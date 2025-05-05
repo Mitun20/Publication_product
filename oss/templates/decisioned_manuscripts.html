@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="{% url 'editor_in_chief' %}">
+                                Manuscripts waiting for decision
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link active" href="{% url 'decisioned_manuscripts' %}">
+                                Manuscripts decisioned
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Manuscripts History</h2>
+
+                    <!-- Filter Form -->
+                    <form method="GET" class="mb-3">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search by title" value="{{ search_term }}">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">All Statuses</option>
+                                {% for status in all_statuses %}
+                                    <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>
+                                        {{ status }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Manuscript ID</th>
+                                    <th scope="col" width="18%">Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">File</th>
+                                    <th scope="col">Submitted on</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.manuscript_id }}</td>
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>{{ submission.article_status }}</td>
+                                    <td>
+                                        {% if submission.final_file %}
+                                        <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ submission.submitted_on }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination controls -->
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                            {% endif %}
+    
+                            <span class="current">
+                                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                            </span>
+    
+                            {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

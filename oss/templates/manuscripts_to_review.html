@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li >
+                            <a class="nav-link" href="{% url 'reviewer_invitations' %}">
+                                Invitation
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="#">
+                                Manuscripts to Review
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'reviewed_manuscripts' %}">
+                                Manuscripts Reviewed 
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Manuscripts to Review</h2>
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    
+                                    <th scope="col">Manuscript ID</th>
+                                    <!-- <th scope="col">Journal</th> -->
+                                    <th scope="col" width="18%" >Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">File</th>
+                                    <th scope="col">Submitted Date</th>
+                                    <th scope="col">Revision Due Date</th>
+                                    <th scope="col">Plagiarism Report</th>
+
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.manuscript_id }}</td>
+                                    <!-- <td>{{ submission.journal }}</td> -->
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td> 
+                                        
+                                            <a href="#" class="comments-link" data-submission-id="{{ submission.id }}" data-bs-toggle="modal" data-bs-target="#commentModal">Comment</a>
+                                            <br>
+                                            {% for ae_assignment in ae_assignments %}
+                                            {% if ae_assignment.submission_id == submission.id %}
+                                            <a href="{% url 'contact_form' %}?email={{ ae_assignment.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Associate Editor</a>
+                                            {% endif %}
+                                            {% endfor %}
+                                        
+                                    </td>
+                                    
+                                    <td>
+                                        {% if submission.final_file %}
+                                            <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                        {% else %}
+                                        --
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ submission.submitted_on }}</td>
+                                    <td>{{ submission.revision_due_date }}</td>
+                                    <td>
+                                        {% if submission.plag_report %}
+                                            <p><a href="{{ submission.plag_report.url }}" 
+                                            onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">
+                                            View Report
+                                            </a></p>
+                                        {% else %}
+                                            No Report
+                                        {% endif %}
+                                    </td>
+                                </tr> 
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination controls -->
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                            {% endif %}
+    
+                            <span class="current">
+                                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                            </span>
+    
+                            {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header"> 
+                <h5 class="modal-title" id="commentModalLabel">Submit Review Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="commentForm" method="POST" action="{% url 'submit_review_comments' %}" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <input type="hidden" name="submission_id" id="submission_id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="review_recommendation" class="form-label">Review Recommendation</label>
+                        <select id="review_recommendation" name="review_recommendation" class="form-select" >
+                            <option value="">Select Recommendation</option>
+                            {% for choice, display in review_recommendation_choices %}
+                                <option value="{{ choice }}">{{ display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="review_comments" class="form-label">Comments</label>
+                        <textarea id="review_comments" name="review_comments" class="form-control" rows="3" ></textarea>
+                    </div>
+                    <div id="error-message" class="text-danger" style="display:none;">Please fill out all fields before submitting.</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <h3><div id="loadingMessage" style="display:none;">Processing...</div></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script><!-- JavaScript -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script>
+    // JavaScript function to validate the form
+    function validateForm() {
+        // Get the values of the fields
+        const reviewRecommendation = document.getElementById('review_recommendation').value;
+        const reviewComments = CKEDITOR.instances.review_comments.getData().trim();
+
+        // Check if the fields are empty
+        if (!reviewRecommendation || !reviewComments) {
+            // Show the error message
+            document.getElementById('error-message').style.display = 'block';
+            return false; // Prevent form submission
+        }
+
+        // Hide error message and allow submission
+        document.getElementById('error-message').style.display = 'none';
+        return true;
+    }
+
+    document.querySelectorAll('.comments-link').forEach(link => {
+        link.addEventListener('click', function() {
+            const submissionId = this.getAttribute('data-submission-id');
+            document.getElementById('submission_id').value = submissionId;
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        CKEDITOR.replace('review_comments');
+
+        document.getElementById('commentForm').addEventListener('submit', function(event) {
+            if (!validateForm()) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Get CKEditor instance
+            var editorData = CKEDITOR.instances.review_comments.getData();
+
+            // Create a temporary element to strip HTML tags
+            var tempElement = document.createElement('div');
+            tempElement.innerHTML = editorData;
+            var plainText = tempElement.textContent || tempElement.innerText || "";
+            
+            // Set the plain text back to the textarea
+            document.getElementById('review_comments').value = plainText;
+
+            // Show loading message
+            document.getElementById('loadingMessage').style.display = 'block';
+        });
+    });
+</script>
+
+{% endblock %}

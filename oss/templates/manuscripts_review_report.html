@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul >
+                        <li > 
+                            <a class="nav-link" href="{% url 'associate_editor' %}">
+                                Manuscripts to Review
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="{% url 'manuscripts_review_report' %}">
+                                Manuscripts with Review Report
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_under_review' %}">
+                                Manuscripts under Review
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_eic' %}">
+                                Manuscripts to EIC
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Manuscripts With Review Reports</h2>
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Manuscript ID</th>
+                                    <!-- <th scope="col">Journal</th> -->
+                                    <th scope="col" width="18%">Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Reviewers</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">File</th>
+                                    <th scope="col">Submitted on</th>
+                                    <th scope="col">Plagiarism Report</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    
+                                    <td>{{ submission.manuscript_id }}</td>
+                                    <!-- <td>{{ submission.journal }}</td> -->
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>
+                                        {% for reviewer in submission.submission_reviewer_set.all %}
+                                            <p><a href="#" class="reviewer-link" 
+                                            data-submission-id="{{ submission.id }}" 
+                                            data-reviewer-id="{{ reviewer.reviewer.id }}">
+                                            {{ reviewer.reviewer.user.first_name }} {{ reviewer.reviewer.user.last_name }} - comments
+                                            </a><br>
+                                        <a href="{% url 'contact_form' %}?email={{ reviewer.reviewer.user.email  }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;"> Contact {{ reviewer.reviewer.user.first_name }} {{ reviewer.reviewer.user.last_name }}</a> 
+                                            </p>
+                                        {% empty %} 
+                                            <p>No reviewers assigned</p>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <p>
+                                            <a href="#" class="recommend-link" 
+                                            data-submission-id="{{ submission.id }}">
+                                            Recommend
+                                            </a><br>
+                                            <a href="{% url 'contact_form' %}?email={{  admin_email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Admin</a>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        {% if submission.final_file %}
+                                            <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                        {% else %}
+                                        --
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ submission.submitted_on }}</td>
+                                    <td>
+                                        {% if submission.plag_report %}
+                                            <p><a href="{{ submission.plag_report.url }}" 
+                                            onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">
+                                            View Report
+                                            </a></p>
+                                        {% else %}
+                                            No Report
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination controls -->
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                            {% endif %}
+    
+                            <span class="current">
+                                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                            </span>
+    
+                            {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<div class="modal" id="reviewerModal" tabindex="-1" role="dialog" aria-labelledby="reviewerModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewerModalLabel">Reviewer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reviewersForm">
+                <p><strong>Review Recommendation:</strong> <span id="reviewRecommendation"></span></p>
+                <p><strong>Review Comments:</strong></p>
+                <p id="reviewComments"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="recommendationModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review Recommendation</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="recommendationForm">
+                    <div class="form-group">
+                        <label for="recommendation">Review Recommendation</label>
+                        <select id="recommendation" class="form-control">
+                            <option value="select">select Recommendation</option>
+                            <option value="A">Accept</option>
+                            <option value="R">Reject</option>
+                            <option value="MIN_R">Minor Revision</option>
+                            <option value="MAJ_R">Major Revision</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="comments">Comments</label>
+                        <textarea id="comments" class="form-control"></textarea>
+                        <div id="reviewersCommentsSection" style="display:none;">
+                            <label for="reviewersComments">Reviewers Comments:</label>
+                            <textarea id="reviewersComments" class="form-control" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" id="includeReviewersComments" class="form-check-input">
+                        <label for="includeReviewersComments" class="form-check-label">Include Reviewers Comments</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <h3><div id="loadingMessage" style="display:none;">Processing...</div></h3>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+<!-- Include jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Include Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Handle clicks on the 'Recommend' link
+    $('.recommend-link').on('click', function(e) {
+        e.preventDefault();
+        var submissionId = $(this).data('submission-id');
+        var $modal = $('#recommendationModal');
+
+        // Show modal
+        $modal.show();
+
+        // Clear previous data
+        $('#recommendation').val('');
+        if (CKEDITOR.instances['comments']) {
+            CKEDITOR.instances['comments'].destroy();
+        }
+        $('#comments').val('');
+        CKEDITOR.replace('comments');
+        $('#includeReviewersComments').prop('checked', false);
+
+        // Load reviewers comments if checkbox is checked
+        $('#includeReviewersComments').off('change').on('change', function() {
+            updateCommentsBox($('#includeReviewersComments').prop('checked'), submissionId);
+        });
+
+        // Function to update comments box
+        function updateCommentsBox(includeReviewersComments, submissionId) {
+            var currentComments = CKEDITOR.instances['comments'].getData();
+
+            // Load reviewers comments
+            if (includeReviewersComments) {
+                $.ajax({
+                    url: '{% url "get_reviewers_comments" %}',  // Adjust URL as needed
+                    type: 'GET',
+                    data: { submission_id: submissionId },
+                    success: function(response) {
+                        var reviewersCommentsText = '<p>Reviewers Comments:</p><p>' + response.comments + '</p>';
+                        if (!currentComments.includes("Reviewers Comments:")) {
+                            CKEDITOR.instances['comments'].setData(currentComments + reviewersCommentsText);
+                        }
+                    }
+                });
+            } else {
+                CKEDITOR.instances['comments'].setData(currentComments.replace(/<p>Reviewers Comments:<\/p><p>.*?<\/p>/s, ''));
+            }
+        }
+
+        $('#recommendationForm').off('submit').on('submit', function(e) {
+            e.preventDefault();
+            var recommendation = $('#recommendation').val();
+            var comments = CKEDITOR.instances['comments'].getData();
+
+            // Check if recommendation and comments are filled
+            if (recommendation === 'select' || comments.trim() === '') {
+                alert('Please fill in both recommendation and comments.');
+                return;
+            }
+
+            // Show loading message
+            $('#loadingMessage').show();
+            $.ajax({
+                url: '{% url "submit_recommendation" %}',  // Adjust URL as needed
+                type: 'POST',
+                data: {
+                    submission_id: submissionId,
+                    recommendation: recommendation,
+                    comments: comments,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Hide loading message
+                    $('#loadingMessage').hide();
+                    alert('Recommendation submitted successfully!');
+                    location.reload();
+                    $modal.hide();
+                },
+                error: function() {
+                    alert('An error occurred.');
+                }
+            });
+        });
+
+    });
+
+    $('.modal .close').on('click', function() {
+        $('#recommendationModal').hide();
+    });
+
+    $(window).on('click', function(event) {
+        if ($(event.target).is('#recommendationModal')) {
+            $('#recommendationModal').hide();
+        }
+    });
+});
+        
+// Handle clicks on reviewer names
+            
+    $(document).ready(function(){
+        $('.reviewer-link').click(function(e){
+            e.preventDefault();
+            var submissionId = $(this).data('submission-id');
+            var reviewerId = $(this).data('reviewer-id');
+    
+            $.ajax({
+                url: "{% url 'get_reviewer_details' %}",
+                data: {
+                    'submission_id': submissionId,
+                    'reviewer_id': reviewerId
+                },
+                success: function(data) {
+                    $('#reviewRecommendation').text(data.review_recommendation);
+                    $('#reviewComments').text(data.review_comments);
+                    $('#reviewerModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    alert("An error occurred while fetching reviewer details: " + error);
+                }
+            });
+        });
+    });
+    
+    
+</script>
+{% endblock %}

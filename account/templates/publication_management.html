@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+ 
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li >
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                User Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="{% url 'publication_management' %}">
+                                Publication Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link " href="{% url 'date_settings' %}">
+                                 Date Settings
+                            </a>
+                        </li>
+                        <!-- <li >
+                            <a class="nav-link" href="{% url 'add_journal' %}">
+                                Journal Management
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <h2>Publication Management</h2>
+            <br>
+            <!-- Publication Buttons -->
+            <div id="publicationButtons" class="d-flex flex-wrap">
+                {% for journal in journals %}
+                    <button type="button" class="btn btn-save m-2 journal-btn" data-journal-id="{{ journal.id }}">{{ journal.title }}</button>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.journal-btn').click(function() {
+            var journalId = $(this).data('journal-id');
+            $.ajax({
+                url: '{% url "bridge" %}',  // URL of the view to handle the request
+                method: 'POST',
+                data: {
+                    'journal_id': journalId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token for security
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        window.location.href = response.redirect_url;  // Redirect to the new page
+                    } else {
+                        console.error('Error:', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error sending journal data:', error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

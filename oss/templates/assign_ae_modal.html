@@ -1,0 +1,14 @@
+<form method="post" action="{% url 'assign_ae' submission.id %}">
+    {% csrf_token %}
+    <label for="editor_id">Select Editor:</label>
+    {% for editor in ae_editors %}
+        <div>
+            <input type="radio" id="editor_{{ editor.editor.id }}" name="editor_id" value="{{ editor.editor.id }}">
+            <label for="editor_{{ editor.editor.id }}">{{ editor.editor.user.first_name }} {{ editor.editor.user.last_name }}</label>
+        </div>
+    {% endfor %}
+    
+    <!-- <button type="submit" class="btn btn-primary">Assign</button> -->
+    
+</form>
+

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .navbar-custom {
+        background-color: #044d5e;
+    }
+    .navbar-custom .navbar-nav .nav-link {
+        color: white;
+        margin: 0 15px; /* Add spacing between links */
+    }
+    .navbar-custom .navbar-nav .nav-link:hover,
+    .navbar-custom .navbar-nav .nav-link.active {
+        color: #eabf1c; /* Change color on hover and active */
+    }
+    .navbar-custom .navbar-nav {
+        margin: auto; /* Center the navbar items */
+    }
+
+    .pagination-container {
+        display: flex;               /* Use flexbox for layout */
+        flex-direction: column;      /* Stack items vertically */
+        align-items: center;         /* Center items horizontally */
+        justify-content: center;     /* Center items vertically if needed */
+        text-align: center;          /* Center text inside */
+        margin: 20px 0;              /* Add vertical spacing around pagination */
+    }
+
+    .pagination-text {
+        margin-bottom: 10px;         /* Space between text and links */
+    }
+
+    .pagination-links {
+        display: inline-block;       /* Keeps the links inline while allowing centering */
+    }
+
+    .pagination-link {
+        color: #044d5e;              /* Customize link color */
+        text-decoration: none;       /* Remove underline */
+        margin: 0 10px;              /* Space between links */
+    }
+
+    .pagination-link:hover {
+        text-decoration: underline;  /* Add underline on hover */
+    }
+</style>
+
+<br>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_management' %}">Admin-panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'volume_page' journal.id %}" id="volume-link">Volume</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'issue_list' journal.id %}" id="issues-link">Issues</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'articles_page' journal.id %}" id="articles-link">Publish Articles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manuscript_processing' journal.id %}" id="manuscript-link">Manuscript in Processing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'published_article' journal.id %}" id="published-link">Published Article</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Published Article</h1>
+    </div>
+    
+    <!-- Accepted Submissions Table -->
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Volume</th>
+                <th>Issue</th>
+                <th>Title of the Paper</th>
+                <th>Authors</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+                <tr>
+                    <td>{{ article.article_data.volume }}</td>
+                    <td>{{ article.article_data.issue }}</td>
+                    <td>{{ article.article_data.title }}</td>
+                    <td>{{ article.article_data.authors }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'remove_article' article.id %}" class="remove-article-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No articles found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination-container">
+    <div class="pagination-text">
+        <span>Page {{ articles.number }} of {{ articles.paginator.num_pages }}</span>
+    </div>
+    <div class="pagination-links">
+        {% if articles.has_previous %}
+            <a href="?page={{ articles.previous_page_number }}&volume={{ selected_volume }}&issue={{ selected_issue }}" class="pagination-link">Previous</a>
+        {% endif %}
+        {% if articles.has_next %}
+            <a href="?page={{ articles.next_page_number }}&volume={{ selected_volume }}&issue={{ selected_issue }}" class="pagination-link">Next</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.remove-article-form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            var form = $(this);
+            
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        // Optionally, you can redirect or update the UI
+                        window.location.href = '/journal/{{ journal.id }}/published_article/'; // Redirect to the published articles page
+                    } else {
+                        alert(response.message); // Show an error message
+                    }
+                },
+                error: function() {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+

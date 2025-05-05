@@ -1,0 +1,382 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+
+{% block content %}
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg17">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>FAQ - Karpagam JCS</h2>
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+    <section class="about-section pt-100 pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <div class="about-information accordions">
+                        <ul>
+                            <li>
+                                <a href="{% url 'about' %}" class="active">
+                                    About Karpagam Journal of Computer Science
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
+
+                    </div>
+                </div>
+
+                <div class="col-md-8" style="text-align:left;">                    
+                <div class="section-title">
+                    <h2>Frequently Asked Questions - KJCS</h2>
+                </div>
+                <div class="row"> 
+                    <div class="faq-section">             
+                        <div class="accordions">                           
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item1">
+                                    <h2>Is KJCS peer-reviewed?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item1">
+                                    <p>Yes, KJCS operates a single-blind review process. Suitable papers are sent to a minimum of two independent expert reviewers to assess the quality. The Editor’s decision is final.</p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item2">
+                                    <h2>What types of paper are published by KJCS?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item2">
+                                    <p>KJCS publishes following type of articles: Original research paper, Short Reports, Case Studies ,Review Paper , Literature Reviews, Conceptual Framework, Analytical and Simulation Models and Technical Notes.</p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item3">
+                                    <h2>What is the ISSN of the Journal?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item3">
+                                    <p> Yes, it has ISSN. It is written in the top of the journal and also available in the home page of the journal website.</p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item4">
+                                    <h2>Is there a print version of the journal?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item4">
+                                    <p>Yes, KJCS Journal is published both online and print version.</p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item5">
+                                    <h2>Can I submit more than one paper for the same issue?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item5">
+                                    <p> Yes, you can submit more than one paper at a time.
+                                    </p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item6">
+                                    <h2>When should I submit my papers? Are there any deadlines?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item6">
+                                    <p>
+                                    There is no deadline for paper submission, so you can submit your manuscript at any time. As long as the submitted paper is peer-reviewed and accepted successfully, it would be published in the upcoming issue.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item7">
+                                    <h2>How to submit a paper?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item7">
+                                    <p> All papers should be submitted through online mode through our journal website.</p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item8">
+                                    <h2>Can I send only abstract for review?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item8">
+                                    <p>No, You have to send full length paper for review process.</p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item9">
+                                    <h2>What are paper publication charges?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item9">
+                                    <p>Click here for Publication Charges.
+                                    </p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item10">
+                                    <h2>Do I need to submit the copyright form along with the manuscript?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item10">
+                                    <p>Copyright forms shall be accepted by KJCS only if the submission is accepted for publication.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item11">
+                                    <h2>Whether it provide hard copy of Journal or not?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item11">
+                                    <p>Yes after publication papers online, we send the hard copy of Journal to all authors by speed post.</p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item12">
+                                    <h2>When will I receive an acknowledgment email for my submission?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item12">
+                                    <p>Paper submissions are normally acknowledged within 12 to 24 hrs.
+                                    </p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item13">
+                                    <h2>How much time will you take to review a paper?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item13">
+                                    <p>
+                                    It depends on reviewer response. In general, submitted paper may be reviewed within 15 days. It is advised you, do not submit the same article to multiple journals at the same time. You should wait for review report.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item14">
+                                    <h2>How many authors may be cited in a paper?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item14">
+                                    <p>Maximum 03 authors may be cited in a paper.</p>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item15">
+                                    <h2>Can I submit same paper to the multiple journals?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item15">
+                                    <p>No, It is advised you, do not submit the same article to multiple journals at the same time. You should wait for review report.</p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item16">
+                                    <h2>Is it compulsory to submit papers in the given journal template?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item16">
+                                    <p>Yes, you have to submit the paper in the journal paper template format, but paper should be in msworld file format.
+                                    </p>
+                                </div>
+                            </div>
+                          
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="item17">
+                                    <h2>What are the terms and conditions to withdraw my paper?<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="item17">
+                                    <p>Terms and conditions are available in the ‘Authors Guidelines’ page. Please refer journal website. Paper cannot be withdrawn at any condition once it is accepted.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div> 
+                    </div>        
+                    
+                </div>                
+                    </div>              
+                </div>
+            </div>
+        </section>
+    <!-- About Area End -->
+
+
+        <!-- Subscribe Section Start -->
+        <section class="subscribe-section">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-6">
+                        <div class="section-title">
+                            <h2>Get New Job Notifications</h2>
+                            <p>Subscribe & get all related jobs notification</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <form class="newsletter-form" data-toggle="validator">
+                            <input type="email" class="form-control" placeholder="Enter your email" name="EMAIL" required autocomplete="off">
+    
+                            <button class="default-btn sub-btn" type="submit">
+                                Subscribe
+                            </button>
+    
+                            <div id="validator-newsletter" class="form-result"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Subscribe Section End -->
+
+        {% endblock %}

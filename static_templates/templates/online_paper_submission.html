@@ -1,0 +1,414 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+{% block content %}
+        <!-- Page Title Start -->
+        <section class="page-title title-bg3">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Online Paper Submission</h2>
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+   <!-- About Area Start -->
+   <section class="account-section ptb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information accordions">
+                    <ul>
+                        <li>
+                            <a href="{% url 'about' %}" class="active">
+                                About Karpagam Journal of Computer Science
+                            </a>
+                        </li>
+                    
+                        <li>
+                            <div class="accordion-item" >
+                                
+                                <div class="accordion-title" data-tab="iteml1">
+                                    <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml1">
+                                    <ul >
+                                        {% for journal in journals %}
+                                        <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion-item" >
+                                <div class="accordion-title" data-tab="iteml2">
+                                    <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    
+                                </div>
+                                <div class="accordion-content" id="iteml2">
+                                    <ul >
+                                        {% for journal in journals %}
+                                        <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml3">
+                                    <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml3">
+                                    <ul>
+                                        <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                        <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                        <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml4">
+                                    <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml4">
+                                    <ul>
+                                        <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                        <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                        <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- <li>
+                            <a href="#">
+                                Abstracting and indexing
+                            </a>
+                        </li> -->
+                        <li>
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml5">
+                                    <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml5">
+                                    <ul>
+                                        <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                        <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                        <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion-item" >
+                                <div class="accordion-title" data-tab="iteml6">
+                                    <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml6"> 
+                                    <ul>
+                                        <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                        <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                        <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                    </ul>
+                                </div> 
+                            </div>
+                        </li>
+                            {% if user.is_authenticated %}
+                                {% for group in user.groups.all %}
+                                    {% if group.name == 'Author' %}
+                                        <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                    
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                            {% endif %}
+                        <li>
+                            <div class="accordion-item" >
+                                <div class="accordion-title" data-tab="iteml7">
+                                    <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml7"> 
+                                    <ul>
+                                        <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                        <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                        <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                    </ul>
+                                </div> 
+                            </div>
+                        </li>
+                        <li>
+                            <div class="accordion-item" >
+                                <div class="accordion-title" data-tab="iteml8">
+                                    <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                </div>
+                                <div class="accordion-content" id="iteml8"> 
+                                    <ul>
+                                        <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                        <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                        <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                        <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                    </ul>
+
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="job-post">
+                    <form class="job-post-from">
+                        <div class="row justify-content-center pt-20">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Topic Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Select Journal</label>
+                                    <select class="category">
+                                        <option data-display="">Select Journal</option>
+                                        <option value="1">Karpagam JCS</option>
+                                        <option value="2">Karpagam IJAM</option>
+                                        <option value="4">Karpagam JCM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Article Type</label>
+                                    <select class="category">
+                                        <option data-display="">Please Select Article Type</option>
+                                        <option value="1">Review Article</option>
+                                        <option value="2">Research Article</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label> Area of Article</label>
+                                    <select class="category">
+                                        <option data-display="">Main Subject Area of Article</option>
+                                        <option value="1">Algorithms</option>
+                                        <option value="2">Artificial Intelligences</option>
+                                        <option value="3"> Computer Networks</option>
+                                        <option value="4">Data Base Management & Information Retrieval Systems</option>
+                                        <option value="5"> Image Processing</option>
+                                        <option value="6">Network Security</option>
+                                        <option value="7">Wireless & Mobile Networking</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center pt-20">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Full Title of Article</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Keywords</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label> Abstract</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                   Next
+                                </button>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <h4>Authors of Article</h4>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>First Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Family Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Middle Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Academic Address</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>ORCID Id</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                   <label>Corresponding Author</label> &nbsp;<input type="checkbox" name="checkbox"> 
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                    Add this Author
+                                </button>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <h4>Reviewer Offers </h4>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Reviewer's Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                
+                            </div>
+                          
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Academic Address</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                    Add this Reviewer
+                                </button>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <h4>Conflict of Interest  </h4>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Reviewer's Name</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                                
+                            </div>
+                          
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Academic Address</label>
+                                    <input type="text" class="form-control" id="exampleInput1" placeholder="" required>
+                                </div>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                    Add this Reviewer
+                                </button>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <h4>File Uploads </h4>
+                        <div class="row justify-content-center pt-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Image/Figure</label>
+                                    <input type="file" name="Image/Figure" placeholder="Image/Figure" class="form-control">
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Table File(s)</label>
+                                    <input type="file" name="Table File(s)" placeholder="Table File(s)" class="form-control">
+                                </div>
+                                
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Additional File</label>
+                                    <input type="file" name="Table File(s)" placeholder="Table File(s)" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Main Article</label>
+                                    <input type="text" name="Main Article" placeholder="Main Article" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                   Submit
+                                </button>
+                            </div>
+                        </div>
+                        <p>&nbsp;</p>
+                        <h4>Produced PDF</h4>
+                        <div class="row justify-content-center pt-20">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Upload PDF</label>
+                                    <input type="file" name="Upload PDF" placeholder="Upload PDF" class="form-control">
+                                </div>
+                                
+                            </div>
+                                                       
+                            <div class="col-md-12 text-center">
+                                <button type="submit" class="post-btn">
+                                   Submit
+                                </button>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- About Area End -->
+ 
+
+{% endblock %}

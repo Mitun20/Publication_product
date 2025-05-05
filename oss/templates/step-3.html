@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% load form_tags %}
+{% block content %}
+
+            <!-- About Area Start -->
+<section class="job-style-two job-list-section pt-100 pb-100" style="text-align:left;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <h3 style="color:white">Submission</h3>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'new_submission' submission_id=submission.id %}">
+                                Step 1: Title, category & Abstract
+                            </a>
+                        </li> 
+                        <li>
+                            <a href="{% url "submission_step_two" submission_id=submission.id %}"  >
+                                Step 2: File Upload
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step3" submission_id=submission.id %}"  class="active">
+                                Step 3: Keywords
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step4" submission_id=submission.id %}">
+                                Step 4: Authors & Affiliation
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step5" submission_id=submission.id %}"  >
+                                Step 5: Details & Comments
+                            </a>
+                        </li>    
+                        <li>
+                        <a href="{% url "step6_review_submit" submission_id=submission.id %}" >
+                            Step 6: Review & Submit
+                        </a>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="col-md-8" style="text-align:left;">                    
+                <div class="section-title-space">
+                    <h2>Step 3: Keywords</h2>
+                </div>
+                <div class="about-text-list">
+                    <ul>
+                        <li>
+                        <i class='bx bx-chevrons-right bx-tada'></i>
+                        <b>You must type your own keywords into the boxes below.</b>
+                        </li>
+                        <li>
+                        <i class='bx bx-chevrons-right bx-tada'></i>
+                        A minimum of two keywords are required and a maximum of six
+                        </li>
+                        <li>
+                        <i class='bx bx-chevrons-right bx-tada'></i>
+                        Please type only one keyword in each box
+                        </li> 
+                        <li>
+                        <i class='bx bx-chevrons-right bx-tada'></i>
+                        Providing your keywords in this electronic format assists us in identifying and assigning appropriate reviewers for your work.
+
+                        </li> 
+                            
+                        <li>When you are finished, click "Save and Continue."
+                        <button class="readmore-link" id="openPopup"><span>Read More...</span></button>
+                        <br><span style="color:red">*</span> = Required Fields</li>             
+                    </ul> 
+                    
+                    <!-- Popup - text -->
+                    <div id="popup" class="popup">
+                        <div class="popup-content">
+                            <span class="close-button">&times;</span>
+                            <h2>Page Guidelines</h2>
+                            <p class="mt-30">Supply up to six keywords for tagging the paper when archived in the database. Researchers will be more likely to retrieve the paper when conducting a keyword search of our database if your paper is suitably tagged. In the near future the controlled list of keywords will appear on the Emerald website and will form part of the new online content management system so it will be easier then to find the suitable terms but in the meantime pick keywords which reflect the specificity of the paper. Avoid overarching terms like "Management" unless the paper discusses the topic with such a wide focus. Use the most common term for a concept. Do not make up new terms for an old concept. Try to think broadly; if the paper discusses performance appraisal in an electronics factory it may be worthwhile supplying the industry as a keyword. If an activity/research takes place in a particular country then supply the country's name as a keyword.</p>
+                        
+                        </div>
+                    </div>                    
+                </div>
+                <hr style="border-width:3px;">
+
+                <div class="about-section">
+                    <div class="row mt-50">
+                    <div class="col-lg-12">
+                        <div class="section-title-archives">
+                            <h4><span style="color:red">* </span>Keywords <span style="font-size:18px; text-transform:none;">(minimum of 5 keywords should be added)</span></h4>
+                        </div>
+                        <form id="addKeywordForm" method="POST">
+                            {% csrf_token %}
+                            <div class="col-lg-6 mt-30">
+                                <div class="input-group mb-3">
+                                    <input type="text" name="keyword" class="form-control" placeholder="Enter keyword" required>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-outline-secondary" type="submit">
+                                            <i style="font-size:15px; font-weight:700;" class="bx bx-plus"></i>Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="row mt-30">
+                            <div class="col-lg-12">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr style="border-bottom: 1px solid #ddd  !important; background-color:#fff;">
+                                                <th>Keyword</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for keyword in keywords %}
+                                            <tr style="border-bottom: 1px solid #ddd !important;">
+                                                <td style="border-right: none !important;">{{ keyword.keyword }}</td>
+                                                <td style="border-right: none !important;">
+                                                    <button class="remove-keyword btn btn-danger" data-id="{{ keyword.id }}">Remove</button>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td>No keywords added yet.</td>
+                                            </tr>
+                                            {% endfor %}
+                                            
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="mt-50" style="border-width:3px;">
+
+                        <div class="form-group">
+                            
+                            <form method="POST">
+                                {% csrf_token %}
+                                <!-- <button type="submit" name="action" value="save" class="btn btn-primary">Save</button> -->
+                                <button type="submit" name="action" value="save_continue" class="btn btn-success">Save & Continue</button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    
+    
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    console.log("Document ready");
+
+    // Function to handle adding a keyword
+    $('#addKeywordForm').on('submit', function(e) {
+        e.preventDefault();
+        var keyword = $('input[name="keyword"]').val();
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+        console.log("Adding keyword:", keyword);
+        
+        $.ajax({
+            type: 'POST',
+            url: '{% url "step3" submission_id=submission.id %}',
+            data: {
+                'action': 'add',
+                'keyword': keyword,
+                'csrfmiddlewaretoken': csrfToken
+            },
+            success: function(response) {
+                console.log("Add response:", response);
+                if (response.success) {
+                    $('tbody tr:contains("No keywords added yet.")').remove();
+                    var newRow = `<tr style="border-bottom: 1px solid #ddd !important;">
+                                    <td style="border-right: none !important;">${response.keyword}</td>
+                                    <td style="border-right: none !important;">
+                                        <button class="remove-keyword btn btn-danger" data-id="${response.keyword_id}">Remove</button>
+                                    </td>
+                                </tr>`;
+                    $('tbody').append(newRow);
+                    $('input[name="keyword"]').val('');
+                }
+            }
+        });
+    });
+
+    // Function to handle removing a keyword
+    $('tbody').on('click', '.remove-keyword', function(e) {
+        e.preventDefault();
+        var keywordId = $(this).data('id');
+        var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
+        console.log("Removing keyword ID:", keywordId);
+        
+        $.ajax({
+            type: 'POST',
+            url: '{% url "step3" submission_id=submission.id %}',
+            data: {
+                'action': 'remove',
+                'keyword_id': keywordId,
+                'csrfmiddlewaretoken': csrfToken
+            },
+            success: function(response) {
+                console.log("Remove response:", response);
+                if (response.success) {
+                    $(`button[data-id="${response.keyword_id}"]`).closest('tr').remove();
+                    var rowCount = $('tbody tr').length;
+                    if (rowCount === 0) {
+                    // If no rows, append the "No keywords added yet." message
+                    var noKeywordsRow = `<tr>
+                                            <td>No keywords added yet.</td>
+                                        </tr>`;
+                    $('tbody').append(noKeywordsRow);
+                }
+                }
+            }
+        });
+    });
+});
+</script>
+
+
+<script>
+var popup = document.getElementById("popup");
+var openPopupButton = document.getElementById("openPopup");
+var closeButton = document.getElementsByClassName("close-button")[0];
+
+openPopupButton.onclick = function() {
+  popup.style.display = "block";
+};
+
+closeButton.onclick = function() {
+  popup.style.display = "none";
+};
+
+window.onclick = function(event) {
+  if (event.target == popup) {
+    popup.style.display = "none";
+  }
+};</script>
+
+<!--pop over  -->
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+
+});
+</script>
+<!-- File Upload Button type -->
+<script>
+const fileInput = document.getElementById('file-input');
+const fileUploadBtn = document.querySelector('.file-upload-btn');
+const fileNamesDiv = document.getElementById('file-names');
+
+fileUploadBtn.addEventListener('click', () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', () => {
+  const files = fileInput.files;
+  let fileNames = '';
+
+  for (let i = 0; i < files.length; i++) {
+    fileNames += `${files[i].name}, `;
+  }
+
+  fileNamesDiv.textContent = fileNames.slice(0, -2);
+});
+
+</script>
+{% endblock content %}

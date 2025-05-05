@@ -1,0 +1,415 @@
+{% load static %}
+{% load custom_filters %}
+{% load auth_extras %}
+
+<!DOCTYPE html>
+<html lang="zxx">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css'%}">
+        <!-- Owl Carousel CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/owl.carousel.min.css'%}">
+        <!-- Owl Carousel Theme Default CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/owl.theme.default.min.css'%}">
+        <!-- Box Icon CSS-->
+        <link rel="stylesheet" href="{% static 'assets/css/boxicons.min.css'%}">
+        <!-- Flaticon CSS-->
+        <link rel="stylesheet" href="{% static 'assets/fonts/flaticon/flaticon.css'%}">
+        <!-- Magnific CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css'%}">
+        <!-- Meanmenu CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/meanmenu.css'%}">
+        <!-- Nice Select CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/nice-select.css'%}">
+        <!-- Style CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/style.css'%}">
+		<!-- Dark CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/dark.css'%}">
+        <!-- Responsive CSS -->
+        <link rel="stylesheet" href="{% static 'assets/css/responsive.css'%}">
+        <!-- Title CSS -->
+        <title>Karpagam Journal of Computer Science</title>
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png'%}"> 
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        
+        <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    </head>
+    <body>
+            <!-- Pre-loader Start -->
+            <!-- Pre-loader Start -->
+    <div class="loader-content">
+        <div class="d-table">
+            <div class="d-table-cell">
+                <div class="sk-circle">
+                    <div class="sk-circle1 sk-child"></div>
+                    <div class="sk-circle2 sk-child"></div>
+                    <div class="sk-circle3 sk-child"></div>
+                    <div class="sk-circle4 sk-child"></div>
+                    <div class="sk-circle5 sk-child"></div>
+                    <div class="sk-circle6 sk-child"></div>
+                    <div class="sk-circle7 sk-child"></div>
+                    <div class="sk-circle8 sk-child"></div>
+                    <div class="sk-circle9 sk-child"></div>
+                    <div class="sk-circle10 sk-child"></div>
+                    <div class="sk-circle11 sk-child"></div>
+                    <div class="sk-circle12 sk-child"></div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    <!-- Pre-loader End -->
+    <section class="topbar">
+        <!-- <marquee>Donec maximus, magna at imperdiet sodales, odio turpis vehicula magna, sed varius felis orci quis
+            velit. </marquee> -->
+            Karpagam JCS ISSN: 2582 – 8525 (Print), 2583 – 3669 (Online)
+    </section>
+    <section class="bgwhitesec">
+        <div class="container">
+            <div class="header-section">
+                <div class="hs"> <a class="navbar-brand" href="{% url 'index' %}">
+                        <img src="{% static 'assets/img/logo.png'%}" alt="logo">
+                    </a></div>
+                
+                <div class="hs1">
+                    {% if request.user|has_group:"Author" %}
+                        <a href="{% url 'submitted' %}">CALL FOR PAPERS MAR - APR 2025</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">CALL FOR PAPERS MAR - APR 2025</a>
+                    {% endif %}
+
+                </div>
+                <div class="hs2"><img src="{% static '/assets/img/line.jpg'%}"></div>
+
+                <div class="hs3">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="login-btn">Login</a>
+                    <a href="{% url 'register' %}" class="regter-btn">Register</a>
+                    {% endif %}
+                </div>
+                
+
+            </div>
+        </div>
+    </section>
+    <!-- Navbar Area Start -->
+    <div class="navbar-area">
+        <!-- Menu For Mobile Device -->
+        <div class="mobile-nav">
+            <a href="{% url 'index' %}" class="logo" style="margin-bottom: 10px;">
+                <img src="{% static 'assets/img/logo-ftr.png'%}" alt="logo">
+            </a>
+        </div>
+
+        <!-- Menu For Desktop Device -->
+        <div class="main-nav">
+            <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                    <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
+                        <ul class="navbar-nav m-auto">
+                            <li class="nav-item">
+                                <a href="{% url 'index' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                {% url 'about' as about_url %}
+                                {% url 'about_jcs' as about_jcs_url %}
+                                {% url 'about_ijam' as about_ijam_url %}
+                                {% url 'about_jcm' as about_jcm_url %}
+                                <a href="{{ about_url }}" class="nav-link {% if request.path == about_url %}active{% elif request.path == about_jcs_url %}active{% elif request.path == about_ijam_url %}active{% elif request.path == about_jcm_url %}active{% endif %}">About</a>
+                                <ul class="dropdown-menu">
+                                    <!-- {% url 'about_jcs' as about_jcs_url %} -->
+                                    <li class="nav-item">
+                                        <a href="{{ about_jcs_url }}" class="nav-link {% if request.path == about_jcs_url %}active{% endif %}">About Karpagam JCS</a>
+                                    </li>
+                                     <!-- {% url 'about_ijam' as about_ijam_url %} -->
+                                    <li class="nav-item">
+                                        <a href="{{ about_ijam_url }}" class="nav-link {% if request.path == about_ijam_url %}active{% endif %}">About Karpagam IJAM</a>
+                                    </li>
+                                    <!-- {% url 'about_jcm' as about_jcm_url %} -->
+                                    <li class="nav-item">
+                                        <a href="{{ about_jcm_url }}" class="nav-link {% if request.path == about_jcm_url %}active{% endif %}">About Karpagam JCM</a>
+                                    </li> 
+                                </ul> 
+                            </li>
+                            <li class="nav-item">
+
+                                {% url 'editorial_board_members_jcs' as editorial_board_members_jcs_url %}
+                                {% url 'editorial_board_members_ijam' as editorial_board_members_ijam_url %}
+                                {% url 'editorial_board_members_jcm' as editorial_board_members_jcm_url %}
+                                
+                                <a href="{{ editorial_board_members_jcs_url }}" class="nav-link  {% if request.path|startswith:'/editorial_board_members' %}active{% endif %}">Editorial Board Members</a>
+                                 <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a href="{{ editorial_board_members_jcs_url }}" class="nav-link {% if request.path == editorial_board_members_jcs_url %}active{% endif %}">Editorial Board Members Karpagam JCS</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ editorial_board_members_ijam_url }}" class="nav-link {% if request.path == editorial_board_members_ijam_url %}active{% endif %}">Editorial Board Members Karpagam IJAM</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ editorial_board_members_jcm_url }}" class="nav-link {% if request.path == editorial_board_members_jcm_url %}active{% endif %}">Editorial Board Members Karpagam JCM</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'authors_guidelines_jcs' as authors_guidelines_jcs_url %}
+                                {% url 'authors_guidelines_ijam' as authors_guidelines_ijam_url %}
+                                {% url 'authors_guidelines_jcm' as authors_guidelines_jcm_url %}
+                                <a href="{{ authors_guidelines_jcs_url }}" class="nav-link {% if request.path|startswith:'/authors_guidelines' %}active{% endif %}">Author Guidelines</a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a href="{{ authors_guidelines_jcs_url }}" class="nav-link {% if request.path == authors_guidelines_jcs_url %}active{% endif %}">Author’s Guidelines Karpagam JCS</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ authors_guidelines_ijam_url }}" class="nav-link {% if request.path == authors_guidelines_ijam_url %}active{% endif %}">Author’s Guidelines Karpagam IJAM</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ authors_guidelines_jcm_url }}" class="nav-link {% if request.path == authors_guidelines_jcm_url %}active{% endif %}">Author’s Guidelines Karpagam JCM</a>
+                                    </li> 
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                {% url 'aim_scope_jcs' as aim_scope_jcs_url %}
+                                {% url 'aim_scope_ijam' as aim_scope_ijam_url %}
+                                {% url 'aim_scope_jcm' as aim_scope_jcm_url %}
+
+                                <a href="{{ aim_scope_jcs_url }}" class="nav-link {% if request.path|startswith:'/aim_scope' %}active{% endif %}">Aim and Scope</a>
+                                <ul class="dropdown-menu">
+                                    <li class="nav-item">
+                                        <a href="{{ aim_scope_jcs_url }}" class="nav-link {% if request.path == aim_scope_jcs_url %}active{% endif %}">Karpagam JCS Aim and Scope</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ aim_scope_ijam_url }}" class="nav-link {% if request.path == aim_scope_ijam_url %}active{% endif %}">Karpagam IJAM Aim and Scope</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ aim_scope_jcm_url }}" class="nav-link {% if request.path == aim_scope_jcm_url %}active{% endif %}">Karpagam JCM Aim and Scope</a>
+                                    </li> 
+                                </ul>
+                            </li>
+                            <!-- <li class="nav-item">
+                                {% url 'institutions' as institutions_url %}
+                                <a href="{{ institutions_url }}" class="nav-link {% if request.path == institutions_url %}active{% endif %}">Institutions</a>
+                            </li> -->
+                            <li class="nav-item">
+                                {% url 'contact' as contact_url %}
+                                <a href="{{ contact_url }}" class="nav-link {% if request.path == contact_url %}active{% endif %}">Contact Us</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://wa.me/your-phone-number" target="_blank" class="nav-link">
+                                    <i class="fab fa-whatsapp"></i> WhatsApp
+                                </a>
+                            </li>
+                            
+                        </ul>
+                        
+                        
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar Area End -->
+    <!-- Navbar Area End -->
+    {% block content %}
+
+
+    {% endblock %}
+ 
+
+       <!-- Footer Section Start -->
+       <footer class="footer-area pt-70 pb-50">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="footer-widget">
+                        <div class="footer-logo">
+                            <a href="{% url 'index' %}">
+                                <img src="{% static 'assets/img/logo-ftr.png'%}" alt="logo">
+                            </a>
+                        </div>
+
+                        <p>Karpagam Journal of Computer Science is one of the fast-emerging academic publishers in KARPAGAM JOURNAL OF COMPUTER SCIENCE specializing in producing superior-quality academic journals across the disciplines of Computer Science.</p>
+
+                        <div class="footer-social" style="display: none;">
+                            <a href="https://www.facebook.com/login/" target="_blank"><i
+                                    class='bx bxl-facebook'></i></a>
+                            <a href="https://twitter.com/i/flow/login" target="_blank"><i
+                                    class='bx bxl-twitter'></i></a>
+                            <a href="https://www.pinterest.com/" target="_blank"><i
+                                    class='bx bxl-pinterest-alt'></i></a>
+                            <a href="https://www.linkedin.com/" target="_blank"><i class='bx bxl-linkedin'></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-sm-6">
+                    <div class="footer-widget pl-60">
+                        <h3>Quick Links</h3>
+                        <ul>
+                            <li>
+                                <a href="{% url 'review_board_jcs' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Review Board
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Paper Template
+                                </a>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Abstracting and Indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <a href="{% url 'plagiarism_policy_jcs' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Plagiarism Policy
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% static '/downloads/copyright-jcs.pdf'%}" target="_blank">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                   Copyright
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'faq_karpagam_jcs' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    FAQ
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-sm-6">
+                    <div class="footer-widget pl-60">
+                        <h3>Policy</h3>
+                        <ul>
+                            <li>
+                                <a href="{% url 'publication_fees' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Online Payment
+                                </a>
+                            </li>
+                            <li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                        <a href="{% url 'startnew' %}">
+                                            <i class='bx bx-chevrons-right bx-tada'></i>
+                                            Online Paper Submission
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'startnew' %}">
+                                            <i class='bx bx-chevrons-right bx-tada'></i>
+                                            Online Paper Submission
+                                        </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% else %}
+                                    <a href="{% url 'startnew' %}">
+                                        <i class='bx bx-chevrons-right bx-tada'></i>
+                                        Online Paper Submission
+                                    </a>
+                            
+                                {% endif %}
+                            </li>
+                            <li>
+                                <a href="{% url 'terms_and_conditions' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                   Terms & Conditions
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'reviewer_policy_jcs' %}">
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Reviewer Policy
+                                </a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-sm-6">
+                    <div class="footer-widget footer-info">
+                        <h3>Information</h3>
+                        <ul>
+                            <li>
+                                <span>
+                                    <i class='bx bxs-phone'></i>
+                                    <a href="tel:4222980014"  style="padding-left: 0px;">
+                                        +91-422-2980014
+                                    </a>
+                                </span>
+                               
+                            </li>
+
+                            <li>
+                                <span>
+                                    <i class='bx bxs-envelope'></i>
+                                    <a href="mailto:jcs@kahedu.edu.in" style="padding-left: 0px;">
+                                        jcs@kahedu.edu.in
+                                    </a>
+                                </span>
+                               
+                            </li>
+
+                            <li>
+                                <span>
+                                    <i class='bx bx-location-plus'></i>
+                                    Address:
+                                </span>
+                                Eachanari Post, <br>Coimbatore – 641 021,
+                                <br>Tamil Nadu, India.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="copyright-text text-center">
+        <p>Copyright © 2024 Karpagam Journal of Computer Science. Concept by <a href="https://irepute.in/" target="_blank">repute</a>
+        </p>
+    </div>
+    <!-- Footer Section End -->
+
+    <!-- Back To Top Start -->
+    <div class="top-btn">
+        <i class='bx bx-chevrons-up bx-fade-up'></i>
+    </div>
+    <!-- Back To Top End -->
+
+    <!-- jQuery first, then Bootstrap JS -->
+    <script src="{% static 'assets/js/jquery.min.js'%}"></script>
+    <script src="{% static 'assets/js/bootstrap.bundle.min.js'%}"></script>
+    <!-- Owl Carousel JS -->
+    <script src="{% static 'assets/js/owl.carousel.min.js'%}"></script>
+    <!-- Nice Select JS -->
+    <script src="{% static 'assets/js/jquery.nice-select.min.js'%}"></script>
+    <!-- Magnific Popup JS -->
+    <script src="{% static 'assets/js/jquery.magnific-popup.min.js'%}"></script>
+    <!-- Subscriber Form JS -->
+    <script src="{% static 'assets/js/jquery.ajaxchimp.min.js'%}"></script>
+    <!-- Form Velidation JS -->
+    <script src="{% static 'assets/js/form-validator.min.js'%}"></script>
+    <!-- Contact Form -->
+    <script src="{% static 'assets/js/contact-form-script.js'%}"></script>
+    <!-- Meanmenu JS -->
+    <script src="{% static 'assets/js/meanmenu.js'%}"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'assets/js/custom.js'%}"></script>
+</body>
+
+</html>

@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<!-- Custom CSS for Sidebar -->
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a class="nav-link" href="{% url 'admin_office' %}">
+                                Manuscripts submitted
+                            </a>
+                        </li>
+                    
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_rejection' %}">
+                                Manuscripts with rejection
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link active" href="{% url 'manuscripts_acceptance' %}">
+                                Manuscripts with Acceptance
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link " href="{% url 'manuscripts_review' %}">
+                                Manuscripts under review
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_revision' %}">
+                                Manuscripts waiting for revision
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_revision_overdue' %}">
+                                Manuscripts waiting for revision and overdue
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'setting_proof' %}">
+                                Type setting and Proof reading
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'history' %}">
+                                History of Manuscripts 
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+              
+                    <div class="content">
+                        <h2>Manuscripts with Acceptance</h2>
+                        <p>
+                            <a href="{% url 'export_submissions' %}">Export Excel File</a>
+
+                        </p>
+                        <div class=”table-responsive”>  
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Manuscript ID</th>
+                                        <!-- <th scope="col">Journal</th> -->
+                                        <th scope="col" width="18%">Title</th>
+                                        <th scope="col">Author</th>
+                                        <th scope="col" width="18%">Action</th>
+                                        <th scope="col" width="10%">File</th>
+                                        <th scope="col">Submitted on</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Payment Done Date</th>
+                                        <th scope="col">Correction Due Date</th>
+                                        <th scope="col" width="12%">Copyright Form</th>
+                                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for submission in submissions %}
+                                    <tr>
+                                        <td>{{ submission.manuscript_id }}</td>
+                                            <!-- <td>{{ submission.journal }}</td> -->
+                                        <td>{{ submission.title }}</td>
+                                        <td>{{ submission.author.get_full_name }}</td>
+                                        <td>
+                                            {% if submission.additional_file %}
+                                                <li><a href="{{ submission.additional_file.url }}" download>Additional File</a></li>
+                                            {% else %}
+                                            <li>--</li>
+                                            {% endif %}
+                                            <li><a href="#" class="send-correction-report" data-id="{{ submission.id }}" 
+                                            {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %} 
+                                            style="pointer-events: none; color: #ccc;"{% endif %}>
+                                            Send Correction Report
+                                            </a><br></li>
+                                            <li><a href="#" class="upload-corrected-file" data-id="{{ submission.id }}" 
+                                            {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
+                                            style="pointer-events: none; color: #ccc;"{% endif %}>Upload Corrected File</a></li>
+                                            <li><a href="{% url 'contact_form' %}?email={{ submission.author.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
+                                        </td>
+                                            
+                                            <td>
+                                                {% if submission.final_file %}
+                                                    <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                                {% else %}
+                                                    --
+                                                {% endif %}
+                                                
+                                                {% if submission.article_status.article_status == 'Accepted' %}
+                                                <br>
+                                                {% endif %}
+                                        </td>
+                                        <td>{{ submission.submitted_on }}</td>
+                                        <td>{{ submission.article_status }}</td>
+                                        {% if submission.article_status.article_status == 'Payment Done' or submission.article_status.article_status == 'Awaiting for Correction after Acceptance' %}
+                                            <td>{{ submission.payment_date }}</td>
+                                        {% else %}
+                                            <td align="center">--</td>
+                                        {% endif %}
+                                        {% if submission.article_status.article_status == 'Awaiting for Correction after Acceptance' or submission.article_status.article_status == 'Payment Done' %}
+                                            <td>{{ submission.correction_due_date}}</td>
+                                        {% else %}
+                                            <td align="center">--</td>
+                                        {% endif %}
+                                        <td>
+                                            {% if submission.copyright_file %}
+                                                <!-- <a href="{{ submission.copyright_file.url }}" download>Download Copyright Form</a> -->
+                                                <a href="{{ submission.copyright_file.url }}" target="_blank" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View Copyright</a>
+                                            {% else %}
+                                                --
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Pagination controls -->
+                         <!-- <div>
+                            <form method="GET" action="{% url 'export_submissions' %}" class="form-inline">
+                                <div class="form-group">
+                                    <label for="status" class="mr-2">Select Article Status:</label>
+                                    <select name="status" id="status" class="form-control mr-2" required>
+                                        <option value="">-- Select Status --</option>
+                                        <option value="All">All</option>
+                                        <option value="Submitted">Submitted</option>
+                                        <option value="Awaiting for Correction after Acceptance">Awaiting for Correction</option>
+                                        <option value="Accepted">Accepted</option>
+                                        <option value="Rejected">Rejected</option>
+                                        
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">Download</button>
+                                </div>
+                            </form>
+                            
+                         </div> -->
+                        <div class="row pagination text-center">
+                            <span class="step-links">
+                                {% if submissions.has_previous %}
+                                    <a href="?page=1">&laquo; first</a>
+                                    <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                                {% endif %}
+        
+                                <span class="current">
+                                    Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                                </span>
+        
+                                {% if submissions.has_next %}
+                                    <a href="?page={{ submissions.next_page_number }}">next</a>
+                                    <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Correction Report Modal -->
+<div class="modal fade" id="correctionReportModal" tabindex="-1" role="dialog" aria-labelledby="correctionReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="correctionReportModalLabel">Send Correction Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="correctionReportForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="correctionComments">Comments</label>
+                        <textarea class="form-control" id="correctionComments" name="correction_comments" rows="3" required></textarea>
+                        <input type="hidden" id="submissionId" name="submission_id">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Submit</button>
+                    <h3><div id="loadinggMessage" style="display:none;">Processing...</div></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Corrected File Modal -->
+<div class="modal fade" id="uploadCorrectedFileModal" tabindex="-1" role="dialog" aria-labelledby="uploadCorrectedFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadCorrectedFileModalLabel">Upload Corrected File</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="uploadCorrectedFileForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="correctedTitle">Title</label>
+                        <input type="text" class="form-control" id="correctedTitle" name="corrected_title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="correctedAbstract">Abstract</label>
+                        <textarea class="form-control" id="correctedAbstract" name="corrected_abstract" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="correctedFile">Corrected File</label>
+                        <input type="file" class="form-control" id="correctedFile" name="corrected_file" required>
+                        <input type="hidden" id="submissionIdUpload" name="submission_id">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-custom">Upload</button>
+                    <h3><div id="loadingMessage" style="display:none;">Processing...</div></h3>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script><!-- JavaScript -->
+ <!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Include Bootstrap JS if needed -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
+<!-- Include Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<script>
+$(document).ready(function() {
+        $('.send-correction-report').on('click', function(e) {
+            e.preventDefault();
+            var submissionId = $(this).data('id');
+            $('#submissionId').val(submissionId);
+            $('#correctionReportModal').modal('show');
+        });
+
+        $('#correctionReportForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Update the textarea with the content from CKEditor before serializing the form
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+            }
+            // Show loading message
+            $('#loadinggMessage').show();
+            var formData = $(this).serialize();
+            $.ajax({
+                url: '{% url "send_correction_report" %}',
+                type: 'POST',
+                data: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    alert('Correction report sent successfully!');
+                    location.reload();
+                    $('#correctionReportModal').modal('hide');
+                },
+                error: function(xhr) {
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        });
+
+        // Initialize CKEditor with specific configuration
+        CKEDITOR.replace('correctionComments', {
+            removePlugins: 'exportpdf'  // Disable the export to PDF plugin
+        });
+    });
+
+
+    // upload corrected file 
+    $(document).ready(function() {
+    $('.upload-corrected-file').on('click', function(e) {
+        e.preventDefault();
+        var submissionId = $(this).data('id');
+        
+        // Get submission details via AJAX
+        $.ajax({
+            url: '/get_submission_details/',
+            type: 'GET',
+            data: { submission_id: submissionId },
+            success: function(data) {
+                $('#correctedTitle').val(data.title);
+                $('#correctedAbstract').val(data.abstract);
+                $('#submissionIdUpload').val(submissionId);
+                $('#uploadCorrectedFileModal').modal('show');
+            },
+            error: function(xhr) {
+                alert('Failed to load submission details.');
+            }
+        });
+    });
+
+    $('#uploadCorrectedFileForm').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        // Show loading message
+        $('#loadingMessage').show();
+        $.ajax({
+            url: '{% url "upload_corrected_file" %}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                // Hide loading message
+                $('#loadingMessage').hide();
+                alert('Corrected file uploaded successfully!');
+                $('#uploadCorrectedFileModal').modal('hide');
+                location.reload();
+            },
+            error: function(xhr) {
+                alert('An error occurred. Please try again.');
+                console.log("Upload error", xhr);
+            }
+        });
+    });
+});
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+author:
+submission flow :
+login or register to open "start new submission" page and click "begin new submission"
+Step 1: Title, category & Abstract
+ - Enter your title and abstract into the appropriate boxes.
+ - Select your manuscript category if needed.
+ -When you are finished, click "Save and Continue."
+
+Step 2: File Upload
+- read the instructions shown there
+- choose file and add article type if you have more then one file click "add file"
+after you added the files means click "upload files"
+- there are shown you uploaded file one verify that
+
+Step 3: Keywords:
+- read the instructions shown there
+- you can add more then one keyword
+- When you are finished, click "Save and Continue."
+
+Step 4: Authors & Affiliation:
+- you can add co-authors details like (Name, Email, Affiliation)
+- When you are finished, click "Save and Continue."
+
+Step 5: Details & Comments
+-read the instuructions
+- Enter or paste your cover letter text into the "Cover Letter" box below
+- Answer any remaining questions appropriately
+- When you are finished, click "Save and Continue."
+
+Step 6: Review & Submit
+-  if you missed any nessecery field it will show in the top of the page 
+- after completed you can check the you entered details are shown verify and click "View Proof"
+then click the "I have viewed the proof" and click "Submit"
+- you will recieve an email for your submission
+
+
+contact admin
+
+admin office Work in:
+Manuscripts submitted Flow:
+- all submitted manuscripts are shown here and check the format and you need to test the plagrisam report using online tool and then upload report
+- if the format is not related or any mistakes you can reject the manuscript by click "Reject" button and type the mistakes in commend box
+- if ok it can move to next process means click "Assign AE" button and choose AE and click "Assign"
+
+Manuscripts with rejection Flow:
+- the rejeted manuscripts are shown here you can view the comments and who rejected this manuscripts
+
+Manuscripts with Acceptance Flow:
+- Accepeted manuscripts are shown here is there is any correction you can send the correction report by clicking "Send Correction Report" after the payment is done then only it shown 
+- all corrceted now the manusript is ready means upload corrected file by clicking "Upload Corrected File"
+
+Manuscripts under review Flow:
+- if there is any mancuscripts is processing by reviewes it is shoewing in here 
+
+Manuscripts waiting for revision Flow:
+- if there is manucripts waiting for reviewers means it shown here 
+
+Manuscripts waiting for revision and overdue Flow:
+- if there is manucripts waiting for reviewers and it cross over the due date means it shown here 
+
+Type setting and Proof reading Flow:
+- you need to upload the updated and competed file here by clicking "Upload Type Set Document" it send throug the email to author after author comirmed you need to done the proof read by clecking "Proof Read Doine"
+
+Associate Editor:
+
+Manuscripts to Review Flow:
+- in this you invite the reviewers by "Invite"
+- you can reject the manuscript using "Reject" button
+- you can view the plagrisam report and manuscript
+
+Manuscripts with Review Report Flow:
+- you can see the reviewers comments 
+- you can contact the reviewers who review the paper
+- you can recommend the manuscript by "Recommend"
+
+Manuscripts under Review Flow:
+- it shows you assigned reviewers accepted manuscripts 
+
+Manuscripts to EIC Flow:
+-  after you recommended the manuscripts it moves to EIC it shows here 
+
+Reviewer:
+Invitation Flow:
+- if any Associate Editor invite you to review the manuscripts means the invitaions shows here you can accept or reject the paper 
+
+Manuscripts to Review Flow:
+- here it shows the you accepted invitation's manuscripts 
+- use "view pdf " to view the manuscripts
+- use "Recommend" to write the comments for that manuscripts 
+
+Manuscripts Reviewed Flow:
+- your reviewed completed manuscripts are shown here 
+
+Editor in Chief:
+
+Manuscripts waiting for decision Flow:
+- you can see the AE comments how reviewed before for this manuscripts by using "View"
+- to view the manuscripts by using "View PDM"
+- you need to recommend the paper by using "Make decision " 
+
+
+
+
+
+

@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    #test {
+        display: flex;
+    }
+    .test select{
+        background-color: #fff;
+        border-radius: 5px;
+        border: solid 1px #e8e8e8;
+        /* box-sizing: border-box; */
+        clear: both;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 400;
+        height: 42px;
+        line-height: 40px;
+        outline: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+        text-align: left !important;
+        width: 90% !important;
+        flex: 1;
+        margin-left: 10px;
+    }
+    /* .test select>option {
+        width: 100%;
+        
+    } */
+
+
+
+    
+</style>
+            <!-- About Area Start -->
+<section class="job-style-two job-list-section pt-100 pb-100" style="text-align:left;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <h3 style="color:white">Submission</h3>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'new_submission' submission_id=submission.id %}">
+                                Step 1: Title, category & Abstract
+                            </a>
+                        </li> 
+                        <li>
+                            <a href="{% url "submission_step_two" submission_id=submission.id %}"  class="active">
+                                Step 2: File Upload
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step3" submission_id=submission.id %}"  >
+                                Step 3: Keywords
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step4" submission_id=submission.id %}"  >
+                                Step 4: Authors & Affiliation:
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step5" submission_id=submission.id %}" >
+                                Step 5: Details & Comments
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step6_review_submit" submission_id=submission.id %}" >
+                            Step 6: Review & Submit
+                        </a>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="col-md-8" style="text-align:left;"> 
+
+                <div class="about-section">                   
+                    <div class="section-title-space">
+                        <h2>Step 2: File Upload</h2>
+                    </div>
+                    <div class="about-text-list">
+                        <ul>
+                            <li>
+                            <i class='bx bx-chevrons-right bx-tada'></i>
+                            <b>Your article file must not contain any author details or any information that would identify the authors but must include the structured abstract.</b>
+                            </li>
+                            <li>
+                            <i class='bx bx-chevrons-right bx-tada'></i>
+                            Please keep file names short (less than 128 characters)
+                            </li>
+                            <li>
+                            <i class='bx bx-chevrons-right bx-tada'></i>
+                            Upload as many files as needed for your manuscript in groups of three or fewer. (Larger files take longer to upload). These files will be combined into a single document for the peer review process.
+                            </li> 
+                            <li>
+                            <i class='bx bx-chevrons-right bx-tada'></i>
+                            <b>All figures and plates should be submitted in electronic form, of high quality and legible (e.g. formats: .pdf, .ai, .eps, .ppt, .xls). Original figure creation files are preferred. If supplying photographic images set them at a high resolution (300dpi) and at least 10cm wide (e.g. formats: tif, .jpeg, .bmp)</b>
+                            </li>   
+                            <li>To designate the order in which your files appear, use the dropdowns in the "order" column below.</li>     
+                            <li>View your uploaded files by clicking on HTML or PDF. When you are finished, click "Save and Continue."
+                            <button class="readmore-link" id="openPopup"><span>Read More...</span></button>
+                            <br><span style="color:red">*</span> = Required Fields</li>             
+                        </ul> 
+                        
+                        <!-- Popup - text -->
+                        <div id="popup" class="popup">
+                            <div class="popup-content">
+                                <span class="close-button">&times;</span>
+                                <h2>Page Guidelines</h2>
+                                <p class="mt-30">Your text and figure file(s) will be converted into HTML so that they can be easily viewed with a browser on the Internet. They will also be converted into a .PDF document so that they can be viewed and printed with Adobe Acrobat Reader. The files in the .PDF document will be presented in the order specified.</p>
+                            
+                            </div>
+                        </div>                    
+                    </div><!--List section end-->
+                </div>
+
+                <hr>
+
+
+<!-- File Section Start -->
+<!-- File Section Start -->
+<!-- step-2.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Files</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+</head>
+<body>
+
+    <div class="about-section">
+
+        <h1>Step 2: Upload Files</h1>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div id="files_container">
+                <div> 
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>File</th>
+                                    <th>File Category:</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tr style="border-bottom: 1px solid #ddd !important; background-color:#fff; font-size:16px;">
+                                <td width="50%">
+                                    <label for="id_file"></label>
+                                    <input type="file" name="file" multiple >
+                                    
+                                </td>
+                                <td width="30%">
+                                    
+                                        <label for="id_file_category" ></label><br>
+                                            {{ form.file_category }}
+                                        
+                                </td>
+                                <td width="20%">
+
+                                </td>
+                            </tr>
+                        </table><br>
+                    </div>
+                    <!-- <label for="id_file">Upload Files:</label><br>
+                    <input type="file" name="file" multiple>
+                    <br><br>
+                    <label for="id_file_category">File Category:</label><br>
+                    {{ form.file_category }}
+                    <br><br> -->
+                </div>
+            </div>
+            <button type="button" class="btn btn-success" id="add_more_files"> Add File</button>
+            <button type="submit" class="btn btn-primary" name="action" value="save">Upload Files</button>
+        </form>
+
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+
+        <!-- File Section Start -->
+        <div class="about-section">
+            <div class="row mt-50">
+                <div class="section-title-archives">
+                    <h3>Files 
+                        <button type="button" class="btn btn-secondary btn-icon fade-in-right" title="File Upload"
+                        data-container="body" data-toggle="popover" data-placement="right" data-content="Upload submission files including the main submission file and supplementary files">
+                        <i class="bx bx-question-mark"></i>
+                        </button>
+                    </h3>
+                </div>
+            </div>
+
+            <div class="row mt-30">
+                <div class="col-lg-12">
+                    <div class="table-responsive">
+                        <div class=”table-responsive”>  
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Order</th>
+                                        <th>Actions</th>
+                                        <th>File</th>
+                                        <th>File Designation</th>
+                                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in submission_files %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>
+                                            <form method="post" action="{% url 'submission_step_two' submission.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="file_id" value="{{ file.id }}">
+                                                <button type="submit" name="remove_file" class="btn btn-danger btn-sm">Remove</button>
+                                            </form>
+                                        </td>
+                                        <td>{{ file.file.name }}</td>
+                                        <td>{{ file.file_category }}</td>
+                                    
+                                    </tr>
+                                    {% empty %}
+                                    <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <td colspan="6">No files uploaded</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mt-50" style="border-width:3px;">
+
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function() {
+        // Allowed file extensions
+        const allowedExtensions = ['jpeg', 'jpg', 'png', 'docx', 'pdf', 'eps', 'tiff'];
+    
+        // Function to validate file types
+        function validateFileType(fileInput) {
+            const files = fileInput.files;
+            let isValid = true;
+            for (let i = 0; i < files.length; i++) {
+                const fileExtension = files[i].name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(fileExtension)) {
+                    isValid = false;
+                    alert('Wrong file type: ' + files[i].name + '. Only jpeg, jpg, png, docx, pdf, eps, tiff are allowed.');
+                    break;
+                }
+            }
+            return isValid;
+        }
+    
+        // Validate file on change
+        $(document).on('change', 'input[type="file"]', function() {
+            if (!validateFileType(this)) {
+                $(this).val(''); // Clear the input if validation fails
+            }
+        });
+    
+        // Function to dynamically add more file input fields
+        let fileIndex = 1; // Starting index for dynamically added fields
+    
+    $('#add_more_files').click(function() {
+        var filesContainer = $('#files_container');
+        
+        // Create a new table row with file input and file category fields, plus a Remove button
+        var newFileInputRow = `
+        
+            
+            <tr class="file-row" id="file_row_${fileIndex}" style="border-bottom: 1px solid #ddd !important; background-color:#fff; font-size:16px;">
+                <td width="50%">
+                    <label for="id_file_${fileIndex}"></label><br>
+                    <input type="file" name="file" id="id_file_${fileIndex}" multiple>
+                </td>
+                <td class="test" width="30%">
+                    <label for="id_file_category_${fileIndex}" ></label><br>
+                        {{ form.file_category }}
+                </td>
+                <td width="20%">
+                    <!-- Add a remove button to each dynamically added row -->
+                    <button type="button" class="btn btn-danger btn-sm remove-file" data-file-index="${fileIndex}" style="background:#dc3545; color:white;">Remove</button>
+                </td>
+            </tr>
+        `;
+        // Append the new row to the table
+        filesContainer.find('table').append(newFileInputRow);
+        
+        // Increment the index for the next dynamically added field
+        fileIndex++;
+    });
+
+    // Remove the file input row when the "Remove" button is clicked
+    $(document).on('click', '.remove-file', function() {
+        var rowIndex = $(this).data('file-index');
+        $('#file_row_' + rowIndex).remove();
+    });
+    });
+    </script>
+                <div class="row mt-30 d-flex" style="justify-content:space-evenly;">
+                    <div>
+                        <div class="theme-btn">
+                            <a href="{% url 'step3' submission.id %}" class="btn btn-primary">
+                                <i class="bx bx-chevrons-right"></i> Continue
+                            </a>
+                        </div>
+                    </div>
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+    <!-- Back To Top Start -->
+    <div class="top-btn">
+        <i class='bx bx-chevrons-up bx-fade-up'></i>
+    </div>
+    <!-- Back To Top End -->
+
+   
+<script>
+var popup = document.getElementById("popup");
+var openPopupButton = document.getElementById("openPopup");
+var closeButton = document.getElementsByClassName("close-button")[0];
+
+openPopupButton.onclick = function() {
+  popup.style.display = "block";
+};
+
+closeButton.onclick = function() {
+  popup.style.display = "none";
+};
+
+window.onclick = function(event) {
+  if (event.target == popup) {
+    popup.style.display = "none";
+  }
+};</script>
+
+<!--pop over  -->
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+
+});
+</script>
+{% endblock content %}

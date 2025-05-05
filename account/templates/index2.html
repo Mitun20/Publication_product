@@ -1,0 +1,948 @@
+{% extends "main_base.html" %}
+{% load static %} 
+{% block content %}
+{% if user.is_superuser or user.groups.exists %}    
+    <div class="navbar-area sublinks">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="{% url 'index' %}" class="nav-link">Home</a>
+                        </li>
+                        {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a href="{% url 'user_management' %}" class="nav-link">User Management</a>
+                        </li>
+                        {% endif %}
+                        {% for group in user.groups.all %}
+                        {% if group.name == 'AE' %}
+                        <li class="nav-item">
+                            <a href="{% url 'associate_editor' %}" class="nav-link">Associate Editor</a>
+                        </li>
+                        
+                    {% elif group.name == 'EIC' %}
+                        <li class="nav-item">
+                            <a href="{% url 'editor_in_chief' %}" class="nav-link">Editor in Chief</a>
+                        </li>
+                        
+                    {% elif group.name == 'Author' %}
+                        <li class="nav-item">
+                            <a href="{% url 'startnew' %}" class="nav-link">Author</a>
+                        </li>
+                        
+                    {% elif group.name == 'Reviewer' %}
+                        <li class="nav-item">
+                            <a href="{% url 'reviewer_invitations' %}" class="nav-link">Reviewer</a>
+                        </li>
+                        
+                    {% elif group.name == 'Admin Office' %}
+                        <li class="nav-item">
+                            <a href="{% url 'admin_office' %}" class="nav-link">Admin Office</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                        
+                        
+                    </ul>
+                    <!-- Right-aligned items -->
+                    <ul class="navbar-nav ml-auto">
+                    <!-- {% for group in user.groups.all %}
+                 
+                
+                    {% endfor %} -->
+                    {% if has_ae_or_eic %}
+                        <li class="nav-item">
+                            <a href="{% url 'editor_profile' %}" class="nav-link">Editor Profile</a>
+                        </li>
+                        {% endif %}
+                    {% if has_author_or_reviewer %}
+                        <li class="nav-item">
+                            <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                        </li>
+                    {% endif %}
+                        <li class="nav-item">
+                            <a href="{% url 'change_password' %}" class="nav-link">Change Password</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+{% endif %}       
+    <!-- Navbar Area End -->
+
+    <!-- Banner Section Start -->
+    <div class="banner-style-two">
+        <div class="d-table">
+            <div class="d-table-cell">
+                <div class="container">
+                    <div class="banner-text">
+
+                        <h1>Where <br>Excellence Knows <br>No Bounds</h1>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                            labore et dolore magna aliqua. Quis ipsum suspendisse.</p>
+
+                        <div class="theme-btn">
+                            <a href="job-details.html" class="default-btn">Know More</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- Banner Section End -->
+
+    <!-- Find Section Start -->
+<!-- Find Section Start -->
+<div class="find-section pb-100">
+    <div class="container three-sections-wrap">
+
+        <div class="row justify-content-center ">
+            <div class="col-lg-4">
+                <div class=" jcs-wrap">
+                    <img src="{% static '/assets/img/logo-jcs.png'%}">
+                    <h2 align= center><a href="{% url 'current_issue' 2 %}">JCS</a></h2>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </div>
+            </div>
+            <div class="col-lg-4 ">
+                <div class=" jcs-wrap">
+                    <img src="{% static '/assets/img/logo-ijam.png'%}">
+                    <h2 align= center><a href="{% url 'current_issue' 3 %}">IJAM</a></h2>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class=" jcs-wrap">
+                    <img src="{% static '/assets/img/logo-jcm.png'%}">
+                    <h2 align= center><a href="{% url 'current_issue' 1 %}">JCM</a></h2>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </div>
+            </div>
+            
+        </div>
+
+    </div>
+</div>
+
+
+    <!-- Find Section End -->
+    <!-- About Area Start -->
+    <section class="account-section pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    
+                    <div class="about-information accordions">
+                        <ul>
+                            <li>
+                                <a href="{% url 'about' %}" class="active">
+                                    About Karpagam Publications
+                                </a>
+                            </li>
+                        
+                            <li>
+                            <div class="accordion-item" >
+                            <div class="accordion-title" data-tab="iteml1">
+                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml1">
+                                <ul >
+                                    {% for journal in journals %}
+                                    <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                            </li>
+                            <li>
+                            <div class="accordion-item" >
+                            <div class="accordion-title" data-tab="iteml2">
+                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml2">
+                                <ul >
+                                    {% for journal in journals %}
+                                    <li><a href="{% url "archives" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            </li>
+                            <li>
+                            <div class="accordion-item">
+                            <div class="accordion-title" data-tab="iteml3">
+                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml3">
+                                <ul>
+                                    <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                    <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                    <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                </ul>
+                            </div>
+                            </li>
+                            <li>
+                            <div class="accordion-item">
+                            <div class="accordion-title" data-tab="iteml4">
+                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml4">
+                                <ul>
+                                    <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                    <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                    <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                </ul>
+                            </div>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li>
+                            <li>
+                            <div class="accordion-item">
+                            <div class="accordion-title" data-tab="iteml5">
+                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml5">
+                                <ul>
+                                    <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                    <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                    <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                </ul>
+                            </div>
+                            </li>
+                            <li>
+                            <div class="accordion-item" >
+                            <div class="accordion-title" data-tab="iteml6">
+                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml6"> 
+                                
+                                    <ul>
+                                        <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                        <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                        <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                    </ul>
+                            </div> 
+                            </li>
+                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                            <li>
+                            <div class="accordion-item" >
+                            <div class="accordion-title" data-tab="iteml7">
+                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            </div>
+                            <div class="accordion-content" id="iteml7"> 
+                                
+                                <ul>
+                                    <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                    <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                    <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                </ul>
+                            </div> 
+                            </li>
+                            <div class="accordion-item" >
+                            <div class="accordion-title" data-tab="iteml8">
+                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                            
+                            </div>
+                            <div class="accordion-content" id="iteml8"> 
+                                <ul>
+                                    <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                    <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                    <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                </ul>
+                            </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
+                        
+                    </div>
+               
+                </div>
+
+                <div class="col-md-8">
+                    <div class="about-details">
+                        <h1>About Karpagam Publications</h1>
+                        <p>Dr.R.Vasanthakumar, a philanthropist par excellence and our founder promoter is the President
+                            of Karpagam University. An enterprising industrialist, he is the Chairman and Managing
+                            Director of Karpagam Industries Private Limited, Bannariamman Engineering Industries Private
+                            Limited, Karpagam Yarns Private Limited, Karpagambigai Investments Limited and Karpagam
+                            Infrastructure Private Limited that together employ over 400 personnel.</p>
+                        <p>
+                            A Gold Medallist from the Madras University, he graduated with Honours in Electrical &
+                            Electronics Engineering. It is probably his deep-rooted academic interest that fuelled
+                            Dr.R.Vasanthakumar’s endeavours in the field of education.</p>
+                        <p>
+
+                            Besides education, Dr.R.Vasanthakumar is a renowned name in lending his assistance to
+                            philanthropic causes. His contribution to temple maintenance and renovation of dilapidated
+                            temples is priceless. </p>
+                        <p><a href="{% url 'about' %}" class="readmore">Read More</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- About Area End -->
+    <!-- Why Choose Section Start -->
+    <section class="why-choose-two pb-60">
+        <div class="container">
+            <div class="section-title-l text-start">
+                <h2>Latest Issues</h2>
+            </div>
+           
+            <div class="row justify-content-center">
+                {% for issue in latest_issues %}
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="choose-card">
+                            <img src="{% static '/assets/img/icon-1.png'%}" class="pb-30">
+                            <h3>Volume {{ issue.volume.volume }} Issue {{ issue.issue }}<br>{{ issue.volume.year }} {{ issue.description }}</h3>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                                labore et dolore.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                
+            </div>
+            <div class="section-title text-center">
+                <a href="{% url 'current_issue' 2  %}" class="readmore">Read More</a>
+            </div>
+        </div>
+    </section>
+    <!-- Why Choose Section End -->
+
+    <!-- Indexedby Section Start -->
+      <section class="indexedby-section">
+        <div class="container">
+            <div class="section-title-2 text-center">
+                <h2>INDEXED BY</h2>
+            </div>
+
+            <div class="condidate-slider owl-carousel owl-theme" style="padding-bottom: 0px;">
+                <div class="condidate-item">
+                    <div class="candidate-img">
+                        <img src="{% static 'assets/img/company-logo/logo-1.jpg'%}" alt="Indexedby image">
+                    </div>
+                </div>
+                <div class="condidate-item">
+                    <div class="candidate-img">
+                        <img src="{% static 'assets/img/company-logo/logo-2.jpg'%}" alt="Indexedby image">
+                    </div>
+                </div>
+                <div class="condidate-item">
+                    <div class="candidate-img">
+                        <img src="{% static 'assets/img/company-logo/logo-3.jpg'%}" alt="Indexedby image">
+                    </div>
+                </div>
+                <div class="condidate-item">
+                    <div class="candidate-img">
+                        <img src="{% static 'assets/img/company-logo/logo-4.jpg'%}" alt="Indexedby image">
+                    </div>
+                </div>
+                <div class="condidate-item">
+                    <div class="candidate-img">
+                        <img src="{% static 'assets/img/company-logo/logo-5.jpg'%}" alt="Indexedby image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Indexedby Section End -->
+
+    <!-- Category Section Start -->
+    <section class="categories-section pt-70">
+        <div class="container">
+
+            <div class="row justify-content-center">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="justified-tab-0" data-bs-toggle="tab"
+                            href="#justified-tabpanel-0" role="tab" aria-controls="justified-tabpanel-0"
+                            aria-selected="true"> POPULAR ARTICLES </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="justified-tab-1" data-bs-toggle="tab" href="#justified-tabpanel-1"
+                            role="tab" aria-controls="justified-tabpanel-1" aria-selected="false"> LATEST PUBLISHED
+                            ARTICLES </a>
+                    </li>
+
+                </ul>
+                <div class="tab-content pt-5" id="tab-content">
+                    <div class="tab-pane active" id="justified-tabpanel-0" role="tabpanel"
+                        aria-labelledby="justified-tab-0">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12  bdr-btm">
+                                <div class="job-card-two">
+                                    <div class="row align-items-center justify-content-center">
+                                        <div class="col-md-1">
+                                            <div>
+                                                <a href="#">
+                                                    <img src="{% static 'assets/img/pdf-icon.png'%}" alt="logo">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="job-info">
+                                                <h3>
+                                                    Innovative Approach for Dermatological Diagnosis: Distinct Based
+                                                    Multi-Modal Fusion of AI
+                                                </h3>
+
+                                                <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                    phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12  bdr-btm">
+                                <div class="job-card-two">
+                                    <div class="row align-items-center justify-content-center">
+                                        <div class="col-md-1">
+                                            <div>
+                                                <a href="#">
+                                                    <img src="{% static 'assets/img/pdf-icon.png'%}" alt="logo">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="job-info">
+                                                <h3>
+                                                    Outlier Selection Method for Classification of Breast Cancer
+                                                </h3>
+                                                <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                    phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12  bdr-btm">
+                                <div class="job-card-two">
+                                    <div class="row align-items-center justify-content-center">
+                                        <div class="col-md-1">
+                                            <div>
+                                                <a href="#">
+                                                    <img src="{% static 'assets/img/pdf-icon.png'%}" alt="logo">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="job-info">
+                                                <h3>
+                                                    Survey on distributed denial of service attack using deep learning
+                                                    approaches
+                                                </h3>
+                                                <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                    phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane" id="justified-tabpanel-1" role="tabpanel" aria-labelledby="justified-tab-1">
+                        <div class="row justify-content-center">
+                                {% for article in latest_articles %}
+                                <div class="col-lg-12 bdr-btm">
+                                    <div class="job-card-two">
+                                        <div class="row align-items-center justify-content-center">
+                                            <div class="col-md-1">
+                                                <div>
+                                                    <a href="#">
+                                                        <img src="{% static 'assets/img/pdf-icon.png' %}" alt="logo">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-11">
+                                                <div class="job-info">
+                                                    <h3>
+                                                        {{ article.accepted_submission.corrected_title }}
+                                                    </h3>
+                                                    <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                        phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-70">
+                <div class="section-title text-center"><a href="{% url 'current_issue' 2  %}" class="readmore">View More</a></div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="call-papers" style="background: url({% static '/assets/img/call-bg.jpg' %}) no-repeat center center;">
+                    More Opportunities to publish your research
+                    <h3>Browse open Calls for Papers</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Category Section End -->
+
+    <!-- Companies Section Start -->
+    <section class="company-section pt-60 pb-70">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>EDITORIAL BOARD MEMBERS</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-1.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr. S. Ravi M.Sc., Ph.D
+                                    </h3>
+                                    <b>Registrar</b>
+                                    <ul>
+
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-1.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr. S. Ravi M.Sc., Ph.D
+                                    </h3>
+                                    <b>Registrar</b>
+                                    <ul>
+
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-1.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr. S. Ravi M.Sc., Ph.D
+                                    </h3>
+                                    <b>Registrar</b>
+                                    <ul>
+
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-2.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr.S.Sheeja MCA, M.Phil., Ph.D
+                                    </h3>
+                                    <b>Professor</b>
+                                    <ul>
+
+                                        <li>
+                                            Department of Computer Science
+                                            <bR>Karpagam Academy of Higher Education
+                                            <br>Coimbatore – 641 021
+                                            <br>Email: <a
+                                                href="mailto:sheejaca@kahedu.edu.in">sheejaca@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-2.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr.S.Sheeja MCA, M.Phil., Ph.D
+                                    </h3>
+                                    <b>Professor</b>
+                                    <ul>
+
+                                        <li>
+                                            Department of Computer Science
+                                            <bR>Karpagam Academy of Higher Education
+                                            <br>Coimbatore – 641 021
+                                            <br>Email: <a
+                                                href="mailto:sheejaca@kahedu.edu.in">sheejaca@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-2.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info">
+                                    <h3>
+                                        Dr.S.Sheeja MCA, M.Phil., Ph.D
+                                    </h3>
+                                    <b>Professor</b>
+                                    <ul>
+
+                                        <li>
+                                            Department of Computer Science
+                                            <bR>Karpagam Academy of Higher Education
+                                            <br>Coimbatore – 641 021
+                                            <br>Email: <a
+                                                href="mailto:sheejaca@kahedu.edu.in">sheejaca@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <!-- Companies Section End -->
+
+    <!-- Job Info Section Start -->
+    <div class="guide-info pt-100 pb-70">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h2>AUTHOR'S GUIDELINES</h2>
+                    <p>This is a broad based Journal covering all branches of Applied Mathematics. The objective is to
+                        publish high quality original contributions and “state of art” papers in all areas of
+                        Mathematics with a broad range of application to scientific problems.</p>
+                </div>
+            </div>
+            <div class="row justify-content-center pt-60">
+                <div class="col-md-6">
+                    <img src="{% static '/assets/img/authors-img.jpg'%}">
+                </div>
+
+                <div class="col-md-6">
+                    <h4>Manuscript Preparation</h4>
+                    <p>Submission should be about 8 pages in length, typed in double space with Times New Roman font,
+                        Size 10, Double column on 81/2×11 inch paper with one inch margins on all sides and should
+                        include a 75-200 words abstract, 5-10 relevant key words.
+                    </p>
+
+                    <h4>References</h4>
+                    <p>All the cited works used in the text must be included in the reference list, and all the
+                        reference items must appear in the text. References should appear only in the following format.
+                    </p>
+                    <p><a href="{% url 'authors_guidelines_jcs'  %}" class="readmore">Read More</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Job Info Section End -->
+
+    <!-- Pricing Section Start -->
+    <section class="pricing-section pb-70 pt-70">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>INSTITUTIONS</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                    et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida.</p>
+            </div>
+
+            <div class="row justify-content-center">
+            <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM ACADEMY OF HIGHER EDUCATION
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Deemed to be University Established Under Section 3 of UGC Act, 1956)
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                                <img src="{% static 'assets/img/ins-logo-1.png'%}" alt="logo">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://kahedu.edu.in/" target="_blank" class="default-btn">
+                                        View More
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM COLLEGE OF ENGINEERING
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Autonomous – Approved by AICTE, Affiliated to Anna University, Accredited by NBA )
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                                <img src="{% static 'assets/img/ins-logo-2.png'%}" alt="logo">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://kce.ac.in/" target="_blank" class="default-btn">
+                                        View More
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM COLLEGE OF PHARMACY
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Approved by PCI, AICTE and Govt. of Tamil Nadu, Affiliated to The Tamil Nadu Dr.MGR Medical University )
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                                <img src="{% static 'assets/img/ins-logo-3.png'%}" alt="logo">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://kcp.edu.in/" target="_blank" class="default-btn">
+                                        View More
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM NURSING COLLEGE
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Approved by Indian Nursing Council, Govt. of Tamil Nadu, Affiliated to The Tamil Nadu Dr.MGR Medical University )
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                                <img src="{% static 'assets/img/company-logo/logo-5.jpg' %}" alt="Logo 5">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://www.knc.ac.in/" target="_blank" class="default-btn">
+                                        View More
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM INSTITUTE OF TECHNOLOGY
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Approved by AICTE, Affiliated to Anna University )
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <img src="{% static 'assets/img/ins-logo-4.png'%}" alt="logo">
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://karpagamtech.ac.in/" target="_blank" class="default-btn">
+                                        View More
+
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="institution">
+                        <div class="row align-items-center justify-content-center">
+
+                            <div class="col-md-8">
+                                <div class="comp-info">
+                                    <h3>
+                                        KARPAGAM FACULTY OF MEDICAL SCIENCES AND RESEARCH
+                                    </h3>
+                                    <ul>
+                                        <li>
+                                            (Approved by Medical Council of India, Affiliated to The Tamil Nadu Dr.MGR Medical University)
+                                        </li>
+                                    </ul>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+
+                                <img src="{% static 'assets/img/ins-logo-6.png'%}" alt="logo">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div class="theme-btn text-end">
+                                    <a href="https://kfmsr.in" target="_blank" class="default-btn">
+                                        View More
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </section>
+    <!-- Pricing Section End -->
+
+    {% endblock content %}

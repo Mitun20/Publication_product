@@ -1,0 +1,280 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-agjcs">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Author Guidelines - Karpagam JCS</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row" style="text-align:left;">
+                <div class="col-md-4">
+               
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                </div>
+
+                <div class="col-md-8">                    
+                        <div class="section-title-space">
+                            <h2>Author Guidelines - KJCS</h2>
+                        </div>
+                        <div class="about-text-list">
+                            <ul>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    The Karpagam Publication publishes Karpagam JCS.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Articles hitherto unpublished in Journals only qualify for submission. Articles accepted for publication in Karpagam JCS should not be published in other Journals. All references made in the article should be traceable.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    All the papers will be first assessed by our technical committee. Selected papers will be further scrutinized by the expert committee. Author’s will be notified of the acceptance. It is the author’s responsibility to obtain permission for reproduction of figures, tables, etc. from published sources. The Editorial board has the right to accept or reject any article if not found suitable.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Copyright for the published articles will be owned by Karpagam Charity Trust which is the publisher of Karpagam JCS.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    The responsibility for the contents of the paper lies with the author’s and not with Editor, Editorial Board as well as the authorities of the Karpagam Academy of Higher Education.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    The manuscript should be submitted using the “Submit Article” section in our Web site Karpagam Journal of Computer Science.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Authors should submit their manuscript electronically via the homepage of journal. After registration, authors will be asked to upload their manuscript.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    After acceptance of the paper, the camera ready paper should be submitted in pdf format.
+
+                                </li>
+                            </ul> 
+                        </div>                   
+                    </div>              
+                </div>
+            </div>
+        </section>
+    <!-- About Area End -->
+
+    <section class="about-section pt-60 pb-100 bg-grey">
+        <div class="container">
+            <div class="row" style="text-align:left;">
+                <div class="sub-title">               
+                    <h3>Copyright</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>Authors are also instructed to submit the copyright transfer form once the article is accepted for publication, without which the articles will not be processed. Author can download the copyright transfer form; duly filled form should be submitted to jcs@kahedu.edu.in</p>                
+                </div>
+                <div class="sub-title">               
+                    <h3>Manuscript Preparation</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>Submission should be about 8 pages in length, typed in double space with Times New Roman font, Size 10, Double column on 81/2×11 inch paper with one inch margins on all sides and should include a 75-200 words abstract, 5-10 relevant key words.</p>
+                    <p>The pages should be consecutively numbered, starting with the title page though the text, reference list, tables, figure and legends. The title should be brief, specific and amendable to indexing. The article should include an abstract, introduction, sub-headings, illustration and conclusion.</p>                
+                </div>
+                <div class="sub-title">               
+                    <h3>References</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>All the cited works used in the text must be included in the reference list, and all the reference items must appear in the text. References should appear only in the following format.</p>                
+                </div>
+                <div class="sub-title">               
+                    <h3>Book</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>Author(s),Book title,Location:Publishing company,year,pp.<br>
+                        <b>Example:</b> W.K.Chen,Linear Networks and Systems,Belmont,CA: Wadsworth,1993,pp.123-35</p>                
+                </div>
+                <div class="sub-title">               
+                    <h3>Aritcle in a Journal Book</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>Author(s) Name.Article title,Journal Name,Vol,pp,month,year.<br>
+                    <b>Example:</b> Lotfi Zadeh.International and Control, The International Journal of Information Control,vol.8. pp.353,1965.</p>                
+                </div>
+                <div class="sub-title">               
+                    <h3>Articles from Conference Proceedings (published)</h3>
+                    <!-- <h3>International</h3> -->
+                </div>
+                <div class="about-text">
+                    <p>Author(s). Article title. Conference proceedings,year,pp.<br>
+                        <b>Example:</b> V.Sassone. Foundations of Software Science and Computational Structures, Vol 390,Issues 2-3,pp 127-270 Jan 2008.</p>                
+                </div>
+            </div>               
+    </section>
+
+    {% endblock%}

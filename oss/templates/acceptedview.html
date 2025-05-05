@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="tab-content">
+    <div id="tab1" class="tab active">
+        <section class="about-section pt-100 pb-60">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <div class="about-information accordions">
+                            <ul>
+                                <li><a href="#">
+                                    <h3 style="color:white">Author Dashboard</h3>
+                                </a></li>
+                                <!-- {% if has_draft %}
+                                <li><a href="{% url 'draft' %}">Manuscripts in draft</a></li>
+                                {% endif %} -->
+                                <!-- {% if has_revision %}
+                                <li><a href="{% url 'revision' %}">Manuscript waiting for revision</a></li>
+                                {% endif %} -->
+                                {% if has_submitted %}
+                                <li><a href="{% url 'submitted' %}">Manuscripts submitted</a></li>
+                                {% endif %}
+                                {% if has_accepted %}
+                                <li><a href="{% url 'accepted' %}" class="active">Manuscript Accepted</a></li>
+                                {% endif %}
+                                {% if has_rejected %}
+                                <li><a href="{% url 'rejected' %}">Manuscript Rejected</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'startnew' %}">Start New Submission</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-9" style="text-align:left;">
+                        <h2>Accepted Manuscripts</h2>
+                        <h5 class="h4space">Click <a href="{% static '/downloads/copyright-jcs.pdf' %}"  download>Here</a> to download Copyright form</h5> 
+                            
+                        <div class="job-style-two job-list-section">
+                            <div class=”table-responsive”>  
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Manuscript ID</th>
+                                            <th scope="col" width="18%">Title</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">File</th>
+                                            <th scope="col">Submitted On</th>
+                                            <th scope="col">Decisioned on</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for submission in submissions %}
+                                        <tr>
+                                            <td>{{ submission.manuscript_id }}</td>
+                                            <td>{{ submission.title }}</td>
+                                            <td>
+                                                <p> 
+                                                    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#copyrightModal-{{ submission.id }}">
+                                                        Copyright
+                                                    </button> -->
+                                                    <a href="#"  data-bs-toggle="modal" data-bs-target="#uploadModal-{{ submission.id }}">
+                                                        Upload Copyright
+                                                    </a>
+                                                    
+                                                </p>
+                                                <p><a href="#">Pay APC</a></p>
+                                            </td>
+                                            
+                                            <td>{{ submission.article_status }}</td>
+                                            <td>
+                                                {% if submission.final_file %}
+                                                    <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                                {% else %}
+                                                --
+                                            {% endif %}
+                                            </td>
+                                            <td>{{ submission.submitted_on|date:"d-M-Y" }}</td>
+                                            <td>{{ submission.decissioned_on|date:"d-M-Y" }}</td>
+                                        </tr>
+                                        <!-- Copyright Modal -->
+                                        <div class="modal fade" id="copyrightModal-{{ submission.id }}" tabindex="-1" aria-labelledby="copyrightModalLabel-{{ submission.id }}" aria-hidden="true" data-bs-backdrop="false">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="copyrightModalLabel-{{ submission.id }}">Copyright Actions</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <!-- Your modal content here -->
+                                                        <p>
+                                                            <a href="{% static '/downloads/copyright-jcs.pdf' %}" class="btn btn-success" download>Download Form</a>
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal-{{ submission.id }}">
+                                                                Upload
+                                                            </button>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- File Upload Modal -->
+                                        <div class="modal fade" id="uploadModal-{{ submission.id }}" tabindex="-1" aria-labelledby="uploadModalLabel-{{ submission.id }}" aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="true">
+                                            <div class="modal-dialog">
+                                                <form method="POST" enctype="multipart/form-data" action="{% url 'upload_copyright_form' submission.id %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="uploadModalLabel-{{ submission.id }}">Upload Copyright Form</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <input type="file" name="copyright_form" required>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary">Upload</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="author-card-step-two">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <p>No submitted manuscripts found.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row pagination text-center">
+                            <span class="step-links">
+                                {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                                {% endif %}
+
+                                <span class="current">
+                                    Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                                </span>
+
+                                {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Include Bootstrap CSS and JS (replace if using a different version) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+{% endblock content %}

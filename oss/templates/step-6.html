@@ -1,0 +1,528 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<section class="about-section pt-100 pb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li><a href="#"><h3 style="color:white">Submission</h3></a></li>
+                        <li><a href="{% url 'new_submission' submission_id=submission.id %}">Step 1: Title, category & Abstract</a></li>
+                        <li><a href="{% url "submission_step_two" submission_id=submission.id %}"  >Step 2: File Upload</a></li>
+                        <li><a href="{% url "step3" submission_id=submission.id %}"  >Step 3: Keywords</a></li>
+                        <li><a href="{% url 'step4' submission.id %}">Step 4: Authors & Affiliation</a></li>
+                        <li><a href="{% url 'step5' submission.id %}">Step 5: Details & Comments</a></li>
+                        <li><a href="{% url 'step6_review_submit' submission.id %}" class="active">Step 6: Review & Submit</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            
+
+            <div class="col-md-8" style="text-align:left;">
+                {% if empty_fields %}
+                    <div class="alert alert-warning">
+                        <strong>The following fields are empty:</strong>
+                        <ul>
+                            {% for field in empty_fields %}
+                                <li>{{ field }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" id="review-submit-form">
+                    {% csrf_token %}
+                    <div class="section-title-space">
+                        <h2>Step 6: Review & Submit</h2>
+                    </div>
+                    <div class="about-text-list">
+                        <ul>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i><b>Please read our <a href="https://www.emeraldgrouppublishing.com/publish-with-us/ethics-integrity/research-publishing-ethics?_gl=1%2A1wfvgqs%2A_ga%2ANDk0Njk4NTQ3LjE3MTk5ODg0ODU.%2A_ga_45RWY1YP1V%2AMTcyMDQ1ODczMy4yMy4xLjE3MjA0NjU3NjQuMC4wLjA." target="_blank">Publishing Ethics</a> and <a href="https://www.emeraldgrouppublishing.com/publish-with-us/author-policies/publishing-permissions?_gl=1%2Ap7wusq%2A_ga%2ANDk0Njk4NTQ3LjE3MTk5ODg0ODU.%2A_ga_45RWY1YP1V%2AMTcyMDQ1ODczMy4yMy4xLjE3MjA0NjU3NjQuMC4wLjA." target="_blank">Permissions Checks</a> before submitting your paper.</b></li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>Enter or paste your cover letter text into the "Cover Letter" box below. If you would like to attach a file containing your cover letter, click the "Browse..." button, locate your file, and click "Attach this Cover Letter"</li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>The cover letter is optional and will not be seen by the journal reviewers</li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>If relevant, please complete, and upload at the next section, the <a href="{% static 'downloads/case-study-consent-form.pdf'%}">Case Study Consent Form</a></li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>Answer any remaining questions appropriately</li>
+                            <li>When you are finished, click "Submit" <br><span style="color:red">*</span> = Required Fields</li>
+                        </ul>
+                    </div>
+                    <hr style="border-width:3px;">
+
+                    <!-- Article type -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Article type:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ Article_Type.article_type }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Journal -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Journal:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                K{{ journal.title }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Title:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ form.title.value }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Category:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ category.catagory }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Abstract -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Abstract:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ form.abstract.value }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Files uploaded -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">FILE:</th>
+                                        <th>FILE DESIGNATION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for file in submission_files %}
+                                    <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">{{ file.file.name }}</td>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">{{ file.file_category }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <td colspan="2" style="border:1px solid #d9dbdf; padding: 10px;">No files uploaded</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Keyword -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="padding: 10px;">Keywords:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for keyword in keywords %}
+                                    <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">{{ keyword.keyword }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">No keywords added yet.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- CoAuthor -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th colspan="3" style="padding: 10px; text-align: left;">CoAuthor:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for coauthor in coauthors %}
+                                    <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <td style="padding: 10px; font-size:12px; border-left: 1px solid #ddd;">{{ coauthor.name }}</td>
+                                        <td style="padding: 10px; font-size:14px; border-left: 1px solid #ddd;">
+                                            <a href="mailto:{{ coauthor.email }}">{{ coauthor.email }}</a>
+                                        </td>
+                                        <td style="padding: 10px; font-size:14px; border-left: 1px solid #ddd;">{{ coauthor.institution }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" style="padding: 10px; text-align: center;">No coauthors added yet.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Cover Letter -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Cover Letter:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ form.cover_letter.value }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Funding -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table cellpadding="5" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="background-color:#f2f2f2;">Funding:</th>                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            {% if submission.is_funded == 1 %}
+                                                Yes
+                                            {% elif submission.is_funded == 0 %}
+                                                No
+                                            {% else %}
+                                                Not selected
+                                            {% endif %}
+                                        </td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    {% if submission.is_funded == 1 %}
+                                    <tr>
+                                        <td>detail:</td>
+                                        <td>{{ funder.detail }}</td>
+                                    </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Manuscript Information -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table cellpadding="5" style="width:100%;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th colspan="2" style="border-right:1px solid #d9dbdf">Manuscript Information</th>                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf; width:40%;">
+                                            <p>Number of Figures: </p>    
+                                        </td>
+                                        <td style="border-top:1px solid #d9dbdf; width:60%;">
+                                            <div class="form-group">
+                                                {{form.figures.value}}
+                                            </div>       
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf; width:40%;">
+                                            <p>Number of Tables: </p>    
+                                        </td>
+                                        <td style="border-top:1px solid #d9dbdf; width:60%;">
+                                            <div class="form-group col-md-12">
+                                                {{form.tables.value}}
+                                            </div>       
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf; width:40%;">
+                                            <p>Number of Words: </p>    
+                                        </td>
+                                        <td style="border-top:1px solid #d9dbdf; width:60%;">
+                                            <div class="form-group">
+                                                {{form.words.value}}
+                                            </div>       
+                                        </td>
+                                    </tr>                                    
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- previously submitted -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table cellpadding="5" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="background-color:#f2f2f2;">Has this manuscript been submitted previously?</th>                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            {% if submission.is_submitted_already == 1 %}
+                                                Yes
+                                            {% elif submission.is_submitted_already == 0 %}
+                                                No
+                                            {% else %}
+                                                Not selected
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Acknowledgements -->
+                    <!-- <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table cellpadding="5" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="background-color:#f2f2f2;">Confirm the following:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="acknowledgement_1" name="acknowledgement_1" {% if form.acknowledgement_1.value %} checked {% endif %} disabled>
+                                                <label class="form-check-label" for="acknowledgement_1">
+                                                    Acknowledgement 1
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="acknowledgement_2" name="acknowledgement_2" {% if form.acknowledgement_2.value %} checked {% endif %} disabled>
+                                                <label class="form-check-label" for="acknowledgement_2">
+                                                    Acknowledgement 2
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="acknowledgement_3" name="acknowledgement_3" {% if form.acknowledgement_3.value %} checked {% endif %} disabled>
+                                                <label class="form-check-label" for="acknowledgement_3">
+                                                    Acknowledgement 3
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div> -->
+
+                    <!-- Conflict of Interest -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table cellpadding="5" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="background-color:#f2f2f2;"> I/We have declared any potential conflict of interest in the research. Any support from a third party has been noted in the Acknowledgements.</th>                                
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-top:1px solid #d9dbdf;">
+                                            {% if submission.conflict_of_interest == 1 %}
+                                                Yes
+                                            {% elif submission.conflict_of_interest == 0 %}
+                                                No
+                                            {% else %}
+                                                Not selected
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                    <!-- Conflict of Interest Description -->
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">
+                            <table style="width:100%; border-collapse: collapse;">
+                                <thead style="background-color:#f2f2f2;">
+                                    <tr>
+                                        <th style="border-right:1px solid #d9dbdf; padding: 10px;">Conflict of Interest Description:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border:1px solid #d9dbdf; padding: 10px;">
+                                            <div class="form-group">
+                                                {{ form.coi_describe.value }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                    </div>
+
+                </form>
+                    <!-- Checkbox and buttons -->
+                    <form method="post" enctype="multipart/form-data" action="{% url 'submission_step_six' submission.id %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <button type="button" id="viewProofButton" class="btn btn-secondary" {% if empty_fields %} disabled {% endif %}>View Proof</button>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="confirmViewProofCheckbox" disabled>
+                            <label class="form-check-label" for="confirmViewProofCheckbox" >I have viewed the proof</label>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" id="submitButton" name="action" value="submit" class="btn btn-success" disabled>Submit</button>
+                            <h3><div id="loadingMessage" style="display:none;">Please Wait...</div></h3>
+                        </div>
+                    </form>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var viewProofButton = document.getElementById('viewProofButton');
+        var confirmViewProofCheckbox = document.getElementById('confirmViewProofCheckbox');
+        var submitButton = document.getElementById('submitButton');
+        
+        var viewProofUrl = "{% url 'view_proof' submission.id %}";  // Correctly set the view proof URL
+    
+        viewProofButton.addEventListener('click', function() {
+            // Open the merged PDF file in a new window when View Proof button is clicked
+            window.open(viewProofUrl, '_blank', 'location=0');
+            confirmViewProofCheckbox.disabled = false; 
+
+        });
+    
+        confirmViewProofCheckbox.addEventListener('change', function() {
+            // Enable the submit button if the checkbox is checked
+            submitButton.disabled = !confirmViewProofCheckbox.checked;
+    
+        });
+    });
+
+
+
+   
+    document.getElementById('submitButton').addEventListener('click', function() {
+        // Show loading message
+        $('#loadingMessage').show();
+    });
+    </script>
+
+{% endblock content %}

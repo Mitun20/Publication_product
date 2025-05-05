@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li > 
+                            <a class="nav-link" href="{% url 'admin_office' %}">
+                                Manuscripts submitted
+                            </a>
+                        </li>
+                        
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_rejection' %}">
+                                Manuscripts with rejection
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_acceptance' %}">
+                                Manuscripts with Acceptance
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="{% url 'manuscripts_review' %}">
+                                Manuscripts under review
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_revision' %}">
+                                Manuscripts waiting for revision
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'manuscripts_revision_overdue' %}">
+                                Manuscripts waiting for revision and overdue
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'setting_proof' %}">
+                                Type setting and Proof reading
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'history' %}">
+                                History of Manuscripts 
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Manuscripts Under Review</h2>
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Manuscript ID</th>
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Author</th>  <!-- New Author column -->
+                                    <!-- <th scope="col">Journal</th>  -->
+                                    <th scope="col">File</th>
+                                    <th scope="col">Submission Date</th>
+        
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.manuscript_id }}</td>
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <!-- <td>{{ submission.journal }}</td>  -->
+                                    <td>
+                                        {% if submission.final_file %}
+                                            <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                        {% else %}
+                                        --
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ submission.submitted_on }}</td>
+        
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination controls -->
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                            {% endif %}
+    
+                            <span class="current">
+                                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
+                            </span>
+    
+                            {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Modal for Viewing Comments -->
+<div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentsModalLabel">Admin Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="commentsBody">
+                <!-- Comments will be injected here by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</script>
+
+{% endblock %}

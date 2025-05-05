@@ -1,0 +1,4 @@
+{% for reviewer in reviewers %}
+<input type="checkbox" id="{{ reviewer.id }}" value="{{ reviewer.id }}" name="reviewer">
+<label for="{{ reviewer.id }}"> {{ reviewer.first_name }} {{ reviewer.last_name }}</label><br>
+{% endfor %}

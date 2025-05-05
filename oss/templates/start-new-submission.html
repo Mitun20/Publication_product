@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+
+            <!-- About Area Start -->
+<section class="about-section pt-100 pb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information accordions">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <h3 style="color:white">Author Dashboard</h3>
+                            </a>
+                        </li>
+                        <!-- {% if has_draft %}
+                        <li><a href="{% url 'draft' %}">Manuscripts in draft</a></li>
+                        {% endif %} -->
+                        {% if has_submitted %}
+                        <li><a href="{% url 'submitted' %}">Manuscripts submitted</a></li>
+                        {% endif %}
+                        <!-- {% if has_revision %}
+                        <li><a href="{% url 'revision' %}">Manuscript waiting for revision</a></li>
+                        {% endif %} -->
+                        {% if has_accepted %}
+                        <li><a href="{% url 'accepted' %}">Manuscript Accepted</a></li>
+                        {% endif %}
+                        {% if has_rejected %}
+                        <li><a href="{% url 'rejected' %}">Manuscript Rejected</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'startnew' %}" class="active">Start New Submission</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="col-md-8" style="text-align:left;">                    
+                <div class="section-title-space">
+                <h2>Start New Submission</h2>
+                </div>
+                
+                <div class="about-section" style="text-align:left;">
+                    
+                    <div class="about-text">
+                        <p><b>Use of inclusive language</b></p>
+                        <p>We encourage all authors to choose language that is inclusive and respectful. Submissions should not contain anything that might imply that one individual is superior to another on the grounds of race, gender, culture, sexuality, or any other characteristic, and inclusive language should be used throughout. Authors should ensure that writing is free from bias, for instance by using 'he or she', 'his or hers’, ‘him or her', or the singular gender-neutral ‘they, theirs or them’. Further Information on our inclusive language policy can be found in the author guidelines.</p>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-7">
+                            <div class="about-text">
+                                <p>Traditional submission allows you to upload files that were created from many sources.</p>
+                            </div>
+                        </div>
+                      
+                        <div class="col-md-5">
+                            <div class="theme-btn text-end">
+                                <a href="{% url 'new_submission' submission_id=0 %}" class="btn btn-primary">
+                                   Begin New Submission
+                                </a>
+                            </div>
+                            
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>                
+    </div><br><br>   
+     
+
+{% endblock content %}
+
+
+

@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .navbar-custom {
+        background-color: #044d5e;
+    }
+    .navbar-custom .navbar-nav .nav-link {
+        color: white;
+        margin: 0 15px; /* Add spacing between links */
+    }
+    .navbar-custom .navbar-nav .nav-link:hover,
+    .navbar-custom .navbar-nav .nav-link.active {
+        color: #eabf1c; /* Change color on hover and active */
+    }
+    .navbar-custom .navbar-nav {
+        margin: auto; /* Center the navbar items */
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    /* Pagination Container */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        padding: 10px 0;
+    }
+
+    /* Pagination Links Container */
+    .pagination .step-links {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    /* Pagination Links and Spans */
+    .pagination a, .pagination span {
+        padding: 6px 10px;
+        text-decoration: none;
+        color: #055160;
+        border: 1px solid #dee2e6;
+        border-radius: 50px;
+        transition: background-color 0.3s, color 0.3s;
+        font-size: 14px; /* Adjust font size for a better fit */
+    }
+
+    /* Hover Effects */
+    .pagination a:hover {
+        background-color: #055160;
+        color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Current Page Highlight */
+    .pagination .current {
+        background-color: #055160;
+        color: white;
+        border-color: #055160;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Disabled Links */
+    .pagination .disabled {
+        color: #6c757d;
+        pointer-events: none;
+        cursor: not-allowed;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 600px) {
+        .pagination .step-links {
+            gap: 3px;
+        }
+        .pagination a, .pagination span {
+            padding: 4px 8px;
+            font-size: 12px; /* Adjust font size for smaller screens */
+        }
+    }
+    .btn-filter {
+        background-color: #055160; /* Background color */
+        border-color: #055160; /* Border color */
+        color: #ffc107; /* Text color */
+    }
+    
+    /* Button color on hover */
+    .btn-filter:hover {
+        background-color: #043d4e; /* Darker background color on hover */
+        border-color: #043d4e; /* Darker border color on hover */
+    }
+</style>
+
+<br>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_management' %}">Admin-panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'volume_page' journal.id %}" id="volume-link">Volume</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'issue_list' journal.id %}" id="issues-link">Issues</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'articles_page' journal.id %}" id="articles-link">Publish Articles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'manuscript_processing' journal.id %}" id="manuscript-link">Manuscript in Processing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'published_article' journal.id %}" id="published-link">Published Article</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<h1>Manuscripts in Processing - {{ journal.title }}</h1>
+
+<form method="get" action="">
+    <label for="status">Filter by Status:</label><br>
+    <select name="status" id="status">
+      <option value="">All</option>
+      {% for status in article_status_filter %}
+        <option value="{{ status.article_status }}" {% if request.GET.status == status.article_status %}selected{% endif %}>{{ status.article_status }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-filter">Filter</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Status</th>
+            <th>Change Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for submission in submissions %}
+        <tr>
+            <td>{{ submission.title }}</td>
+            <td>{{ submission.author.username }}</td>
+            <td>{{ submission.article_status.article_status }}</td>
+            <td>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="submission_id" value="{{ submission.id }}">
+                    <select name="article_status">
+                        {% for status in article_status_change %}
+                            <option value="{{ status.id }}" {% if submission.article_status.id == status.id %}selected{% endif %}>{{ status.article_status }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-filter">Update</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1&status={{ request.GET.status }}">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}&status={{ request.GET.status }}">previous</a>
+        {% else %}
+            <span class="disabled">&laquo; first</span>
+            <span class="disabled">previous</span>
+        {% endif %}
+    
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+    
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&status={{ request.GET.status }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&status={{ request.GET.status }}">last &raquo;</a>
+        {% else %}
+            <span class="disabled">next</span>
+            <span class="disabled">last &raquo;</span>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock content %}
+

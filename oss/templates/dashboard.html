@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    #hierarchyMap {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .hierarchy-marker {
+        background: transparent;
+        border: none;
+    }
+    
+    .marker-circle {
+        border-radius: 50%;
+        border: 2px solid white;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    }
+    
+    .country-popup, .state-popup, .city-popup {
+        min-width: 200px;
+    }
+    
+    .country-popup h4 {
+        color: #3f51b5;
+        margin-top: 0;
+    }
+    
+    .state-popup h5 {
+        color: #2196f3;
+        margin-top: 0;
+    }
+    
+    .city-popup h6 {
+        color: #4caf50;
+        margin-top: 0;
+    }
+    
+    .alert {
+        margin-bottom: 15px;
+    }
+    </style>
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <!-- <li>
+                            <a class="nav-link" href="{% url 'associate_editor' %}">Manuscripts to Review</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_review_report' %}">Manuscripts with Review Report</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_under_review' %}">Manuscripts under Review</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_eic' %}">Manuscripts to EIC</a>
+                        </li> -->
+                        <li>
+                            <a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Editorial Dashboard</h2>
+                    
+                    <!-- Key Metrics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card p-3 bg-light">
+                                <h4>Total Submissions</h4>
+                                <h3 class="text-primary">{{ total_submissions }}</h3>
+                                <p class="mb-0">Incoming Papers</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3 bg-light">
+                                <h4>Accepted Papers</h4>
+                                <h3 class="text-success">{{ accepted_papers }}</h3>
+                                <p class="mb-0">{{ accepted_percent }}% Acceptance Rate</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card p-3 bg-light">
+                                <h4>Decision Ratio</h4>
+                                <h3 class="text-info">{{ decided_ratio }}%</h3>
+                                <p class="mb-0">Papers with Final Decision</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Trends Chart -->
+                    <div class="card p-3">
+                        <h5 class="card-title">Monthly Submission Trends</h5>
+                        <div class="chart-container" style="position: relative; height:300px; width:100%">
+                            <canvas id="monthlyTrendsChart"></canvas>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="badge bg-primary me-2">Incoming</span>
+                            <span class="badge bg-success">Accepted</span>
+                        </div>
+                    </div>
+<br>
+                    <!-- Stages Chart -->
+                    <div>
+                        <h3>Papers in Stages</h3>
+                        <canvas id="stageChart" width="400" height="200"></canvas>
+                        {% for status, count in stage_dict.items %}
+                            <!-- <button style="background-color: blue; color: white;">
+                                {{ status }}: {{ count }}
+                            </button> -->
+                        {% endfor %}
+                    </div>
+                    <div class="card p-3 mt-4">
+                        <h3>Paper Locations</h3>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Click any marker to see location details
+                        </div>
+                        <div id="hierarchyMap" style="height: 600px; width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const map = L.map('hierarchyMap').setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    
+    const locations = JSON.parse('{{ locations|escapejs }}');
+    const markers = L.layerGroup().addTo(map);
+    
+    // Custom icon with hierarchical styling
+    function createIcon(count, level) {
+        const colors = {
+            'country': '#3f51b5',
+            'state': '#2196f3',
+            'city': '#4caf50'
+        };
+        const sizes = {
+            'country': 40,
+            'state': 30,
+            'city': 20
+        };
+        
+        return L.divIcon({
+            className: 'hierarchy-marker',
+            html: `
+                <div class="marker-circle" style="
+                    width: ${sizes[level]}px;
+                    height: ${sizes[level]}px;
+                    background: ${colors[level]};
+                    border-color: ${colors[level]};
+                ">
+                    ${level === 'city' ? count : ''}
+                </div>
+            `,
+            iconSize: [sizes[level], sizes[level]],
+            iconAnchor: [sizes[level]/2, sizes[level]/2]
+        });
+    }
+    
+    // Process locations and create hierarchical markers
+    const processedLocations = {};
+    
+    locations.forEach(loc => {
+        // Create country marker if not exists
+        if (!processedLocations[loc.country]) {
+            processedLocations[loc.country] = {
+                type: 'country',
+                states: {},
+                paper_count: 0,
+                coords: null
+            };
+        }
+        processedLocations[loc.country].paper_count += loc.paper_count;
+        
+        // Create state marker if not exists
+        if (!processedLocations[loc.country].states[loc.state]) {
+            processedLocations[loc.country].states[loc.state] = {
+                type: 'state',
+                cities: {},
+                paper_count: 0,
+                coords: null
+            };
+        }
+        processedLocations[loc.country].states[loc.state].paper_count += loc.paper_count;
+        
+        // Store city data
+        processedLocations[loc.country].states[loc.state].cities[loc.city] = {
+            type: 'city',
+            paper_count: loc.paper_count,
+            sample_title: loc.sample_title,
+            coords: null
+        };
+    });
+    
+    // Geocode and add markers
+    Object.entries(processedLocations).forEach(([country, countryData]) => {
+        // Geocode country
+        geocodeLocation(country).then(coords => {
+            if (coords) {
+                countryData.coords = coords;
+                const marker = L.marker(coords, {
+                    icon: createIcon(countryData.paper_count, 'country'),
+                    zIndexOffset: 1000
+                }).addTo(markers);
+                
+                marker.bindPopup(`
+                    <div class="country-popup">
+                        <h4><i class="fas fa-globe-asia"></i> ${country}</h4>
+                        <p><strong>Total Papers:</strong> ${countryData.paper_count}</p>
+                        <p><strong>States:</strong> ${Object.keys(countryData.states).length}</p>
+                    </div>
+                `);
+                
+                // Process states for this country
+                Object.entries(countryData.states).forEach(([state, stateData]) => {
+                    geocodeLocation(`${state}, ${country}`).then(coords => {
+                        if (coords) {
+                            stateData.coords = coords;
+                            const marker = L.marker(coords, {
+                                icon: createIcon(stateData.paper_count, 'state'),
+                                zIndexOffset: 500
+                            }).addTo(markers);
+                            
+                            marker.bindPopup(`
+                                <div class="state-popup">
+                                    <h5><i class="fas fa-map-marked-alt"></i> ${state}, ${country}</h5>
+                                    <p><strong>Papers:</strong> ${stateData.paper_count}</p>
+                                    <p><strong>Cities:</strong> ${Object.keys(stateData.cities).length}</p>
+                                </div>
+                            `);
+                            
+                            // Process cities for this state
+                            Object.entries(stateData.cities).forEach(([city, cityData]) => {
+                                geocodeLocation(`${city}, ${state}, ${country}`).then(coords => {
+                                    if (coords) {
+                                        cityData.coords = coords;
+                                        const marker = L.marker(coords, {
+                                            icon: createIcon(cityData.paper_count, 'city'),
+                                            zIndexOffset: 0
+                                        }).addTo(markers);
+                                        
+                                        marker.bindPopup(`
+                                            <div class="city-popup">
+                                                <h6><i class="fas fa-map-marker-alt"></i> ${city}</h6>
+                                                <p><strong>State:</strong> ${state}</p>
+                                                <p><strong>Country:</strong> ${country}</p>
+                                                <p><strong>Papers:</strong> ${cityData.paper_count}</p>
+                                                ${cityData.sample_title ? `<p><strong>Sample:</strong> ${cityData.sample_title}</p>` : ''}
+                                            </div>
+                                        `);
+                                    }
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    });
+    
+    // Auto-fit the map after all markers are added
+    setTimeout(() => {
+        if (markers.getLayers().length > 0) {
+            map.fitBounds(markers.getBounds());
+        }
+    }, 2000);
+    
+    // Geocoding helper function
+    function geocodeLocation(address) {
+        return new Promise(resolve => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        resolve([parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+                    } else {
+                        resolve(null);
+                    }
+                })
+                .catch(() => resolve(null));
+        });
+    }
+});
+</script>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('stageChart').getContext('2d');
+  const stageChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ stage_labels|safe }},  // e.g., ['Accepted', 'Submitted', 'Rejected', 'Published']
+      datasets: [{
+        label: 'Number of Papers',
+        data: {{ stage_counts|safe }},  // e.g., [1, 2, 6, 7]
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(75, 192, 192, 0.7)'
+        ],
+        borderColor: [
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(255, 99, 132, 1)',
+          'rgba(75, 192, 192, 1)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+</script>
+
+
+<!-- Dashboard Chart Scripts -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Monthly Trends Chart
+        const monthlyCtx = document.getElementById('monthlyTrendsChart').getContext('2d');
+        const monthlyData = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [
+                {
+                    label: 'Incoming',
+                    data: [12, 19, 15, 8, 10, 12, 15, 18, 14, 16, 12, 10],
+                    borderColor: '#2196F3',
+                    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Accepted',
+                    data: [4, 7, 5, 3, 4, 5, 6, 8, 5, 6, 4, 3],
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                }
+            ]
+        };
+
+        new Chart(monthlyCtx, {
+            type: 'line',
+            data: monthlyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+});
+
+</script>
+
+{% endblock %}

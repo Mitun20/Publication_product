@@ -1,0 +1,20 @@
+{% extends 'profile_base.html' %}
+ 
+{% block content %}
+    <!-- Home Section Start -->
+    <div class="signup-section ptb-60" >
+        <div class="container">
+            <form class="signup-form">
+            <div class="row justify-content-center">
+               
+                    <div class="col-lg-6 col-md-6 ">
+                        <h2>Welcome to Karpagam Journal of Computer Science</h2>
+                        <p>Hello, {{ user.username }}!</p>
+                        <p>You are now logged in.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Home Section End -->
+{% endblock %}

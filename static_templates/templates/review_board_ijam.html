@@ -1,0 +1,544 @@
+{% extends "main_base.html" %}
+{% load static %}
+{% block content %}
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-rb">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Review Board</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+               
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                </div>
+
+                <div class="col-md-8">
+                    <div class="about-text">
+                        <div class="section-title">
+                            <h2>Review Board - IJAM</h2>
+                        </div>
+                    </div> 
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                            <div class="editor-info">
+                                                <h4>
+                                                    Dr. Sherif I. Ammar
+                                                </h4>
+                                                <ul>    
+                                                    <li>
+                                                        Mathematics Department,
+                                                        <br>Faculty Of Science,
+                                                        <br>Menofia University, Shebin El_Kom,
+                                                        Menofia, Zip code (32511),
+                                                        <br>Egypt.
+                                                        <br>Email: <a href="mailto:sherifamar2000@yahoo.com">sherifamar2000@yahoo.com</a>
+                                                    </li>        
+                                                </ul>
+                                            </div>
+                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                            <div class="editor-info">
+                                                <h4>
+                                                    Dr. A. Muthusamy
+                                                </h4>
+                                                <ul>    
+                                                    <li>
+                                                        Professor,<br>
+                                                        Department of Mathematics,
+                                                        <br>Periyar University,
+                                                        <br>Salem - 636 011.
+                                                        <br>Mobile No: 9842035190
+                                                        <br>Email: <a href="mailto:ambdu@yahoo.com">ambdu@yahoo.com</a>               
+                                                    </li>        
+                                                </ul>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. M. Lellis Divagar
+                                        </h4>
+
+                                        <ul>    
+                                            <li>
+                                                Professor & Head,<br>
+                                                Department of Mathematics,
+                                                <br>Madurai Kamaraj University,
+                                                <br>Madurai-625021.
+                                                <br>Mobile No: 9443805959
+                                                <br>Email: <a href="mailto:thivagar.maths@mkuniversity.org">thivagar.maths@mkuniversity.org</a>  
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. R. Uthayakumar
+                                        </h4>
+
+                                        <ul>    
+                                            <li>
+                                                Professor & Head,<br>
+                                                Department of Mathematics,
+                                                <br>Gandhigram Rural Institute,
+                                                <br>Gandhigram, Dindigul.
+                                                <br>Mobile No: 8903403855
+                                                <br>Email: <a href="mailto:uthayagri@gmail.com">uthayagri@gmail.com</a>  
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">   
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. K. Sivagamasundari
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                Professor<br>
+                                                Department of Mathematics,
+                                                <br>Avinasilingam Institute for Home Science and Higher Education, 
+                                                <br>Coimbatore-43.
+                                                <br>Mobile No: 9894307340
+                                                <br>Email: <a href="mailto:sivanath2011@gmail.com">sivanath2011@gmail.com</a>  
+                                            </li>            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>      
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. K. Somasundaram
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                Professor & Chair Person,
+                                                Department of Mathematics,
+                                                <br>Amrita Vishwa Vidyapeetham,
+                                                <br>Ettimadai,
+                                                <br> Coimbatore.
+                                                <br>Mobile No: 9443657545
+                                                <br>Email: <a href="mailto:s_sundaram@cb.amrits.edu">s_sundaram@cb.amrits.edu</a> 
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">   
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. S. Anbazhagan
+                                        </h4>
+                                
+                                    <ul>    
+                                        <li>
+                                            Professor & Head,<br>
+                                            Department of Mathematics,
+                                            <br>Alagappa University,
+                                            <br>Karaikudi-630003.
+                                            <br>Mobile No: 9790292525
+                                            <br>Email: <a href="mailto:anbazhagan_n@yahoo.co.in">anbazhagan_n@yahoo.co.in</a>  
+                                        </li>           
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. K. Bhuvaneswari
+                                        </h4>
+                                
+                                    <ul>    
+                                        <li>
+                                            Associate Professor & Head,<br>
+                                            Department of Mathematics,
+                                            <br>Mother Teresa Women’s University,
+                                            <br>Kodaikanal – 624 101.
+                                            <br>Mobile No: 9489954277
+                                            <br>Email: <a href="mailto:drkbmaths@gmail.com">drkbmaths@gmail.com</a>  
+                                        </li>       
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Arokiarani
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>Nirmala College for Womem(Autonomous),
+                                                Coimbatore-12.
+                                                <br>Mobile No: 9952336480
+                                                <br>Email: <a href="mailto:stell11960@yahoo.co.in">stell11960@yahoo.co.in</a>  
+                                            </li>         
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. A. Anguraj
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>PSG Arts and Science College,
+                                                <br>Coimbatore-641014.
+                                                <br>Mobile No: 9443737620
+                                                <br>Email: <a href="mailto: angurajpsg@yahoo.com">angurajpsg@yahoo.com</a>  
+                                            </li>           
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. K. Ramasamy
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>Kongunadu Arts and Science College,
+                                                <br>Coimbatore-641029.
+                                                <br>Mobile No: 9994433486
+                                                <br>Email: <a href="mailto: ramasamymaths@yahoo.com">ramasamymaths@yahoo.com</a>  
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. A.K. Abdul Hakeem
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>Sri Ramakrishna Mission Vidyalayam College of Arts and Science, Coimbatore-641020.
+                                                <br>Mobile No: 9442401998
+                                                <br>Email: <a href="mailto: abdulhakeem6@gmail.com"> abdulhakeem6@gmail.com</a>  
+                                            </li>      
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. A. James Albert
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Professor & Head,<br>
+                                                Department of Science and Humanities,
+                                                <br>Hindustan College of Engineering & Technology,
+                                                Coimbatore-641032.
+                                                <br>Mobile No: 9443550626
+                                                <br>Email: <a href="mailto: asiralbert@gmail.com">asiralbert@gmail.com</a>  
+                                            </li>         
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. S. Muralisankar
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                School of Mathematics,
+                                                <br>Madurai Kamaraj University,
+                                                <br>Madurai-625021.
+                                                <br>Mobile No: 9444802626
+                                                <br>Email: <a href="mailto: muralimku@gmail.com">muralimku@gmail.com</a>  
+                                            </li>      
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. R. Jayaraman
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>Periyar University College of Arts and Science,
+                                                <br>Pappireddipatti-636 905, Dharmapuri.
+                                                <br>Mobile No: 9842890895
+                                                <br>Email: <a href="mailto: jayarammaths@gmail.com,jayarammaths@yahoo.co.in">jayarammaths@gmail.com, jayarammaths@yahoo.co.in</a>  
+                                            </li>      
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. N. Kamatchi
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor,<br>
+                                                Department of Mathematics,
+                                                <br>Kamaraj College of Engineering and Technology,                   <br>Virudhunagar,
+                                                <br>Tamil Nadu 626001.
+                                                <br>Mobile No: 9789675351
+                                                <br>Email: <a href="mailto: kamakrishna77@gmail.com">kamakrishna77@gmail.com</a>  
+                                            </li>       
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. A. Manivannan
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Associate Professor in Mathematics,
+                                                <br>School of Advanced Sciences,
+                                                <br>VIT University – Chennai Campus,
+                                                <br>Chennai – 600 127.
+                                                <br>Mobile No: 9894091336
+                                                <br>Email: <a href="mailto: manivannangru@gmail.com">manivannangru@gmail.com</a>  
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>   
+        </section>
+    <!-- About Area End -->
+
+
+    {% endblock %}

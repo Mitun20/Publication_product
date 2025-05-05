@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Add CSS styling if required -->
+<style>
+    .navbar-custom {
+        background-color: #044d5e;
+    }
+    .navbar-custom .navbar-nav .nav-link {
+        color: white;
+        margin: 0 15px; /* Add spacing between links */
+    }
+    .navbar-custom .navbar-nav .nav-link:hover,
+    .navbar-custom .navbar-nav .nav-link.active {
+        color: #eabf1c; /* Change color on hover and active */
+    }
+    .navbar-custom .navbar-nav {
+        margin: auto; /* Center the navbar items */
+    }
+</style>
+
+<br>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_management' %}" id="articles-link">Admin-panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'volume_page' journal.id %}" id="volume-link">Volume</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'issue_list' journal.id %}" id="issues-link">Issues</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'articles_page' journal.id %}" id="articles-link">Publish Articles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manuscript_processing' journal.id %}" id="manuscript-link">Manuscript in Processing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'published_article' journal.id %}" id="published-link">Published Article</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Content -->
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Accepted Submissions for Journal: {{ journal.title }}</h1>
+        <button class="btn btn-primary" id="new-article-button">Direct Publish</button>
+    </div>
+    
+    <!-- Accepted Submissions Table -->
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>Papers to Publish</th>
+                <th>Publish</th>
+            </tr>
+        </thead>
+        <tbody id="submission-list">
+            {% for accepted_submission in accepted_submissions %}
+                <tr>
+                    <td>{{ accepted_submission.corrected_title }}</td>
+                    <td>
+                        <button class="btn btn-primary publish-button" data-submission-id="{{ accepted_submission.id }}">Publish</button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="text-center">No accepted submissions found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for Publishing Article -->
+<div class="modal fade" id="publishModal" tabindex="-1" role="dialog" aria-labelledby="publishModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="publishModalLabel">Publish Article</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="publish-form">
+                    <!-- Volume Selection -->
+                    <div class="form-group row">
+                        <label for="volume-select" class="col-md-3 col-form-label">Volume</label>
+                        <div class="col-md-9">
+                            <select id="volume-select" class="form-control">
+                                {% for volume in volumes %}
+                                    <option value="{{ volume.id }}">{{ volume.volume }} ({{ volume.year }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div><br>
+                    <!-- Issue Selection -->
+                    <div class="form-group row">
+                        <label for="issue-select" class="col-md-3 col-form-label">Issue</label>
+                        <div class="col-md-9">
+                            <select id="issue-select" class="form-control nice-select"></select>
+                        </div>
+                    </div><br>
+                    <!-- Published On -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="published-on">Published On</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="date" id="published-on" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="submission-id" value="">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Publish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Direct Article Publishing -->
+<div class="modal fade" id="newArticleModal" tabindex="-1" role="dialog" aria-labelledby="newArticleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newArticleModalLabel">Direct Article Publishing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="new-article-form">
+                    <!-- Volume Selection -->
+                    <div class="form-group row">
+                        <label for="new-volume-select" class="col-md-3 col-form-label">Volume</label>
+                        <div class="col-md-9">
+                            <select id="new-volume-select" class="form-control">
+                                {% for volume in volumes %}
+                                    <option value="{{ volume.id }}">{{ volume.volume }} ({{ volume.year }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div><br>
+                    <!-- Issue Selection -->
+                    <div class="form-group row">
+                        <label for="new-issue-select" class="col-md-3 col-form-label">Issue</label>
+                        <div class="col-md-9">
+                            <select id="new-issue-select" class="form-control nice-select"></select>
+                        </div>
+                    </div><br>
+                    <!-- Published On -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="new-published-on">Published On</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="date" id="new-published-on" class="form-control" required>
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- Title -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="new-title">Title</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" id="new-title" class="form-control" required>
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- Abstract -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="new-abstract">Abstract</label>
+                            </div>
+                            <div class="col-md-9">
+                                <textarea id="new-abstract" class="form-control" required></textarea>
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- Author -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="new-author">Author</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="text" id="new-author" class="form-control" required>
+                            </div>
+                        </div>
+                    </div><br>
+                    <!-- File -->
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="new-file">File</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input type="file" id="new-file" class="form-control" required>
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Publish</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('select').niceSelect(); // Initialize nice-select on all select elements
+
+        function populateIssues(volumeId, issueSelectId) {
+            console.log(`Populating issues for volume ID: ${volumeId}`);
+            $.ajax({
+                url: "{% url 'get_issues_by_volume' %}",
+                type: 'GET',
+                data: { volume_id: volumeId },
+                success: function(response) {
+                    const issues = response.issues;
+                    const issueSelect = $(issueSelectId);
+                    issueSelect.empty();
+                    if (!Array.isArray(issues) || issues.length === 0) {
+                        issueSelect.append($('<option></option>').text('No issues available'));
+                    } else {
+                        issues.forEach(issue => {
+                            issueSelect.append($('<option></option>').attr('value', issue.id).text(issue.issue));
+                        });
+                        issueSelect.val(issues[0].id);
+                    }
+                    $('select').niceSelect('update'); // Update nice-select after dynamically changing options
+                },
+                error: function(xhr, status, error) {
+                    console.error(`AJAX Error: ${status}, ${error}`);
+                    $(issueSelectId).empty().append($('<option></option>').text('Error loading issues'));
+                }
+            });
+        }
+        
+        $('#publishModal').on('show.bs.modal', function() {
+            const firstVolumeId = $('#volume-select option:first').val();
+            $('#volume-select').val(firstVolumeId);
+            populateIssues(firstVolumeId, '#issue-select');
+        });
+
+        $('#volume-select').change(function() {
+            const selectedVolumeId = $(this).val();
+            console.log("Selected volume ID:", selectedVolumeId);
+            populateIssues(selectedVolumeId, '#issue-select');
+        });
+
+        $('#newArticleModal').on('show.bs.modal', function() {
+            const firstVolumeId = $('#new-volume-select option:first').val();
+            $('#new-volume-select').val(firstVolumeId);
+            populateIssues(firstVolumeId, '#new-issue-select');
+        });
+
+        $('#new-volume-select').change(function() {
+            const selectedVolumeId = $(this).val();
+            console.log("Selected volume ID:", selectedVolumeId);
+            populateIssues(selectedVolumeId, '#new-issue-select');
+        });
+
+        $('.publish-button').click(function() {
+            const submissionId = $(this).data('submission-id');
+            $('#submission-id').val(submissionId);
+            $('#publishModal').modal('show');
+        });
+
+        $('#new-article-button').click(function() {
+            $('#newArticleModal').modal('show');
+        });
+
+        $('#publish-form').submit(function(e) {
+            e.preventDefault();
+
+            const submissionId = $('#submission-id').val();
+            const issueId = $('#issue-select').val();
+            const publishedOn = $('#published-on').val();
+            const csrfToken = '{{ csrf_token }}';
+
+            $.ajax({
+                url: "{% url 'publish_article' %}",
+                type: 'POST',
+                data: {
+                    accepted_submission_id: submissionId,
+                    issue_id: issueId,
+                    published_on: publishedOn,
+                    csrfmiddlewaretoken: csrfToken,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert('Failed to publish the article: ' + response.message);
+                    }
+                    $('#publishModal').modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                    alert('An error occurred while publishing the article.');
+                }
+            });
+        });
+
+        $('#new-article-form').submit(function(e) {
+            e.preventDefault();
+
+            const volumeId = $('#new-volume-select').val();
+            const issueId = $('#new-issue-select').val();
+            const publishedOn = $('#new-published-on').val();
+            const title = $('#new-title').val();
+            const abstract = $('#new-abstract').val();
+            const author = $('#new-author').val();
+            const file = $('#new-file')[0].files[0];
+            const csrfToken = '{{ csrf_token }}';
+
+            const formData = new FormData();
+            formData.append('volume_id', volumeId);
+            formData.append('issue_id', issueId);
+            formData.append('published_on', publishedOn);
+            formData.append('title', title);
+            formData.append('abstract', abstract);
+            formData.append('author', author);
+            formData.append('file', file);
+            formData.append('csrfmiddlewaretoken', csrfToken);
+
+            $.ajax({
+                url: "{% url 'publish_new_article' %}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert('Failed to publish the article: ' + response.message);
+                    }
+                    $('#newArticleModal').modal('hide');
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', status, error);
+                    alert('An error occurred while publishing the article.');
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock %}

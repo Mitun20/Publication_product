@@ -1,0 +1,52 @@
+<!-- <div class="job-style-two job-list-section"> -->
+    <!-- <h2 align="center">Submitted Manuscripts</h2> -->
+    <div class=”table-responsive”>  
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Manuscript ID</th>
+                    <th scope="col" width="18%">Title</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Submitted On</th>
+                    <th scope="col">Decisioned on</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for submission in submissions %}
+                <tr>
+                    <td>{{ submission.manuscript_id }}</td>
+                    <td>{{ submission.title }}</td>
+                    <td>
+                        <p>{{ submission.action }}</p>
+                        <p><a href="#" class="upload-link" data-toggle="modal" data-target="#uploadModal" data-submission-id="{{ submission.id }}">Upload Additional Files</a></p>
+                        <!-- <a href="#" class="upload-additional-files-link" data-submission-id="{{ submission.id }}" data-toggle="modal" data-target="#uploadModal">Upload Additional Files</a> -->
+                        <p><a href="{% url 'contact_form' %}?email={{  admin_email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Admin</a> 
+                        </p>
+        
+                    </td>
+                    <td>{{ submission.article_status }}</td>
+                    <td>
+                        {% if submission.final_file %}
+                            <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                        {% else %}
+                        --
+                    {% endif %}
+                    </td>
+                    <td>{{ submission.submitted_on|date:"d-M-Y" }}</td>
+                    <td>{{ submission.decissioned_on|date:"d-M-Y" }}</td>
+                </tr>
+                {% empty %}
+                    <div class="author-card-step-two">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>No submitted manuscripts found.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+<!-- </div> -->

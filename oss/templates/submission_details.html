@@ -1,0 +1,30 @@
+
+
+<div class="container">
+    <h2>Submission Details</h2>
+    <p><strong>Title:</strong> {{ submission.title }}</p>
+    <p><strong>Manuscript ID:</strong> {{ submission.manuscript_id }}</p>
+    <p><strong>Author:</strong> {{ submission.author.get_full_name }}</p>
+    <!-- <p><strong>Journal:</strong> {{ submission.journal }}</p> -->
+    <!-- <p><strong>Article Type:</strong> {{ submission.article_type }}</p> -->
+    <p><strong>Category:</strong> {{ submission.category }}</p>
+    <p><strong>Abstract:</strong> {{ submission.abstract }}</p>
+    <p><strong>Is Funded:</strong> {{ submission.is_funded }}</p>
+    <p><strong>No. of Figures:</strong> {{ submission.no_of_figures }}</p>
+    <p><strong>No. of Tables:</strong> {{ submission.no_of_tables }}</p>
+    <p><strong>No. of Words:</strong> {{ submission.no_of_words }}</p>
+    <p><strong>Conflict of Interest:</strong> {{ submission.conflict_of_interest }}</p>
+    <p><strong>COI Description:</strong> {{ submission.coi_describe }}</p>
+    <p><strong>Is Verified:</strong> {{ submission.is_verified }}</p>
+    <p><strong>Cover Letter:</strong> {{ submission.cover_letter }} </p>
+    <p><strong>Submitted On:</strong> {{ submission.submitted_on }}</p>
+    <p><strong>Decisioned On:</strong> {{ submission.decissioned_on }}</p>
+    <p><strong>Decision By:</strong> {{ submission.decision_by.get_full_name }}</p>
+    <p><strong>Article Status:</strong> {{ submission.article_status.article_status }}</p>
+    <p><strong>Decision:</strong> {{ submission.decision.name }}</p>
+    <p><strong>Final File:</strong> <a href="{{ submission.final_file.url }}">Download</a></p>
+    <p><strong>Admin Comments:</strong> {{ submission.admin_comments }}</p>
+    <p><strong>Payment Date:</strong> {{ submission.payment_date }}</p>
+    <p><strong>Payment Due Date:</strong> {{ submission.payment_due_date }}</p>
+</div>
+

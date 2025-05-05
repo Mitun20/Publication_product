@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="tab-content">
+    <div id="tab1" class="tab active">
+        <section class="about-section pt-100 pb-60">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <div class="about-information accordions">
+                            <ul>
+                                <li><a href="#">
+                                    <h3 style="color:white">Author Dashboard</h3>
+                                </a></li>
+                                {% if has_draft %}
+                                <li><a href="{% url 'draft' %}">Manuscripts in draft</a></li>
+                                {% endif %}
+                                {% if has_submitted %}
+                                <li><a href="{% url 'submitted' %}">Manuscripts submitted</a></li>
+                                {% endif %}
+                                {% if has_revision %}
+                                <li><a href="{% url 'revision' %}" class="active">Manuscript waiting for revision</a></li>
+                                {% endif %}
+                                {% if has_accepted %}
+                                <li><a href="{% url 'accepted' %}">Manuscript Accepted</a></li>
+                                {% endif %}
+                                {% if has_rejected %}
+                                <li><a href="{% url 'rejected' %}">Manuscript Rejected</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'startnew' %}">Start New Submission</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-9" style="text-align:left;">
+                        <div class="job-style-two job-list-section">
+                            <div class="section-title-space">
+                                <h2>Manuscripts with revision</h2>
+                            </div>
+                            <div class="author-card-step-two">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>ID</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>TITLE</h3>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>JOURNAL</h3>
+                                        </div>
+                                    </div> -->
+                                    <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>ACTION</h3>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>SUBMITTED</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="author-card-info">
+                                            <h3>DECISIONED</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% for submission in submissions %}
+                            <div class="author-card-step-two">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <p>{{ submission.manuscript_id }}</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p>{{ submission.title }}</p>
+                                    </div>
+                                    <!-- <div class="col-md-2">
+                                        <p>{{ submission.journal }}</p>
+                                    </div> -->
+                                    <div class="col-md-2">
+                                        <p><a href="{% url 'new_submission' submission.id %}">Submit revision</a></p>
+                                    </div>
+                                    
+                                    <div class="col-md-2">
+                                        <p>{{ submission.submitted_on|date:"d-M-Y" }}</p>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p>{{ submission.decissioned_on|date:"d-M-Y" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="author-card-step-two">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p>No submitted manuscripts found.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock content %}

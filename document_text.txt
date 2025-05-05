@@ -1,0 +1,86 @@
+Editorial Manager
+Instructions for Manuscript Submission
+Login or Register:
+To begin your submission, log in or create an account. Then, navigate to the “Start New Submission” page and click “Begin New Submission.”
+Step 1: Title, Category & Abstract
+Enter your title and abstract in the respective fields.
+Select the appropriate manuscript category if required.
+When finished, click “Save and Continue.”
+Step 2: File Upload
+Read the instructions provided on the page carefully.
+Click “Choose File” to select your manuscript file.
+Select the article type (if applicable).
+If you have more than one file, click “Add File” for each additional document.
+After adding all necessary files, click “Upload Files.”
+Verify that your files are listed correctly under uploaded documents.
+Step 3: Keywords
+Follow the instructions shown on the page.
+Enter appropriate keywords to describe your manuscript (you may enter more than one).
+When done, click “Save and Continue.”
+Step 4: Authors & Affiliations
+Add author and co-author details, including Name, Email, and Affiliation.
+When completed, click “Save and Continue.”
+Step 5: Details & Comments
+Read the instructions carefully.
+Enter or paste your cover letter into the designated box.
+Answer all additional questions as required.
+Once finished, click “Save and Continue.”
+Step 6: Review & Submit
+If any required field is missing, an alert will appear at the top of the page.
+Review all entered information carefully.
+Click “View Proof” to preview your submission.
+Check the box that says “I have viewed the proof” and then click “Submit.”
+You will receive a confirmation email once your submission is successful.
+Admin Office Workflow for Manuscript Processing
+Manuscripts Submitted Flow:
+All newly submitted manuscripts are displayed in this section.
+Check the format of each manuscript.
+Use an online plagiarism checker to test for plagiarism. After checking, upload the plagiarism report.
+If the manuscript format is incorrect or contains significant errors, you can reject it by clicking the “Reject” button and entering the reason in the comment box.
+If the manuscript meets the requirements, proceed by clicking “Assign AE”, select an Associate Editor (AE), and click “Assign.”
+Manuscripts with Rejection Flow:
+Rejected manuscripts are listed here.
+You can view the rejection comments and see which admin/editor rejected the manuscript.
+Manuscripts with Acceptance Flow:
+Accepted manuscripts appear in this section.
+If any corrections are needed, you can send a correction request by clicking “Send Correction Report.”
+Corrections can only be processed after payment is completed.
+Once the author submits the corrected version, you can upload the final corrected file by clicking “Upload Corrected File.”
+Manuscripts Under Review Flow:
+Manuscripts currently being reviewed by reviewers are shown in this section.
+Manuscripts Waiting for Revision Flow:
+Manuscripts that are awaiting revisions from the authors after reviewer feedback will appear here.
+Manuscripts Waiting for Revision (Overdue) Flow:
+Manuscripts that are still waiting for revisions past their due date are shown in this section.
+Typesetting and Proofreading Flow:
+Upload the updated and typeset file by clicking “Upload Type Set Document.”
+The system will automatically send the typeset file to the author via email.
+After the author confirms, complete the process by clicking “Proof Read Done.”
+Associate Editor Workflow:
+Manuscripts to Review:
+You can invite reviewers using the "Invite" button.
+You can reject a manuscript using the "Reject" button.
+You can view the plagiarism report and the manuscript.
+Manuscripts with Review Reports:
+You can view reviewers' comments.
+You can contact the reviewers who reviewed the manuscript.
+You can recommend the manuscript using the "Recommend" button.
+Manuscripts Under Review:
+Displays the manuscripts for which assigned reviewers have accepted the review invitation.
+Manuscripts to EIC:
+After you recommend a manuscript, it is forwarded to the Editor-in-Chief (EIC) and appears in this section.
+Reviewer Workflow:
+Invitation:
+If an Associate Editor invites you to review a manuscript, the invitation will appear here.
+You can choose to Accept or Reject the invitation.
+Manuscripts to Review:
+Displays the manuscripts for which you have accepted the review invitation.
+Use the "View PDF" button to read the manuscript.
+Use the "Recommend" button to submit your review and comments.
+Manuscripts Reviewed:
+Shows the manuscripts you have completed reviewing.
+Editor-in-Chief Workflow:
+Manuscripts Waiting for Decision:
+You can view the Associate Editor's comments and recommendations for the manuscript by clicking "View".
+To read the manuscript, use the "View PDF" button.
+To proceed with your decision on the manuscript, click "Make Decision".

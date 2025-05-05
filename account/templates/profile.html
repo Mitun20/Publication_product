@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+<!-- Page Title End -->
+
+<!-- Account Area Start -->
+<section class="account-section ptb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="account-information">
+                    <div class="profile-thumb">
+                        <img src="{% static 'assets/img/vector-img-4.jpg'%}" alt="">
+                        <h3>{{ author.user.first_name }} {{ author.user.last_name }}</h3>
+                        <p>
+                            {% for group in author.user.groups.all %}
+                                {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+
+                    <ul>
+                        <li>
+                            <a href="#" class="active">
+                                <i class='bx bx-user'></i>
+                                My Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'submitted' %}">
+                                <i class='bx bxs-file-doc'></i>
+                                My Papers
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'change_password' %}">
+                                <i class='bx bx-lock-alt'></i>
+                                Change Password
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'login'%}">
+                                <i class='bx bx-log-out'></i>
+                                Log Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="account-details">
+                    <h3>Basic Information</h3>
+                    <form class="basic-info profile-basicdata job-post-from" method="post" action="{% url 'profile' %}">
+                        {% csrf_token %}
+                        <div class="row justify-content-center">
+                            <div class="form-group">
+                                <label class="custom-label">Title</label><br>
+                                {{ author_form.title }}
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">First Name</label><br>
+                                {{ user_form.first_name }}
+                            </div>
+                        </div>
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">Last Name</label><br>
+                                {{ user_form.last_name }}
+                            </div></div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">Enter Email</label><br>
+                                {{ user_form.email }}   
+                            </div></div>
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">Mobile Number</label><br>
+                                {{ author_form.mobile_no }}
+                            </div></div>
+                          </div>
+                          <div class="row justify-content-center">
+                            <div class="form-group">
+                                <label class="custom-label">Institution / Affiliation</label><br>
+                                {{ author_form.institution }}
+                            </div>
+                          </div>
+                           <div class="row justify-content-center">
+                          <div class="form-group">
+                            <label class="custom-label">Address</label><br>
+                            {{ author_form.address }}
+                        </div>
+                          <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">City</label><br>
+                                {{ author_form.city }}
+                            </div></div>
+                            <div class="col-lg-6 col-md-6">  <div class="form-group">
+                                <label class="custom-label">Zipcode</label><br>
+                                {{ author_form.zipcode }}
+                            </div></div>
+                          </div>
+
+                          <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">State</label><br>
+                                {{ author_form.state }}
+                            </div></div>
+                            <div class="col-lg-6 col-md-6"> <div class="form-group">
+                                <label class="custom-label">Country</label><br>
+                                {{ author_form.country }}
+                            </div></div>
+                          </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6">
+
+                            
+                                <div class="form-group">
+                                    <label class="custom-label">Scopus ID</label><br>
+                                    {{ author_form.scopus_id }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-6 col-md-6">
+    
+                                <div class="form-group">
+                                    <label class="custom-label">Orcid ID</label><br>
+                                    {{ author_form.orcid_id }}
+                                </div>
+                            </div>
+                        </div>
+       
+                            <div class="col-md-12">
+                                <button type="submit" class="account-btn mb-50">Save</button>
+                            </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

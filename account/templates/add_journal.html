@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+ 
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li >
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                User Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'publication_management' %}">
+                                Publication Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link " href="{% url 'date_settings' %}">
+                                 Date Settings
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="{% url 'add_journal' %}">
+                                Journal Management
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <main role="main">
+                    <h2>Add Journal</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-save">Save</button>
+                    </form>
+                </main>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

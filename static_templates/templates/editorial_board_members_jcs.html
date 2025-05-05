@@ -1,0 +1,565 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+<!-- {% block dynamicheadercontent %}
+CALL FOR PAPER Vol - {{latest_issue.volume.volume}}, Issue - {{latest_issue.issue}}, {{latest_issue.description}}
+{% endblock %} -->
+
+{% block content %}
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-ebmjcs">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Editorial Board Members - Karpagam JCS</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row" style="text-align:left;">
+                <div class="col-md-4">
+                    <div class="about-information accordions">
+                        <ul>
+                            <li>
+                                <a href="{% url 'about' %}" class="active">
+                                    About Karpagam Journal of Computer Science
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
+                        
+                    </div>
+               
+            </div>
+
+                <div class="col-md-8">
+                    <div class="about-text">
+                        <div class="section-title">
+                            <h2>Editorial Board Members - Karpagam JCS</h2>
+                        </div>
+                            <!-- <p>This publication is an effort of Karpagam Charity Trust. The Karpagam JCS is a bimonthly Journal in the field of Computer Science, Responsibility for the contents lies upon the authors and not upon the JCS. For copying or reprint permission, write to Copyright Department, JCS Administration, Karpagam Charity Trust, Karpagam Academy of Higher Education, Pollachi Main Road, Coimbatore – 641 021. India.</p> -->
+                             <p>The Karpagam JCS is a bimonthly journal in the field of Computer Science. The responsibility for the contents lies upon the authors and not upon the KJCS. For copying or reprint permissions, write to Editor-in-Chief, E-Mail: jcs@kahedu.in</p>
+                    </div> <br>
+                   
+                <div class="row" style="text-align:left; ">
+                    <div class="sub-title pt-30">               
+                        <h2>Editorial Members</h2>
+                        </div>
+                        <div class="row">                   
+                        <div class="col-md-6">
+                            <div class="sub-title">               
+                                <h3>Editor-in-Chief</h3>
+                                </div>
+                            <div class="editor-card-board">                               
+                                <div class="editor-info" style="height: 190px;">
+                                    <h4>
+                                        Dr. S. Ravi M.Sc., Ph.D
+                                    </h4>
+                                    <b>Registrar</b>
+                                    <ul>    
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                       
+                        
+                        <div class="col-md-6">
+                            <div class="sub-title">               
+                                <h3>Editor</h3>
+                                </div>
+                            <div class="editor-card-board">
+                                <div class="editor-info" style="height: 190px;">
+                                    <h4>
+                                        Dr. R. Santhosh, M.E., M.B.A., Ph.D.
+                                    </h4>
+                                    <b>Professor & Head</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Computer Science and Engineering
+                                            <bR>Karpagam Academy of Higher Education
+                                            <br>Coimbatore – 641 021
+                                            <br>Email: <a
+                                                href="mailto:santhosh.r@kahedu.edu.in">santhosh.r@kahedu.edu.in</a>
+                                        </li>    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div> 
+        </div>   
+    </section>
+    <!-- About Area End -->
+
+
+         <!-- Editorial Board Section Start -->
+        <section class="about-section pt-60 pb-60 bg-grey">
+            <div class="container">
+                <div class="row" style="text-align:left; display: none;">
+                    <img src="{% static 'assets/img/e-board/img-1.jpg'%}" alt=""><br><br>
+                  
+                </div>
+                <div class="row" style="text-align:left;">
+                    <div class="sub-title">               
+                        <h2>Editorial Board</h2>
+                        <h3>International</h3>
+                        </div>
+                                     
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                            <h4>
+                                                Dr. Subramaniam Ganesan M.E., Ph.D
+                                            </h4>
+                                            <b>Professor</b>
+                                            <ul>    
+                                                <li>
+                                                    Department of Computer Science & Engineering,
+                                                    <br>Associate Director - Product Development & Manufacturing Center,
+                                                    <br>Oakland University, Rochester, MI 48309-4401, USA.
+                                                    <br>Email: <a
+                                                        href="mailto:ganesan@oakland.edu">ganesan@oakland.edu</a>
+                                                </li>        
+                                            </ul>
+                                        </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Joy Iong-Zong Chen Ph.D
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Electrical Engineering,
+                                            <br>Da-Yeh University. (5G-MIMO/IoT-BigData, SoC Lab.)<br>
+                                            No. 168, University Rd., Dacun, Changhua, Taiwan 51501, R.O.C.
+                                            <br>Email: <a
+                                                href="mailto:jchen@mail.dyu.edu.tw">jchen@mail.dyu.edu.tw</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                        </div>
+                           
+                        <div class="col-md-6">                            
+                            <div class="editor-card-board">   
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. JunzoWatada Ph.D
+                                    </h4>
+                                    <b>Professor Universiti Technologi PETRONAS,</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Computer & Information Sciences 32610, 
+                                            <br>Seri Iskandar, Perak DarulRidzuan, 
+                                            <br>Malaysia.                                         
+                                            <br>Email: <a
+                                                href="mailto:junzow@osb.att.ne.jp">junzow@osb.att.ne.jp </a>
+                                        </li>    
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Ainuddin Wahid Abdul Wahab Ph.D 
+                                    </h4>
+                                    <b>Associate Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Faculty of Computer Science and Information Technology University,
+                                            <br>Malaya - 50603 Kuala Lumpur, 
+                                            <br>Malaysia.
+                                          
+                                            <br>Email: 
+                                            <a href="mailto:ainuddin@um.edu.my">ainuddin@um.edu.my</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                        </div>
+                         
+                     
+                </div>
+                <div class="row" style="text-align:left;">
+                    <div class="sub-title">
+                        <h3>National</h3>
+                        </div>           
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                            <h4>
+                                                R.S. Balasubramanian M.E
+                                            </h4>
+                                            <b>Director - Karpagam Technical Academy</b>
+                                            <ul>    
+                                                <li>
+                                                    Karpagam College of Engineering,
+                                                    <br>Pollachi Main Road,
+                                                    <br>Coimbatore – 641 032.
+                                                    <br>Email: <a
+                                                        href="mailto:director_kta@kce.ac.in">director_kta@kce.ac.in</a>
+                                                </li>        
+                                            </ul>
+                                        </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. S.N. Sivanandam M.E., Ph.D 
+                                    </h4>
+                                    <b>Emiretus Professor </b>
+                                    <ul>    
+                                        <li>
+                                            Karpagam Academy of Higher Education, 
+                                            <br>Pollachi Main Road, 
+                                            <br>Coimbatore - 641 021. 
+                                            
+                                            <br>Email: <a
+                                                href="mailto:emiretusprofdrsns@kahedu.edu.in">emiretusprofdrsns@kahedu.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. B. Arun Kumar, M.E.,Ph.D. 
+                                    </h4>
+                                    <b>Professor & Head, </b>
+                                    <ul>    
+                                        <li>
+                                            Department of Artificial Intelligence and Data Science,
+                                            <br>Karpagam Academy of Higher Education,
+                                            <br>Coimbatore - 641 021.
+                                            <br>
+                                            Email: <a
+                                                href="mailto:arunkumar.balachandran@kahedu.edu.in ">arunkumar.balachandran@kahedu.edu.in </a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. R. Roopa Chandrika, M.E.,Ph.D. 
+                                    </h4>
+                                    <b>Professor & Head, Department of CSE (Cyber Security) </b>
+                                    <ul>    
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Coimbatore - 641 021.
+                                            <br>Email: <a
+                                                href="mailto:roopachandrika.rajappan@kahedu.edu.in">roopachandrika.rajappan@kahedu.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Arunkumar Thangavelu MCA, Ph.D. 
+                                    </h4>
+                                    <b>Dean & Professor </b>
+                                    <ul>    
+                                        <li>
+                                            School of Computing Sciences & Engineering,
+                                            <br>Vellore Institute of Technology, 
+                                            <br>Vellore - 632 014.
+                                            <br> Tamilnadu. 
+                                            <br>Email: <a
+                                                href="mailto:arunkumart@vit.ac.in">arunkumart@vit.ac.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. E. George Dharma Prakash M.Sc, MCA., M.Phil., Ph.D
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Dept. of Computer Science & Engineering,
+                                            <br>Bharathidasan University,
+                                            <br>Tiruchirappalli – 620 023.
+                                            <br>Email: 
+                                            <a href="mailto:georgeprakashraj@yahoo.com ">georgeprakashraj@yahoo.com, </a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>  
+                            
+                       
+                        </div>
+                           
+                        <div class="col-md-6">  
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Hanumanthappa M B.E., M.Tech., Ph.D 
+                                    </h4>
+                                    <b>Professor and Chairman</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Computer Science & Applications,
+                                            <br>Bangalore University, Jnanabarathi Campus, Mysore Road, 
+                                            <br>Bangalore - 560 056, INDIA.
+                                            <br>Email: 
+                                            <a href="mailto:hanu6572@bub.ernet.in">hanu6572@bub.ernet.in </a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>   
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. K. Vivekanandan B.E., M. Tech.,Ph.D.,
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Computer Science and Engineering,
+                                            <br>Pondicherry Engineering College,
+                                            <br>Puducherry – 605014.
+                                            <br>Email: 
+                                            <a href="mailto:k.vivekanandan@pec.edu">k.vivekanandan@pec.edu</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>  
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. P. Nagabhushan B.E., M.Tech., PhD,
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Studies in Computer Science, <br>University of Mysore,
+                                            <br>Manasagangori, Mysore - 570 006.
+                                            <br>Email: <a
+                                                href="mailto:pnagabhushan@compsci.uni-mysore.ac.in">pnagabhushan@compsci.uni-mysore.ac.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>                     
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Paulraj Murugesa Pandiyan Ph.D
+                                    </h4>
+                                    <b>Principal</b>
+                                    <ul>    
+                                        <li>
+                                            Sri Ramakrishna Institute of Technology,
+                                            <br>Perur, Chettipalyam, Pachapalayam, <br>Coimbatore – 641 010, Tamilnadu.
+                                           <br>Email: 
+                                            <a href="mailto:principal@srit.org">principal@srit.org</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div> 
+                            
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Atulgirimayagirigonsai
+                                    </h4>
+                                    <b>Associate Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Computer Science, 
+                                            <br>Saurashtra University, Rajkot - 3600 005 Gujarat (India)
+                                            <br>Phone: (0281) - 2585232
+                                            Mobile: +919427236866
+                                            <br>Email: <a
+                                                href="mailto:atul.gosai@gmail.com, amg@sauuni.ac.in">atul.gosai@gmail.com, amg@sauuni.ac.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                   
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Ramachandra V Pujeri ME,MBA, PhD,
+                                    </h4>
+                                    <b>Director</b>
+                                    <ul>    
+                                        <li>
+                                            MIT College of Engineering,
+                                            <br>Kothrud, Pune, 
+                                            <br> Maharashtra- 411 038.
+                                           <br>Email: 
+                                            <a href="mailto:director@mitcoe.edu.in">director@mitcoe.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>              
+                        </div>                 
+                </div>
+            </div>
+        </section>
+        <!-- Editorial Board Section End -->
+        {% endblock %}

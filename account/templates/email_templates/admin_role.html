@@ -1,0 +1,18 @@
+<p>Dear {{ user.username }},</p>
+
+    {% if assigned_groups|length == 1 %}
+        <p>You have been assigned as the <strong>{{ assigned_groups.0 }}</strong>.</p>
+    {% else %}
+        <p>You have been assigned the following roles:</p>
+        <ul>
+            {% for group in assigned_groups %}
+                <li>{{ group }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <p>Please click <a href="{{ verification_link }}">Login</a> to your account to view and manage your assigned journal.</p>
+
+    <p>Thank you,</p>
+
+   

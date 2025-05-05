@@ -1,0 +1,577 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+
+{% block content %}
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-rb">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Review Board</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+               
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                </div>
+
+                <div class="col-md-8">
+                    <div class="about-text">
+                        <div class="section-title">
+                            <h2>Review Board - KJCS</h2>
+                        </div>
+                    </div> 
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                            <div class="editor-info">
+                                                <h4>
+                                                    Dr. K. Alagarsamy
+                                                </h4>
+                                                <ul>    
+                                                    <li>
+                                                        Madurai Kamaraj University,<br>
+                                                        Madurai.                                                    
+                                                    </li>        
+                                                </ul>
+                                            </div>
+                                    </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                            <div class="editor-info">
+                                                <h4>
+                                                    Dr. S. Jothi
+                                                </h4>
+                                                <ul>    
+                                                    <li>
+                                                        Sri Padmavati Mahila University,<br>
+                                                        Tirupati.                                                    
+                                                    </li>        
+                                                </ul>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. S. Sukumaran
+                                        </h4>
+
+                                        <ul>    
+                                            <li>
+                                                Erode Arts & Science College,
+                                                <br>Erode.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. C. Chandrasekar   
+                                        </h4>
+
+                                        <ul>    
+                                            <li>
+                                                Periyar University,
+                                                <br>Salem.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">   
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. V. Palaniswamy
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                Alagappa University,
+                                                <br>Karaikudi.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>      
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Antony Selvadoss Thanamani
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                NGM College,
+                                                <br>Pollachi.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">   
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                        Dr. B.L. Shivakumar
+                                        </h4>
+                                
+                                    <ul>    
+                                        <li>
+                                            Sri Ramakrishna Polytechnic College,
+                                            <br>Coimbatore.
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. L. Arockiam
+                                        </h4>
+                                
+                                    <ul>    
+                                        <li>
+                                            St.Joseph’s College,
+                                            <br>Trichy.
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. M. Nagarajan
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                CMS College of Science and Commerce,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. T. Christopher
+                                        </h4>
+                                        
+                                        <ul>    
+                                            <li>
+                                                Govt. Arts & Science College
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Meiyappan
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Alagappa University,
+                                                <br>Karaikudi.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. E. Ramaraj
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Alagappa University,
+                                                <br>Karaikudi.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row"> 
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. S. Deepa
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Presidency College,
+                                                <br>Bangalore, Karnataka.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. M. Vijayakumar
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                K.S.R. College of Engineering,
+                                                <br>Tiruchengode.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Marimuthu
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Govt. Arts & Science College,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. A. Malathy
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Govt. Arts & Science College,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Roseline
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Govt. Arts & Science College,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                    <div class="editor-info">
+                                        <h4>
+                                            Dr. Sumathi
+                                        </h4>
+                                    
+                                        <ul>    
+                                            <li>
+                                                Govt. Arts & Science College,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                        <h4>
+                                            Dr. J. Abdul Samath
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                Government Arts College,
+                                                <br>Udumalpet.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>                               
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                        <h4>
+                                            Dr.Saravanan V
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                Hindusthan College of Arts & Science,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>                               
+                            </div>
+                        </div>    
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                        <h4>
+                                            Dr. T. Karthikeyan
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                PSG College of Arts and Science,
+                                                <br>Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>                               
+                            </div>
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                        <h4>
+                                            Dr. A.V. Ramani
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                Sri Ramakrishna Mission Vidthyala College of Arts and Science, Coimbatore.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>                               
+                            </div>
+                        </div>   
+                        <div class="row">         
+                            <div class="col-md-6">
+                                <div class="editor-card-board">                             
+                                        <div class="editor-info">
+                                        <h4>
+                                            Dr.Bandgar Bapurao Mayappa
+                                        </h4>
+                                        <ul>    
+                                            <li>
+                                                JSPM , Jayawant Technical Campuss,
+                                                <br>Pune.
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>                               
+                            </div>                           
+                        </div>         
+                </div>
+            </div> 
+        </div>   
+    </section>
+    <!-- About Area End -->
+    {% endblock %}

@@ -1,0 +1,219 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+<!-- {% block dynamicheadercontent %}
+FOR PAPER Vol - {{latest_issue.volume.volume}}, Iss - {{latest_issue.issue}}, {{latest_issue.description}}, {{latest_issue.volume.year}}
+
+{% endblock %} -->
+
+{% block content %}
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>About</h2>
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+        <!-- About Section Start -->
+        <section class="about-section pt-100 pb-60" style="text-align:left;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                       
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="about-text">
+                            <div class="section-title">
+                                <h2>Chairman And Managing Trustee</h2>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                     <p>Dr.R.Vasanthakumar, a philanthropist par excellence and our founder promoter is the President of Karpagam University. An enterprising industrialist, he is the Chairman and Managing Director of Karpagam Industries Private Limited, Bannariamman Engineering Industries Private Limited, Karpagam Yarns Private Limited, Karpagambigai Investments Limited and Karpagam Infrastructure Private Limited that together employ over 400 personnel.</p>  
+                                </div>
+                                <div class="col-lg-5 pb-30">
+                                    <div class="about-img">
+                                    <img src="{% static 'assets/img/about.jpg'%}" alt="about image">
+                                    </div>
+                                </div>
+                            </div>
+                            <p>A Gold Medallist from the Madras University, he graduated with Honours in Electrical & Electronics Engineering. It is probably his deep-rooted academic interest that fuelled Dr.R.Vasanthakumar’s endeavours in the field of education.</p>                            
+                        </div>                        
+                    </div>                   
+                </div>
+            </div>
+        </section>
+        <!-- About Section End -->
+
+		 <!-- About Section - Table Start -->
+         <section class="about-section pt-60 pb-100 bg-grey">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12" >
+                        <div class="about-text" style="text-align:left;">
+                            <p>Besides education, Dr.R.Vasanthakumar is a renowned name in lending his assistance to philanthropic causes. His contribution to temple maintenance and renovation of dilapidated temples is priceless. He has renovated and consecrated more than 300 Shiva temples that are mainly in villages with old granite structures and is maintaining daily poojas in those temples. He has also been instrumental in incepting the Panniru Thirumurai Aaivu Mayyam which is involved in Research of Ancient Tamil Saivism Literature like Thevaram, Thiruvasagam & Saiva Siddantham and spreading Saivism by conducting conferences and seminars once in 2 months. His Tamil Chairty wing has undertaken the million rupee five year project to identify, sum up and list the total number of words available in Tamil language from the Imperial Age till date.</p>                    
+                            <p>Dr.R.Vasanthakumar’s noteworthy contributions have been rightly commended through several titles and recognitions. An Honorary Doctorate conferred on him by the Avinashilingam University in 2004 stands testimony to his role as an exemplary academician and an extraordinary philanthropist. NIA Institutions, Pollachi has awarded the title “Kongu Nattu Sathanaiyalar” on the occasion of the 51st Founder’s day of Shri. Nachimuthu Gounder. He has served as President, COSIEMA (Coimbatore Sidco Industrial Estate Management Association) during 1998-2000 and Tamil Nadu Private College Management Association (Coimbatore Chapter) 2000-2002. He is also the President of ENFUSE (Energy & Fuel User’s Association), Coimbatore Chapter and RENOVATION Committees of various SHIVA Temples. He is the Governing Council Member of Sri Ramakrishna Mission Vidyalaya Polytechnic College, Sri Dhandayuthapani Polytechnic College and Thavathiru Santhalinga Adigalar Tamil College.</p>
+                            <p>A Corporate member of the Coimbatore Stock Exchange, Dr.R.Vasanthakumar is also a member of various professional bodies like the Confederation of Indian Industry, Indian Chamber of Commerce, Indo-German Chamber of Commerce, COSIEMA (Coimbatore Sidco Industrial Estate Management Association) and CODISSIA (Coimbatore District Small Scale Industries Association).</p>
+                            <p>Dr.R.Vasanthakumar’s extensive travelling has taken him around the world, primarily to the United States of America, Germany, Italy, Turkey, Japan, Malaysia, Singapore and Switzerland. His rich experience and expertise continues to be a source of great inspiration to one and all.</p>
+                            <p>Dr.R.Vasanthakumar is the publisher of Karpagam JCS, International Journal of Applied Mathematics and Journal of Commerce and Management and owned by Karpagam Journal of Computer Science, A Unit of Karpagam Charity Trust, Karpagam Academy of Higher Education, Eachanari Post, Coimbatore -21.</p>
+                        </div>             
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About Section Table End -->
+
+        {% endblock content %}

@@ -1,0 +1,738 @@
+{% extends "main_base.html" %}
+{% load static %} 
+{% block content %}
+
+    <style>
+        .find-form {
+        margin-bottom: 2rem; /* Space below the form */
+    }
+
+    .find-btn {
+        /* width: 100%; */
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .search-results {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.375rem;
+    }
+
+    .list-group-item {
+    border: none;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 0.5rem;
+    background-color: #ededed;
+    border-radius: 0.375rem;
+}
+
+.list-group-item a {
+    text-decoration: none;
+    color: #000;
+}
+
+    .list-group-item a:hover {
+        text-decoration: underline;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    #search-results {
+        position: relative; /* Make the search-results box the reference point for positioning the button */
+    }
+
+
+    html, body {
+    height: 100%; /* Make sure the body takes up the full height */
+    margin: 0; /* Remove default margin */
+}
+
+.center-container {
+    display: flex; /* Use Flexbox */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100%; /* Full height */
+}
+
+    </style>
+    {% if user.is_superuser or user.groups.exists %}    
+        <div class="navbar-area sublinks">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
+                        <ul class="navbar-nav">
+                            <!-- <li class="nav-item">
+                                <a href="{% url 'index' %}" class="nav-link">Home</a>
+                            </li> -->
+                            {% if user.is_superuser %}
+                            <li class="nav-item">
+                                <a href="{% url 'user_management' %}" class="nav-link">User Management</a>
+                            </li>
+                            {% endif %}
+                            {% for group in user.groups.all %}
+                                {% if group.name == 'AE' %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'associate_editor' %}" class="nav-link">Associate Editor</a>
+                                    </li>
+                                    
+                                {% elif group.name == 'EIC' %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'editor_in_chief' %}" class="nav-link">Editor in Chief</a>
+                                    </li>
+                                    
+                                {% elif group.name == 'Author' %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'startnew' %}" class="nav-link">Author</a>
+                                    </li>
+                                    
+                                {% elif group.name == 'Reviewer' %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'reviewer_invitations' %}" class="nav-link">Reviewer</a>
+                                    </li>
+                                    
+                                {% elif group.name == 'Admin Office' %}
+                                    <li class="nav-item">
+                                        <a href="{% url 'admin_office' %}" class="nav-link">Admin Office</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            
+                        </ul>
+                        <!-- Right-aligned items -->
+                        <ul class="navbar-nav ml-auto">
+                        <!-- {% for group in user.groups.all %}
+                    
+                    
+                        {% endfor %} -->
+                        {% if has_ae_or_eic %}
+                            <li class="nav-item">
+                                <a href="{% url 'editor_profile' %}" class="nav-link">Editor Profile</a>
+                            </li>
+                            {% endif %}
+                        {% if has_author_or_reviewer %}
+                            <li class="nav-item">
+                                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                            </li>
+                        {% endif %}
+                            <li class="nav-item">
+                                <a href="{% url 'change_password' %}" class="nav-link">Change Password</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    {% endif %}     
+    <!-- Navbar Area End -->
+    
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchForm = document.getElementById('search-form');
+                const clearButton = document.getElementById('clear-search');
+                const searchResults = document.getElementById('search-results');
+            
+                // Function to show or hide search results and clear button based on query parameter
+                function updateVisibility() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const searchQuery = urlParams.get('query');
+            
+                    if (searchQuery) {
+                        searchResults.style.display = 'block';
+                        clearButton.style.display = 'inline-block';
+                    } else {
+                        searchResults.style.display = 'none';
+                        clearButton.style.display = 'none';
+                    }
+                }
+            
+                // Update visibility based on URL parameters when the page loads
+                updateVisibility();
+            
+                // Clear button functionality
+                clearButton.addEventListener('click', function() {
+                    // Clear the search input field
+                    searchForm.reset();
+                    
+                    // Hide the search results and clear button
+                    searchResults.style.display = 'none';
+                    clearButton.style.display = 'none';
+                    
+                    // Optionally, redirect to the same page without query parameters
+                    window.location.href = window.location.pathname;
+                });
+            });
+            </script>
+            
+            
+        
+        
+    <!-- Banner Section Start -->
+		<div class="banner-section banner-style-five pt-60 pb-50">
+			<div class="d-table">
+				<div class="d-table-cell">
+					<div class="container"> 
+						<div class="banner-content text-center">
+                            <div class="center-container">
+                                <h2 class="banner-headtxt">Karpagam Journal of Computer Science</h2>
+                            </div>
+                            
+                            <!-- <img src="{% static '/assets/img/logo-jcs.png'%}"> -->
+                            <!-- <br>
+                            <h2>Karpagam Journal of Computer Sciences
+                                one of the fastest
+                                growing publications in Coimbatore<h2> -->
+                        </div>
+                        
+                        <form class="find-form" method="GET" action="{% url 'index' %}" id="search-form">
+                            <div class="row justify-content-center mb-4">
+                                
+                                <div class="col-lg-9 col-sm-12">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" name="query" id="search-query" value="{{ search_query }}" placeholder="KJCS Article or Keyword">
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-sm-12">
+                                    <button type="submit" class="find-btn" style="text-align: center;">
+                                        <span>Search Articles</span>
+                                        <i class='bx bx-search'></i>
+                                    </button>
+                                    
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="search-results" id="search-results" style="display: none;">
+                                    <button type="button" class="find-btn btn btn-secondary ml-2" id="clear-search" style="display: none; position: absolute; width: 4cm; top: 10px; right: 10px; ">
+                                        Clear Search
+                                    </button>
+                                    {% if search_results %}
+                                        <h2>Search Results</h2>
+                                        <ul class="list-group">
+                                            {% for submission in search_results %}
+                                                <li class="list-group-item">
+                                                    {% if submission.file %}
+                                                    <a href="{% url 'download_article' submission.id %}" target="_blank">{{ submission.title }} - Vol {{ submission.issue.volume.volume }}, Issue {{ submission.issue.issue }}, {{ submission.issue.description }}, {{ submission.issue.volume.year }}</a>
+                                                    {% else %}
+                                                        {{ submission.title }} (No file available)
+                                                    {% endif %}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        {% if search_query %}
+                                            <p class="text-muted">No results found for "{{ search_query }}".</p>
+                                        {% endif %}
+                                    {% endif %}
+                                    
+                                </div>
+                            </div>
+                        </div>
+					</div>
+				</div>
+			</div>
+            <!-- <div class="container pt-70"> 
+                <div class="row counter-area">
+                    <div class="col-lg-3 col-6">
+                        <div class="counter-text">
+                            <h2><span>1225</span></h2>
+                            <p>Countries Represented</p>
+                        </div>
+                    </div>
+        
+                    <div class="col-lg-3 col-6">
+                        <div class="counter-text">
+                            <h2><span>145</span></h2>
+                            <p>Journals without APCs</p>
+                        </div>
+                    </div>
+        
+                    <div class="col-lg-3 col-6">
+                        <div class="counter-text">
+                            <h2><span>1500</span></h2>
+                            <p>Journals</p>
+                        </div>
+                    </div>
+        
+                    <div class="col-lg-3 col-6">
+                        <div class="counter-text">
+                            <h2><span>12000</span></h2>
+                            <p>Article Records</p>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+		</div>
+        <!-- Banner Section End -->
+	<!-- Banner Section Start -->
+
+    <!-- Banner Section End -->
+             <!-- Subscribe Section Start -->
+        <section class="subscribe-section">
+            <div class="container">
+                <div class="row align-items-center justify-content-center">
+                    <div class="col-md-6">
+                        <div class="section-title-1">
+                            <h2>About Karpagam Journal of Computer Science</h2>
+                            <p>Karpagam Journal of Computer Science is one of the fast emerging academic publisher dedicated to nurturing knowledge and learning.</p>
+                            <p>KJCS is well respected publication in the technology community and which is a trusted source for research in academia. All of these publications are also available electronically through digital library.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h2>Online Paper Submission</h2>
+                        <p>Submit your manuscript online using our secure submission system. Please note that the submission fee is subject to change.</p>
+                        {% if user.is_authenticated %}
+                            {% if user.is_superuser %}
+                                <!-- If the user is a superuser, show the button with a different link -->
+                                <button class="default-btn sub-btn-gry" type="submit" onclick="window.location.href='/login';">
+                                    Submit New Manuscript
+                                </button>
+                            {% else %}
+                                {% for group in user.groups.all %}
+                                    {% if group.name == 'Author' %}
+                                        <button class="default-btn sub-btn-gry" type="submit" onclick="window.location.href='/startnew';">
+                                            Submit New Manuscript
+                                        </button>
+                                    {% else %}
+                                        <button class="default-btn sub-btn-gry" type="submit" onclick="window.location.href='/login';">
+                                            Submit New Manuscript
+                                        </button>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% else %}
+                            <button class="default-btn sub-btn-gry" type="submit" onclick="window.location.href='/login';">
+                                Submit New Manuscript
+                            </button>
+                            
+                        {% endif %}
+                       <div class="hide-mobile-txt"> <p>&nbsp;</p>
+
+                        <p>&nbsp;</p></div> 
+                    </div>
+                </div>
+            </div>
+        </section> 
+        <!-- Subscribe Section End -->
+             <!-- About Area Start -->
+    <section class="account-section pt-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-3">
+                    
+                    <div class="about-information accordions">
+                        <ul>
+                            <li>
+                                <a href="{% url 'about' %}" class="active">
+                                    About Karpagam Journal of Computer Science
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
+                        
+                    </div>
+                    <br>
+                <img src="{% static 'assets/img/side-img.jpg' %}" alt="">
+                    
+                </div>
+                <div class="col-md-9">
+                    <div class="section-title-l text-start" style="margin-bottom: 30px !important;">
+                        <h2>Our Current Issue</h2>
+                    </div>
+                    <div class="row justify-content-center">
+                        {% for latest_issue in latest_articles %}
+                            <div class="col-lg-12 col-sm-12">
+                                <div class="choose-card" style="text-align: left; padding: 20px; margin-bottom: 15px;">
+                                    <a href="{% url 'download_article' latest_issue.id %}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">{{ latest_issue.article_data.title }}</a>
+                                    <p style="color: #6c757d;">Volume: {{ latest_issue.article_data.volume }} | Issue: {{ latest_issue.article_data.issue }} | Year: {{ latest_issue.article_data.year }}</p>
+                                    <p>Author(s): {{ latest_issue.article_data.authors }}</p>
+                                    <div style="margin-top: 15px;">
+                                        <a href="{% url 'download_article' latest_issue.id %}" download><img src="{% static 'assets/img/pdf_logo.png' %}" alt="" width="32px"> &nbsp; Download</a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="section-title text-center pt-30"><a href="{% url 'current_issue' 2  %}" class="readmore">Read More</a></div>
+
+            </div>
+        </div>
+    </section>
+    <!-- About Area End -->
+
+         
+    <!-- Category Section Start -->
+    <section class="categories-section">
+        <div class="container">
+
+            <!-- <div class="row justify-content-center">
+                <ul class="nav nav-tabs nav-justified" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="justified-tab-0" data-bs-toggle="tab"
+                            href="#justified-tabpanel-0" role="tab" aria-controls="justified-tabpanel-0"
+                            aria-selected="true"> POPULAR ARTICLES </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="justified-tab-1" data-bs-toggle="tab" href="#justified-tabpanel-1"
+                            role="tab" aria-controls="justified-tabpanel-1" aria-selected="false"> LATEST PUBLISHED
+                            ARTICLES </a>
+                    </li>
+
+                </ul>
+                <div class="tab-content pt-5" id="tab-content">
+                    <div class="tab-pane active" id="justified-tabpanel-0" role="tabpanel"
+                        aria-labelledby="justified-tab-0">
+                        <div class="row justify-content-center">
+                            {% for article in top_downloaded_articles %}
+                            <div class="col-lg-12  bdr-btm">
+                                <div class="job-card-two">
+                                    <div class="row align-items-center justify-content-center">
+                                        <div class="col-md-1">
+                                            <div>
+                                                <a href="#">
+                                                    <img src="{% static 'assets/img/pdf-icon.png'%}" alt="logo">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-11">
+                                            <div class="job-info">
+                                                <h3>
+                                                    {{ article.title }} 
+                                                </h3>
+
+                                                <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                    phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="justified-tabpanel-1" role="tabpanel" aria-labelledby="justified-tab-1">
+                        <div class="row justify-content-center">
+                            {% for article in latest_articles %}
+                                <div class="col-lg-12 bdr-btm">
+                                    <div class="job-card-two">
+                                        <div class="row align-items-center justify-content-center">
+                                            <div class="col-md-1">
+                                                 <div>
+                                                    <a href="#">
+                                                        <img src="{% static 'assets/img/pdf-icon.png' %}" alt="logo">
+                                                    </a>
+                                                </div>
+                                            </div> 
+                                            <div class="col-md-11">
+                                                <div class="job-info">
+                                                    <h3>
+                                                        {{ article.title }}
+                                                    </h3>
+                                                    <p>Praesent blandit tristique velit, nec pellentesque leo maximus
+                                                        phasellus dolor semper lobortis convallis eu, elementum eget magna.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-70">
+                <div class="section-title text-center"><a href="{% url 'current_issue' 2  %}" class="readmore">View More</a></div>
+            </div> -->
+
+            <div class="row justify-content-center">
+                <div class="call-papers" style="background: url('{% static "/assets/img/call-bg.jpg" %}') no-repeat center center;">
+                    Publish your academic and scientific research papers
+                    <h3>Join our community and elevate the quality and credibility of your academic and research articles</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Category Section End -->
+
+    <!-- Companies Section Start -->
+    <section class="company-section pt-60 pb-70">
+        <div class="container">
+            <div class="section-title text-center">
+                <h2>EDITORIAL BOARD MEMBERS</h2>
+                <p>Meet the visionaries who ensure the highest standards in evaluating and finetuning research submissions</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-1.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info edior-height">
+                                    <h3>
+                                        Dr. S. Ravi M.Sc., Ph.D
+                                    </h3>
+                                    <b>Registrar</b>
+                                    <ul>
+
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="editor-card">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-4">
+
+                                <img src="{% static '/assets/img/vector-img-2.jpg'%}">
+
+                            </div>
+
+                            <div class="col-lg-8">
+                                <div class="editor-info edior-height">
+                                    <h3>
+                                        Dr. R. Santhosh, M.E., M.B.A., Ph.D.
+                                    </h3>
+                                    <b>Professor & Head</b>
+                                    <ul>
+
+                                        <li>
+                                            Department of Computer Science and Engineering
+                                            <bR>Karpagam Academy of Higher Education
+                                            <br>Coimbatore – 641 021
+                                            <br>Email: <a
+                                            href="mailto:santhosh.r@kahedu.edu.in">santhosh.r@kahedu.edu.in</a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="text-center"><a href="{% url 'editorial_board_members_jcs' %}" class="readmore">View More</a></div>
+            </div>
+        </div>
+    </section>
+    <!-- Companies Section End -->
+
+    <!-- Job Info Section Start -->
+    <div class="guide-info pt-100 pb-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-10">
+                    <h2>AUTHOR GUIDELINES</h2>
+                    <p>Our objective is to publish high-quality original contributions and cutting-edge papers in all areas of computer science, applied mathematics, commerce and management. Ensure your research and academic manuscript meets our submission standards. Follow our detailed instructions to streamline the submission process.</p>
+                </div>
+            </div>
+            <div class="row justify-content-center pt-60">
+                <div class="col-md-6">
+                    <img src="{% static '/assets/img/authors-img.jpg'%}">
+                </div>
+
+                <div class="col-md-6">
+                    <h4>Manuscript Preparation</h4>
+                    <p>Submission should be about 8 pages in length, typed in double space with Times New Roman font,
+                        Size 10, Double column on 81/2×11 inch paper with one inch margins on all sides and should
+                        include a 75-200 words abstract, 5-10 relevant key words.
+                    </p>
+
+                    <h4>References</h4>
+                    <p>All the cited works used in the text must be included in the reference list, and all the
+                        reference items must appear in the text. References should appear only in the following format.
+                    </p>
+                    <p><a href="{% url 'authors_guidelines_jcs'  %}" class="readmore">Read More</a></p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Job Info Section End -->
+         <!-- Indexedby Section Start -->
+         <section class="indexedby-section">
+            <div class="container">
+                <div class="section-title-2 text-center">
+                    <h2>INDEXED BY</h2>
+                </div>
+    
+                <div class="owl-theme" >
+                    
+                    <div class="condidate-item">
+                        <div class="candidate-img">
+                            <img src="{% static 'assets/img/company-logo/logo-5.png'%}" alt="Indexedby image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Indexedby Section End -->
+
+
+
+{% endblock %}

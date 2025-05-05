@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .navbar-custom {
+        background-color: #044d5e;
+    }
+    .navbar-custom .navbar-nav .nav-link {
+        color: white;
+        margin: 0 15px; /* Add spacing between links */
+    }
+    .navbar-custom .navbar-nav .nav-link:hover,
+    .navbar-custom .navbar-nav .nav-link.active {
+        color: #eabf1c; /* Change color on hover and active */
+    }
+    .navbar-custom .navbar-nav {
+        margin: auto; /* Center the navbar items */
+    }
+
+</style>
+
+<br>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'user_management' %}">Admin-panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'volume_page' journal.id %}" id="volume-link">Volume</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'issue_list' journal.id %}" id="issues-link">Issues</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'articles_page' journal.id %}" id="articles-link">Publish Articles</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manuscript_processing' journal.id %}" id="manuscript-link">Manuscript in Processing</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'published_article' journal.id %}" id="published-link">Published Article</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Content -->
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">Volumes for Journal: {{ journal.title }}</h1>
+        <button id="addVolumeButton" class="btn btn-primary mb-3">Add Volume</button>
+    </div>
+    
+    <!-- Volume Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Volume</th>
+                <th>Description</th>
+                <th>Year</th>
+                <th>Journal</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="volumeTableBody">
+            {% for volume in volumes %}
+                <tr data-id="{{ volume.id }}">
+                    <td>{{ volume.volume }}</td>
+                    <td>{{ volume.description }}</td>
+                    <td>{{ volume.year }}</td>
+                    <td>{{ journal.title }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm editVolumeButton">Edit</button>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No volumes found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add/Edit Volume Modal -->
+<div class="modal fade" id="volumeModal" tabindex="-1" role="dialog" aria-labelledby="volumeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="volumeModalLabel">Add/Edit Volume</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="volumeForm">
+                    <input type="hidden" id="volumeId" name="volumeId">
+                    <div class="form-group">
+                        <label for="volumeField">Volume</label>
+                        <input type="text" class="form-control" id="volumeField" name="volume">
+                    </div>
+                    <div class="form-group">
+                        <label for="descriptionField">Description</label>
+                        <input type="text" class="form-control" id="descriptionField" name="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="yearField">Year</label>
+                        <input type="text" class="form-control" id="yearField" name="year">
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveVolumeButton">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#addVolumeButton').click(function() {
+        // Fetch the first row's volume and year
+        var firstRow = $('#volumeTableBody tr:first-child');
+        var volume = firstRow.find('td').eq(0).text();
+        var year = firstRow.find('td').eq(2).text();
+
+        // If there is no first row or the table is empty, set default values
+        if (!volume || !year) {
+            volume = '1'; // or any default value
+            year = new Date().getFullYear(); // current year
+        } else {
+            // Increment the volume and year if valid numbers
+            volume = parseInt(volume) + 1;
+            year = parseInt(year) + 1;
+        }
+
+        $('#volumeModalLabel').text('Add Volume');
+        $('#volumeId').val('');
+        $('#volumeField').val(volume);
+        $('#descriptionField').val('');
+        $('#yearField').val(year);
+        $('#volumeModal').modal('show');
+    });
+
+    $('.editVolumeButton').click(function() {
+        var row = $(this).closest('tr');
+        var id = row.data('id');
+        var volume = row.find('td').eq(0).text();
+        var description = row.find('td').eq(1).text();
+        var year = row.find('td').eq(2).text();
+
+        $('#volumeModalLabel').text('Edit Volume');
+        $('#volumeId').val(id);
+        $('#volumeField').val(volume);
+        $('#descriptionField').val(description);
+        $('#yearField').val(year);
+        $('#volumeModal').modal('show');
+    });
+
+    $('#volumeForm').submit(function(e) {
+        e.preventDefault();
+
+        var id = $('#volumeId').val();
+        var volume = $('#volumeField').val();
+        var description = $('#descriptionField').val();
+        var year = $('#yearField').val();
+        var journalId = "{{ journal.id }}";  // Include the journal ID in the data
+
+        $.ajax({
+            url: id ? "{% url 'edit_volume' %}" : "{% url 'add_volume' %}",
+            type: 'POST',
+            data: {
+                'id': id,
+                'volume': volume,
+                'description': description,
+                'year': year,
+                'journal_id': journalId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('An error occurred.');
+                }
+                $('#volumeModal').modal('hide');
+            }
+        });
+    });
+});
+</script>
+{% endblock content %}
+
+

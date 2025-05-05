@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+            <!-- About Area Start -->
+<section class="job-style-two job-list-section pt-100 pb-100" style="text-align:left;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a href="#">
+                                <h3 style="color:white">Submission</h3>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'new_submission' submission_id=submission.id %}">
+                                Step 1: Title, category & Abstract
+                            </a>
+                        </li> 
+                        <li>
+                            <a href="{% url "submission_step_two" submission_id=submission.id %}"  >
+                                Step 2: File Upload
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step3" submission_id=submission.id %}"  >
+                                Step 3: Keywords
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step4" submission_id=submission.id %}"  class="active">
+                                Step 4: Authors & Affiliation
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step5" submission_id=submission.id %}"  >
+                                Step 5: Details & Comments
+                            </a>
+                        </li>    
+                        <li>
+                            <a href="{% url "step6_review_submit" submission_id=submission.id %}"  >
+                            Step 6: Review & Submit
+                        </a>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+        
+            <div class="col-md-8" >    
+                <!-- templates/submission/add_authors_institutions.html -->
+
+
+    <div class="section-title-space" style="text-align:left;">
+        <h2>Step 4: Authors & Affiliation</h2>
+    </div>
+    <div class="about-text-list">
+        <ul>
+            <li><i class='bx bx-chevrons-right bx-tada'></i> Please ensure <b>all</b> authors are listed below, <b>no changes</b> can be made after submission. Authors not listed will not have their details published.</li>
+            <li><i class='bx bx-chevrons-right bx-tada'></i> Enter the author's e-mail address and click "Find". If the author is found, their information will be automatically filled out for you. Click "Add to My Authors"</li>
+            <li><i class='bx bx-chevrons-right bx-tada'></i> <b>If an author does not have an account, enter your co-authors' information in the boxes below, then click "Add to My Authors"</b></li>
+            <li>When you are finished, click "Save and Continue."<br><span style="color:red">*</span> = Required Fields</li>
+        </ul>                  
+    </div>
+    <hr style="border-width:3px;">
+    <div class="about-section">
+        <div class="row mt-50">
+            <div class="col-lg-12">
+                <div class="section-title-archives">
+                    <h3>Authors</h3>
+                    <h5><span style="color:red">* </span>Selected Authors</h5>
+                </div>
+                <div class="row mt-30">
+                    <div class="col-lg-12">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid #ddd !important; background-color:#fff; font-size:16px;">
+                                        <!-- <th>ORDER</th>
+                                        <th>ACTIONS</th>  -->
+                                        <th>Author</th>                              
+                                        <th>Affiliation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% comment %} {% for author in submission.authors.all %} {% endcomment %}
+                                        <tr style="border-bottom: 1px solid #ddd !important;">
+                                        <!-- <td style="border-right: none !important;"><i class="bx bx-arrows-v"></i>Drag</td>
+                                        <td style="border-right:none !important;">
+                                        <div class="form-group">
+                                            <select class="category">
+                                            <option data-display="">{{ forloop.counter }}</option>
+                                            </select>
+                                        </div>
+                                        </td> -->
+                                        <td style="border-right: none !important;">
+                                        <b>{{ current_author.user.first_name }}</b>
+                                        <span style="font-size:14px;"><br>(Corresponding Author)</span>
+                                        <span style="font-size:14px;">
+                                        <a href="mailto:{{ current_author.user.email }}">{{ current_author.user.email }}</a>
+                                        <br>
+                                        <button type="button" class="btn btn-secondary btn-icon-id">ID</button>
+                                        <a href="{{ current_author.orcid_id }}" target="_blank">{{ current_author.orcid_id }}</a>
+                                        <i class="bx bx-check"></i>
+                                        </span>
+                                        </td>
+                                        <td style="border-right:none !important;">
+                                            {{ current_author.institution }}<br>
+                                            <!-- {{ current_author.address }} -->
+                                        </td>
+                                        </tr>
+                                    {% comment %} {% endfor %} {% endcomment %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+        <!-- Add New CoAuthor Form -->
+        <div class="col-lg-12 mt-50">
+            <div class="section-title-archives">
+                <h3>Add New Co-Author</h3>
+            </div>
+            <div class="col-lg-8 mt-30">
+                <form id="addcoauthorform" method="post">
+                    <!-- {% csrf_token %}
+                    {{ coauthor_form.as_p }} -->
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ coauthor_form.name.id_for_label }}">Name</label>
+                        {{ coauthor_form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ coauthor_form.email.id_for_label }}">Email</label>
+                        {{ coauthor_form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ coauthor_form.biography.id_for_label }}">Affiliation</label>
+                        {{ coauthor_form.institution }}
+                    </div>
+                    <br>
+                    <button type="submit" name="add_coauthor" class="btn btn-primary">Add Co-Author</button>
+                </form>
+                <div id="coauthor-form-errors" class="alert alert-danger mt-3" style="display:none;">
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-50" style="border-width:3px;">
+        <div class="col-lg-12 mt-50">
+            <div class="section-title-archives">
+                <h3>Co-Authors</h3>
+            </div>
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table id="coauthor-table" cellpadding="7" style="width:100%;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #ddd !important; background-color:#fff; font-size:16px;">
+                                <th>Name</th>
+                                <th>Email</th>                       
+                                <th>Affiliation</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for coauthor in coauthors %}
+                                <tr data-id="{{ coauthor.id }}" style="border-bottom: 1px solid #ddd !important;">
+                                    <td style="border-right: none !important; font-size:12px;"><b>{{ coauthor.name }}</b></td>
+                                    <td style="border-right:none !important; font-size:14px;">
+                                        <a href="mailto:{{ coauthor.email }}">{{ coauthor.email }}</a>
+                                    </td>
+                                    <td style="border-right: none !important;">
+                                        <p style="font-size:14px">{{ coauthor.institution }}</p>
+                                    </td>
+                                    <td style="border-right: none !important;">
+                                        <button class="remove-coauthor-btn btn btn-danger" data-id="{{ coauthor.id }}">Remove</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <hr class="mt-50" style="border-width:3px;">
+
+        
+        <div class="row mt-30">
+            {% comment %} <div class="col-md-3">
+              <div class="theme-btn text-end">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" name="save">Save</button>
+                </form>
+              </div>
+            </div> {% endcomment %}
+            <div class="col-md-4">
+              <!-- <div class="theme-btn text-end"> -->
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- <button type="submit" name="action" value="save" class="btn btn-primary">Save</button> -->
+                    <button type="submit" class="btn btn-success" name="save_and_continue">Save and Continue</button>
+                </form>
+              <!-- </div> -->
+            </div>
+          </div>
+    </div>
+
+
+       
+            </div> 
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+       
+    
+        $('#addcoauthorform').on('submit', function(e) {
+            e.preventDefault(); // Prevent form submission
+            var form = $(this);
+            var actionUrl = "{% url 'add_coauthor_ajax' submission.id %}";
+            $.ajax({
+                type: 'POST',
+                url: actionUrl,
+                data: form.serialize(),
+                success: function(response) {
+                    $('#coauthor-form-errors').hide();
+                    $('#coauthor-table tbody').append(
+                        '<tr data-id="' + response.id + '">' +
+                        '<td style="border-right: none !important; font-size:12px;"><b>' + response.name + '</b></td>' +
+                        '<td style="border-right:none !important; font-size:14px;"><a href="mailto:' + response.email + '">' + response.email + '</a></td>' +
+                        '<td style="border-right: none !important;"><p style="font-size:14px">' + response.institution + '</p></td>' +
+                        '<td style="border-right: none !important;"><button class="remove-coauthor-btn btn btn-danger" data-id="' + response.id + '">Remove</button></td>' +
+                        '</tr>'
+                    );
+                    form[0].reset(); // Reset form after successful submission
+                },
+                error: function(response) {
+                    var errors = response.responseJSON.errors || {};
+                    var errorList = $('#coauthor-form-errors ul');
+                    errorList.empty();
+                    for (var field in errors) {
+                        for (var error of errors[field]) {
+                            errorList.append('<li>' + error + '</li>');
+                        }
+                    }
+                    $('#coauthor-form-errors').show(); // Show errors if any
+                }
+            });
+        });
+
+    $(document).on('click', '.remove-coauthor-btn', function(e) {
+        e.preventDefault();
+        var button = $(this);
+        var coauthorId = button.data('id');
+        var actionUrl = "{% url 'remove_coauthor_ajax' submission.id %}";
+        $.ajax({
+            type: 'POST',
+            url: actionUrl,
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                coauthor_id: coauthorId
+            },
+            success: function(response) {
+                $('tr[data-id="' + response.id + '"]').remove();
+            }
+        });
+    });
+});
+</script>
+
+<script>
+var popup = document.getElementById("popup");
+var openPopupButton = document.getElementById("openPopup");
+var closeButton = document.getElementsByClassName("close-button")[0];
+
+openPopupButton.onclick = function() {
+  popup.style.display = "block";
+};
+
+closeButton.onclick = function() {
+  popup.style.display = "none";
+};
+
+window.onclick = function(event) {
+  if (event.target == popup) {
+    popup.style.display = "none";
+  }
+};</script>
+
+<!--pop over  -->
+<script>
+$(function () {
+  $('[data-toggle="popover"]').popover()
+});
+</script>
+<!-- File Upload Button type -->
+<script>
+    const fileInput = document.getElementById('file-input');
+const fileUploadBtn = document.querySelector('.file-upload-btn');
+const fileNamesDiv = document.getElementById('file-names');
+
+fileUploadBtn.addEventListener('click', () => {
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', () => {
+  const files = fileInput.files;
+  let fileNames = '';
+
+  for (let i = 0; i < files.length; i++) {
+    fileNames += `${files[i].name}, `;
+  }
+
+  fileNamesDiv.textContent = fileNames.slice(0, -2);
+});
+
+</script>
+{% endblock content %}

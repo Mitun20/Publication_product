@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block content %}
+ 
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul >
+                        <li >
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                User Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'publication_management' %}">
+                                Publication Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link active" href="{% url 'date_settings' %}">
+                                 Date Settings
+                            </a>
+                        </li>
+                        <!-- <li >
+                            <a class="nav-link" href="{% url 'add_journal' %}">
+                                Journal Management
+                            </a>
+                        </li> -->
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <h2>Date Settings</h2>
+        
+                {% for journal in journals %}
+                <button class="journal-btn" onclick="toggleForm({{ journal.id }})">{{ journal.title }}</button>
+                <div class="journal-form" id="form-{{ journal.id }}" style="display: none;">
+                    <form method="POST" action="{% url 'date_settings' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="journal_id" value="{{ journal.id }}">
+            
+                        {% if journal.id in dates %}
+                            {% with date=dates|get_item:journal.id %}
+                                <label>Due Days to Accept Invitation:</label>
+                                <input type="number" name="due_days_to_accept_invitation" value="{{ date.due_days_to_accept_invitation }}">
+                                <label>Due Days to Review:</label>
+                                <input type="number" name="due_days_to_review" value="{{ date.due_days_to_review }}">
+                                <label>Due Days to Minor Revision:</label>
+                                <input type="number" name="due_days_to_minor_revision" value="{{ date.due_days_to_minor_revision }}">
+                                <label>Due Days to Major Revision:</label>
+                                <input type="number" name="due_days_to_major_revision" value="{{ date.due_days_to_major_revision }}">
+                                <label>Due Days to Payment:</label>
+                                <input type="number" name="due_days_to_payment" value="{{ date.due_days_to_payment }}">
+                                <label>Due Days to Corrections:</label>
+                                <input type="number" name="due_days_to_corrections" value="{{ date.due_days_to_corrections }}">
+                                <label>Due Days to Typeset Approval:</label>
+                                <input type="number" name="due_days_to_typeset_approval" value="{{ date.due_days_to_typeset_approval }}">
+                                <label>Due Days to Next Step:</label>
+                                <input type="number" name="due_days_to_next_step" value="{{ date.due_days_to_next_step }}">
+                            {% endwith %}
+                        {% else %}
+                            <label>Due Days to Accept Invitation:</label>
+                            <input type="number" name="due_days_to_accept_invitation" value="">
+                            <label>Due Days to Review:</label>
+                            <input type="number" name="due_days_to_review" value="">
+                            <label>Due Days to Minor Revision:</label>
+                            <input type="number" name="due_days_to_minor_revision" value="">
+                            <label>Due Days to Major Revision:</label>
+                            <input type="number" name="due_days_to_major_revision" value="">
+                            <label>Due Days to Payment:</label>
+                            <input type="number" name="due_days_to_payment" value="">
+                            <label>Due Days to Corrections:</label>
+                            <input type="number" name="due_days_to_corrections" value="">
+                            <label>Due Days to Typeset Approval:</label>
+                            <input type="number" name="due_days_to_typeset_approval" value="">
+                            <label>Due Days to Next Step:</label>
+                            <input type="number" name="due_days_to_next_step" value="">
+                        {% endif %}
+                        
+                        <button type="submit" class="btn-submit">Save</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    function toggleForm(id) {
+        var form = document.getElementById('form-' + id);
+        form.style.display = form.style.display === 'block' ? 'none' : 'block';
+    }
+</script>
+        
+        
+{% endblock %}

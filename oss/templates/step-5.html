@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+
+<section class="about-section pt-100 pb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li><a href="#"><h3 style="color:white">Submission</h3></a></li>
+                        <li><a href="{% url 'new_submission' submission_id=submission.id %}">Step 1: Title, category & Abstract</a></li>
+                        <li><a href="{% url "submission_step_two" submission_id=submission.id %}"  >Step 2: File Upload</a></li>
+                        <li><a href="{% url "step3" submission_id=submission.id %}"  >Step 3: Keywords</a></li>
+                        <li><a href="{% url "step4" submission_id=submission.id %}"  >Step 4: Authors & Affiliation</a></li>
+                        <li><a href="{% url "step5" submission_id=submission.id %}"  class="active">Step 5: Details & Comments</a></li>
+                        <li><a href="{% url "step6_review_submit" submission_id=submission.id %}"  >Step 6: Review & Submit</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-8" style="text-align:left;">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="section-title-space">
+                        <h2>Step 5: Details & Comments</h2>
+                    </div>
+                    <div class="about-text-list">
+                        <ul>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i><b>Please read our <a href="https://www.emeraldgrouppublishing.com/publish-with-us/ethics-integrity/research-publishing-ethics?_gl=1%2A1wfvgqs%2A_ga%2ANDk0Njk4NTQ3LjE3MTk5ODg0ODU.%2A_ga_45RWY1YP1V%2AMTcyMDQ1ODczMy4yMy4xLjE3MjA0NjU3NjQuMC4wLjA." target="_blank">Publishing Ethics</a> and <a href="https://www.emeraldgrouppublishing.com/publish-with-us/author-policies/publishing-permissions?_gl=1%2Ap7wusq%2A_ga%2ANDk0Njk4NTQ3LjE3MTk5ODg0ODU.%2A_ga_45RWY1YP1V%2AMTcyMDQ1ODczMy4yMy4xLjE3MjA0NjU3NjQuMC4wLjA." target="_blank">Permissions Checks</a> before submitting your paper.</b></li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>Enter or paste your cover letter text into the "Cover Letter" box below. If you would like to attach a file containing your cover letter, click the "Browse..." button, locate your file, and click "Attach this Cover Letter"</li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>The cover letter is optional and will not be seen by the journal reviewers</li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>If relevant, please complete, and upload at the next section, the <a href="{% static 'downloads/case-study-consent-form.pdf'%}">Case Study Consent Form</a></li>
+                            <li><i class='bx bx-chevrons-right bx-tada'></i>Answer any remaining questions appropriately</li>
+                            <li>When you are finished, click "Save and Continue." <br><span style="color:red">*</span> = Required Fields</li>
+                        </ul>
+                    </div>
+                    <hr style="border-width:3px;">
+
+                    <!-- Cover Letter Section -->
+                    <div class="section">
+                        <h3>Cover Letter</h3>
+                        <div class="form-group">
+                            <textarea class="form-control" id="cover_letter" name="cover_letter" placeholder="Write your cover letter..." rows="4" required>{% if submission.cover_letter %}{{ submission.cover_letter }}{% endif %}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Funding Section -->
+                    <div class="section">
+                        <h3>Funding</h3>
+                        <p><strong>Is there funding to report for this submission?</strong></p>
+                        {% comment %} <div class="form-group">
+                            <label><input type="radio" name="is_funded" value="1" {% if submission.is_funded %}checked{% endif %}> Yes</label>
+                            <label><input type="radio" name="is_funded" value="0" {% if not submission.is_funded %}checked{% endif %}> No</label>
+                        </div> {% endcomment %}
+                        <div class="form-group">
+                            <label><input type="radio" name="is_funded" value="1" {% if submission.is_funded == 1 %}checked{% endif %}> Yes</label>
+                            <label><input type="radio" name="is_funded" value="0" {% if submission.is_funded == 0 %}checked{% endif %} required> No</label>
+                        </div>
+                        
+                        <div class="funders-section" {% if submission.is_funded == 1 %}style="display:block;"{% else %}style="display:none;"{% endif %}>
+                            <h4>Funder Information</h4>
+                            <div class="funder-form">
+                                {{ funder_form.as_p }}
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Manuscript Information Section -->
+                    <div class="section">
+                        <h3>Manuscript Information</h3>
+                        <div class="form-group">
+                            <label for="figures">Number of Figures:</label>
+                            <input type="number" name="no_of_figures" id="no_of_figures" class="form-control" value="{{submission.no_of_figures}}" >
+                        </div>
+                        <div class="form-group">
+                            <label for="tables">Number of Tables:</label>
+                            <input type="number" name="no_of_tables" id="no_of_tables" class="form-control" value="{{submission.no_of_tables}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="words">Number of Words:</label>
+                            <input type="number" name="no_of_words" id="no_of_words" class="form-control" value="{{submission.no_of_words}}">
+                        </div>
+                    </div>
+
+                    <!-- Manuscript Submitted Previously Section -->
+                    <div class="section">
+                        <h3>Has this manuscript been submitted previously?</h3>
+                        <div class="form-group">
+                            <label><input type="radio" name="is_submitted_already" value="1" {% if submission.is_submitted_already == 1 %}checked{% endif %} > Yes</label>
+                            <label><input type="radio" name="is_submitted_already" value="0" {% if submission.is_submitted_already == 0 %}checked{% endif %} required> No</label>
+                        </div>
+                    </div>
+
+                    <!-- Confirmations (Acknowledgement) Section -->
+                    <!-- <div class="section">
+                        <h3>Confirmations</h3>
+                        <div class="form-group">
+                            <label><input type="checkbox" name="acknowledgement_1" {% if submission.acknowledgement_1 == 1 %}checked{% endif %}> ACK 1</label><br>
+                            <label><input type="checkbox" name="acknowledgement_2" {% if submission.acknowledgement_2 == 1 %}checked{% endif %}> ACK 2</label><br>
+                            <label><input type="checkbox" name="acknowledgement_3" {% if submission.acknowledgement_3 == 1 %}checked{% endif %}> ACK 3</label>
+                        </div>
+                    </div> -->
+
+                    <!-- Conflict of Interest Section -->
+                    <div class="section">
+                        <h3>Conflict of Interest</h3>
+                        <div class="form-group">
+                            <label><input type="radio" name="conflict_of_interest" value="1" {% if submission.conflict_of_interest == 1 %}checked{% endif %} > Yes</label>
+                            <label><input type="radio" name="conflict_of_interest" value="0" {% if submission.conflict_of_interest == 0 %}checked{% endif %} required> No</label>
+                        </div>
+                        <div class="form-group" >
+                            <label for="coi_describe">Describe:</label><br>
+                            <textarea id="coi_describe" name="coi_describe" rows="4" class="form-control" placeholder="Describe your conflict of interest"></textarea>
+                        </div>
+                    </div>
+<br>
+                    <!-- Navigation Buttons -->
+                    <div class="form-group">
+                        <!-- <button type="submit" name="action" value="save" class="btn btn-primary">Save</button> -->
+                        <button type="submit" name="action" value="save_continue" class="btn btn-success">Save & Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+var popup = document.getElementById("popup");
+var openPopupButton = document.getElementById("openPopup");
+var closeButton = document.getElementsByClassName("close-button")[0];
+
+openPopupButton.onclick = function() {
+  popup.style.display = "block";
+};
+
+closeButton.onclick = function() {
+  popup.style.display = "none";
+};
+
+window.onclick = function(event) {
+  if (event.target == popup) {
+    popup.style.display = "none";
+  }
+};
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[name="is_funded"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                const fundersSection = document.querySelector('.funders-section');
+                if (this.value === '1') {
+                    fundersSection.style.display = 'block';
+                } else {
+                    fundersSection.style.display = 'none';
+                }
+            });
+        });
+    });
+    </script>
+    
+
+{% endblock content %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="tab-content">
+    <div id="tab1" class="tab active">
+        <section class="about-section pt-100 pb-100">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <div class="about-information accordions">
+                            <ul>
+                                <li><a href="#">
+                                    <h3 style="color:white">Author Dashboard</h3>
+                                </a></li>
+                                {% if has_draft %}
+                                <li><a href="{% url 'draft' %}" class="active">Manuscripts in draft</a></li>
+                                {% endif %}
+                                <!-- {% if has_submitted %}
+                                <li><a href="{% url 'submitted' %}">Manuscripts submitted</a></li>
+                                {% endif %} -->
+                                <!-- {% if has_revision %}
+                                <li><a href="{% url 'revision' %}">Manuscript waiting for revision</a></li>
+                                {% endif %} -->
+                                {% if has_accepted %}
+                                <li><a href="{% url 'accepted' %}">Manuscript Accepted</a></li>
+                                {% endif %}
+                                {% if has_rejected %}
+                                <li><a href="{% url 'rejected' %}">Manuscript Rejected</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'startnew' %}">Start New Submission</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-9" style="text-align:left;">
+                        <div class="job-style-two job-list-section">
+                            <h2>Manuscripts in draft</h2>
+                            <div class=”table-responsive”>  
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Manuscript ID</th>
+                                            <th scope="col" width="18%">Title</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for submission in submissions %}
+                                        <tr>
+                                            <td>{{ submission.manuscript_id }}</td>
+                                            <td>{{ submission.title }}</td>
+                                            <td>
+                                        <p><a href="{% url 'new_submission' submission.id %}">Continue</a></p>
+
+                                            </td>
+                                            <td>
+                                                <form method="POST">    
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="submission_id" value="{{ submission.id }}">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td>Draft is empty</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+{% endblock content %}

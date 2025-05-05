@@ -1,0 +1,348 @@
+{% extends "main_base.html" %}
+{% load static %}
+{% block content %}
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-ebmjcm">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Editorial Board Members - Karpagam JCM</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row" style="text-align:left;">
+                <div class="col-md-4">
+                    <div class="about-information accordions">
+                        <ul>
+                            <li>
+                                <a href="{% url 'about' %}" class="active">
+                                    About Karpagam Journal of Computer Science
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
+                        
+                    </div>
+               
+            </div>
+
+                <div class="col-md-8">
+                <div class="row" style="text-align:left;">
+                    <div class="section-title-space">               
+                        <h2>Editorial Board Members - JCM</h2>
+                        </div>                
+                    <div class="col-md-12">
+                        <div class="sub-title">               
+                                <h3>Editor-in-Chief</h3>
+                                </div>
+                        <div class="editor-card-board">                               
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr.M.Palaniswamy Ph.D , FSAB
+                                    </h4>
+                                    <b>Registrar</b>
+                                    <ul>    
+                                        <li>
+                                            Karpagam Academy of Higher Education,
+                                            <br>Pollachi Main Road,
+                                            <br>Coimbatore – 641 021, India.
+                                            <br>Email: <a
+                                                href="mailto:registrar@kahedu.edu.in">registrar@kahedu.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="col-md-12">
+                        <div class="sub-title">               
+                            <h3>Editor</h3>
+                        </div>
+                    <div class="editor-card-board">                               
+                        <div class="editor-info">
+                            <h4>
+                                Dr.K.Jothi, M.Com., M.Phil., Ph.D., PGDCA.,NET, SLET
+                            </h4>
+                            <b>Professor</b>
+                                        <ul>    
+                                            <li>
+                                                Department of Commerce,
+                                                <br>Karpagam Academy of Higher Education,
+                                                <br>Coimbatore – 641 021, India.
+                                                <br>Email: <a
+                                                    href="mailto:jothi.k@kahedu.edu.in">jothi.k@kahedu.edu.in</a>
+                                            </li>        
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>                    
+                </div>
+                </div>
+            </div>        
+    </section>
+    <!-- About Area End -->
+
+
+         <!-- Editorial Board Section Start -->
+        <section class="about-section pt-60 pb-60 bg-grey">
+            <div class="container">
+                <div class="row" style="text-align:left;">
+                    <div class="sub-title">               
+                        <h2>Editorial Board</h2>
+                        <!-- <h3>International</h3> -->
+                        </div>                                     
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. K.S. Chandrasekar, MBA., Ph.D.,
+                                    </h4>
+                                    <b>Director</b>
+                                    <ul>    
+                                        <li>
+                                            Institute of Management Studies,
+                                            <br>University of Kerala, <br>Thiruvananthapuram.   
+                                            <br>Email: <a
+                                                href="mailto:kscnair@keralauniversity.ac.in">kscnair@keralauniversity.ac.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>  
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. V. Balachandran, M.Com., M.Phil., Ph.D.
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Management Studies,
+                                            <br>Perole – Palakkattu Link Road,
+                                            <br>Central University of Kerala, Kerala.
+                                            
+                                            <br>Email: <a
+                                                href="mailto:drvbchand@cukerala.ac.in">drvbchand@cukerala.ac.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div class="row" style="text-align:left;">
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. Malabika Deo, M.Com., M.Phil., Ph.D.
+                                    </h4>
+                                    <b>Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Commerce,
+                                            <br>Pondicherry University,
+                                            <br>Pondicherry.
+                                            <br>Email: <a
+                                                href="mailto:malabika.com@pondiuni.edu.in">malabika.com@pondiuni.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>  
+                        <div class="col-md-6">
+                            <div class="editor-card-board">                             
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. T. Siddaih, M.Com., Ph.D.
+                                    </h4>
+                                    <b>Senior Professor</b>
+                                    <ul>    
+                                        <li>
+                                            Alliance University,
+                                            <br>Chikkahagade Cross, Chandapura – Anekal Road,
+                                            <br>University Campus, Anekal, Karnataka – 562 106.
+                                            <br>Email: <a
+                                                href="mailto:siddaiah.t@alliance.edu.in">siddaiah.t@alliance.edu.in</a>
+                                        </li>        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="row" style="text-align:left;">
+                        <div class="col-md-6">
+                            <div class="editor-card-board">   
+                                <div class="editor-info">
+                                    <h4>
+                                        Dr. M. Sumathy
+                                    </h4>
+                                    <b>Professor & Head</b>
+                                    <ul>    
+                                        <li>
+                                            Department of Commerce,
+                                            <br>Bharathiar University,
+                                            <br>Coimbatore – 641 046.
+                                            <br>Email: <a
+                                                href="mailto:sumathy@buc.edu.in">sumathy@buc.edu.in</a>
+                                        </li>    
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>              
+            </div>        
+        </section>
+        <!-- Editorial Board Section End -->
+
+        {% endblock %}
+        

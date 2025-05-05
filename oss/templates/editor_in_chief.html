@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+
+
+<!-- Modal for AE Comments -->
+<div class="modal fade" id="aeCommentsModal" tabindex="-1" aria-labelledby="aeCommentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="aeCommentsModalLabel">AE Comments</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="aeCommentsBody"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for Sidebar -->
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li>
+                            <a class="nav-link active" href="{% url 'editor_in_chief' %}">
+                                Manuscripts waiting for decision
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'decisioned_manuscripts' %}">
+                                Manuscripts decisioned
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Manuscripts waiting for Decision</h2>
+                    <div class=”table-responsive”>  
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Manuscript ID</th>
+                                    <!-- <th scope="col">Journal</th> -->
+                                    <th scope="col"width="18%">Title</th>
+                                    <th scope="col">Author</th>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">File</th>
+                                    <th scope="col">Submitted on</th>
+                                    <th scope="col">AE Comments</th>
+                                    <th scope="col">Plagiarism Report</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.manuscript_id }}</td>
+                                    <!-- <td>{{ submission.journal }}</td>  -->
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>
+                                        <p>
+                                            <a href="#" class="make-decision-link" data-submission-id="{{ submission.id }}">Make decision</a><br>
+                                            {% for ae in ae_assignment %}
+                                            {% if ae.submission_id == submission.id %}
+                                            <a href="{% url 'contact_form' %}?email={{ ae.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Associate Editor</a>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </p>
+                                    </td>
+                                    
+                                    <td>
+                                        {% if submission.final_file %}
+                                        <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+
+                                        {% else %}
+                                            --
+                                        {% endif %}
+                                    </td>
+        
+                                    <td>{{ submission.submitted_on }}</td>
+                                        <td>
+                                            {% if ae_assignments %}
+                                                {% with ae_assignment=ae_assignments|dict_get:submission.id %}
+                                                    <p><a href="#" class="view-ae-comments" data-comments="{{ ae_assignment.ae_comments|default_if_none:'N/A' }}">View</a></p>
+                                                {% endwith %}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if submission.plag_report %}
+                                                <p><a href="{{ submission.plag_report.url }}" 
+                                                onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">
+                                                View Report
+                                                </a></p>
+                                            {% else %}
+                                                No Report
+                                            {% endif %}
+                                        </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>                    
+                        </table>
+                    </div> 
+                    <!-- Pagination controls -->
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if submissions.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ submissions.previous_page_number }}">previous</a>
+                            {% endif %}
+    
+                            <span class="current">
+                                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}.
+                            </span>
+    
+                            {% if submissions.has_next %}
+                                <a href="?page={{ submissions.next_page_number }}">next</a>
+                                <a href="?page={{ submissions.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Modal for Make Decision -->
+
+<div class="modal fade" id="makeDecisionModal" tabindex="-1" aria-labelledby="makeDecisionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="makeDecisionModalLabel">Make Decision</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="makeDecisionForm" method="post" action="{% url 'save_decision' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="submissionIdInput" name="submission_id" value="">
+                    <div class="mb-3">
+                        <label for="decisionSelect" class="form-label">Decision</label><br>
+                        <select class="form-select" id="decisionSelect" name="decision">
+                            <option value="">Select Recommendation</option>
+                            {% for decision in decisions %}
+                            <option value="{{ decision.id }}">{{ decision.decision }}</option>
+                            {% endfor %}
+                        </select>
+                    </div><br>
+                    <div class="mb-3">
+                        <label for="commentsTextarea" class="form-label">Comments</label>
+                        <textarea class="form-control" id="commentsTextarea" name="comments" rows="4"></textarea>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="includeAeCommentsCheckbox" name="include_ae_comments">
+                        <label class="form-check-label" for="includeAeCommentsCheckbox">Include AE Comments</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <h3><div id="loadingMessage" style="display:none;">Processing...</div></h3>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script>
+
+$(document).ready(function() {
+        // Handle click on "View" link to show AE comments in modal
+        $('.view-ae-comments').click(function(e) {
+            e.preventDefault();
+            var comments = $(this).data('comments');
+            $('#aeCommentsBody').text(comments);
+            $('#aeCommentsModal').modal('show'); // Show the modal
+        });
+    });
+
+
+    // Handle form submission to save decision
+    $(document).ready(function() {
+        // Initialize CKEditor
+        CKEDITOR.replace('commentsTextarea');
+
+        // Handle click on "Make decision" link
+        $('.make-decision-link').click(function(e) {
+            e.preventDefault();
+            var submissionId = $(this).data('submission-id');
+
+            // Get AE comments for the specific submission
+            aeComments = $('.view-ae-comments[data-submission-id="' + submissionId + '"]').data('comments') || '';
+
+            // Populate modal fields
+            $('#submissionIdInput').val(submissionId);
+            CKEDITOR.instances.commentsTextarea.setData('');  // Empty the comments box by default
+            $('#includeAeCommentsCheckbox').prop('checked', false);  // Uncheck the checkbox by default
+            $('#makeDecisionModal').modal('show');
+        });
+
+        // Listen for checkbox change
+        $('#includeAeCommentsCheckbox').change(function() {
+            var includeAeComments = $(this).prop('checked');
+            var submissionId = $('#submissionIdInput').val();
+            var aeComments = $('.view-ae-comments[data-comments]').filter(function() {
+                return $(this).closest('tr').find('.make-decision-link').data('submission-id') == submissionId;
+            }).data('comments') || '';
+
+            updateCommentsBox(includeAeComments, aeComments);
+        });
+
+        // Function to update comments box
+        function updateCommentsBox(includeAeComments, aeComments) {
+            var editorInstance = CKEDITOR.instances.commentsTextarea;
+            var currentComments = editorInstance.getData();
+
+            if (includeAeComments) {
+                // Check if AE comments are already included
+                if (!currentComments.includes("AE Comments:")) {
+                    // Append AE comments with proper format
+                    editorInstance.setData(currentComments + '<br><br>AE Comments:<br>' + aeComments + '<br><br>');
+                }
+            } else {
+                // Remove AE comments if unchecked
+                editorInstance.setData(currentComments.replace('<br><br>AE Comments:<br>' + aeComments + '<br><br>', ''));
+            }
+        }
+
+        // Make decision form submit
+        $('#makeDecisionForm').submit(function(e) {
+            e.preventDefault();
+
+            var decision = $('#decisionSelect').val();
+            var comments = CKEDITOR.instances.commentsTextarea.getData();
+
+            if (!decision || !comments) {
+                alert('Please fill in both the recommendation and comments.');
+                return;
+            }
+
+            var formData = $(this).serialize();
+            // Show loading message
+            $('#loadingMessage').show();
+            $.ajax({
+                url: $(this).attr('action'),
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    // Hide loading message
+                    $('#loadingMessage').hide();
+                    // Handle success, like closing modal or refreshing data
+                    $('#makeDecisionModal').modal('hide');
+                    // Example: Refresh table or redirect
+                    window.location.reload(); // Reload the page
+                },
+                error: function(xhr, status, error) {
+                    // Handle error
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+    
+    
+</script>
+{% endblock %}

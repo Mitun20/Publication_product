@@ -1,0 +1,283 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+<!-- {% block dynamicheadercontent %}
+FOR PAPER Vol - {{latest_issue.volume.volume}}, Iss - {{latest_issue.issue}}, {{latest_issue.description}}, {{latest_issue.volume.year}}
+
+{% endblock %} -->
+
+
+{% block content %}
+
+
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-abtjcs">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>About - Karpagam JCS</h2>
+                    <!-- <ul>
+                        <li>
+                            <a href="index.html">Home</a>
+                        </li>
+                        <li>About Us</li>
+                    </ul> -->
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-60">
+        <div class="container">
+            <div class="row" style="text-align:left;">
+                <div class="col-md-4">
+               
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                </div>
+
+                <div class="col-md-8">
+                    <div class="about-text">
+                        <div class="section-title">
+                            <h2>About Karpagam JCS (Karpagam Journal of Computer Science)</h2>
+                        </div>
+                            <p>The Karpagam JCS ISSN: 2582 – 8525 (Print), 2583 – 3669 (Online) is a bimonthly journal in the field of Computer Science and Information Technology. This journal is started in the year 2005. It seeks to deliver advanced information with the aim of fostering Information Technology, building insights and enabling individual as well as collective advancements in research.</p>
+                        <p><b>Title Change: Journal of Computer Science (ISSN: 0973-2926 Print) continued as Karpagam JCS (ISSN: 2585 – 8525 Print) from 2020</b></p>
+                        <p>The editorial board is a mélange of eminent personalities from prominent institutions and Industry. The journal is a platform to exhibit the skills of research scholars, teaching faculty, industrialists and professionals, and also publish their research work. It enables them to get acquainted with the various resources in the field.</p>
+                            <p style="margin-bottom:0px;"><b>We would like to take this opportunity to invite your valuable contributions towards the journal.</b></p>
+                        <!-- <p><a href="#" class="readmore">Read More</a></p> -->
+                        
+                </div>              
+            </div>
+        </div>
+    </section>
+    <!-- About Area End -->
+
+        <!-- About Section - Table Start -->
+        <section class="about-section pt-60 pb-100 bg-grey">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="editor-card-table table-responsive" style="text-align:left;">                      
+                            <table cellpadding="10">
+                                <tbody>
+                                <tr>
+                                <td>Title</td>
+                                <td>Karpagam JCS</td>
+                                </tr>
+                                <tr>
+                                <td>Frequency</td>
+                                <td>6 issues per year</td>
+                                </tr>
+                                <tr>
+                                <td>ISSN</td>
+                                <td>ISSN : 2582 – 8525 (Print version), 2583 – 3669 (Online)</td>
+                                </tr>
+                                <tr>
+                                <td>Publisher</td>
+                                <td>Karpagam Publication</td>
+                                </tr>
+                                <tr>
+                                <td>Editor – in Chief</td>
+                                <td>Dr. S. Ravi</td>
+                                </tr>
+                                <tr>
+                                <td>Copyright</td>
+                                <td>Karpagam Journal of Computer Science,<br>
+                                A Unit of Karpagam Charity Trust,<br>
+                                Eachanari, Coimbatore,<br>
+                                Tamil Nadu. India</td>
+                                </tr>
+                                <tr>
+                                <td>Starting Year</td>
+                                <td>2005</td>
+                                </tr>
+                                <tr>
+                                <td>Subject Category</td>
+                                <td>Computer Science and Information Technology</td>
+                                </tr>
+                                <tr>
+                                <td>Language</td>
+                                <td>English</td>
+                                </tr>
+                                <tr>
+                                <td>Publication Format</td>
+                                <td>Both Print and Online</td>
+                                </tr>
+                                <tr>
+                                <td>Phone</td>
+                                <td><a href="tel:04222980014">+91-422-2980014</a></td>
+                                </tr>
+                                <tr>
+                                <td>Website</td>
+                                <td><a href="about-jcs.html">karpagampublications.com/about-jcs/</a></td>
+                                </tr>
+                                <tr>
+                                <td style="border-bottom:none;">Address</td>
+                                <td style="border-bottom:none;">Karpagam Journal of Computer Science,<br>
+                                A Unit of Karpagam Charity Trust,<br>
+                                Eachanari,<br>
+                                Coimbatore – 641 021,<br>
+                                Tamil Nadu.<br> 
+                                India</td>
+                                </tr>
+                                </tbody>
+                                </table>
+                            </div>               
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- About Section Table End -->
+
+{% endblock %}
+        

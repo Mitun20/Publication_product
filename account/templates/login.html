@@ -1,0 +1,105 @@
+{% extends 'main_base.html' %}
+{% load form_tags %}
+{% block content %} 
+
+<style>
+    .login-btn button {
+  padding: 10px 30px;
+  border-radius: 30px;
+  background: #001935;
+  color: #ffffff;
+  -webkit-transition: .8s;
+  transition: .8s;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.login-btn button:hover {
+  background: #f3c41a;
+}
+
+.other-login span {
+  color: #001935;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+.pt-20{
+  padding-top: 20px;
+  
+}
+
+
+</style>
+         <!-- Sign In Section Start -->
+         <div class="signin-section ptb-100">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="card">
+                            <div class="card-header heading"><b>Login</b></div>
+                            <div class="card-body">
+                              <form method="post" action="{% url 'login' %}" >
+                                  {% csrf_token %}
+                                
+                                  
+                                  {% if form.errors %}
+                                  <div class="alert alert-danger">
+                                      <p>The email or password you entered is incorrect. Please try again.</p>
+                                  </div>
+                                  {% endif %}
+                                  <div class="form-group">
+                                      <label for="id_username">Enter Email</label>
+                                      {{form.username|add_class:"form-control"}}
+                                  </div>
+              
+                                  <div class="form-group pt-20">
+                                      <label for="id_password">Enter Password</label>
+                                      {{form.password|add_class:"form-control"}}
+                                  </div>
+              
+                                  <div class="login-btn text-center">
+                                      <button type="submit">Login</button>
+                                  </div>
+                                  <div class="create-btn text-center pt-20">
+                                      
+                                          <a href="{% url 'password_reset' %}">
+                                              Forgot Password
+                                              <i class='bx bx-chevrons-right bx-fade-right'></i>
+                                          </a>
+                                      
+                                  </div>
+                              </form>
+                            </div>
+                          </div>
+                        
+                    </div>
+                    <div class="col-lg-6 col-md-6">                        
+                            <div class="card">
+                                <div class="card-header heading"><b>New User</b></div>
+                                <div class="card-body" style="padding-bottom:57px;">
+                                    
+                                        <p>
+                                            Articles, case studies, technical and conference reports are invited for submission
+                                        </p>
+                                        <ul>
+                                        <li>Read about <a href="{% url 'about' %}">About</a></li>
+                                        <li>Read our <a href="{% url 'authors_guidelines_jcs' %}">Author Guidelines</a></li>
+                                    </ul>
+                                        <div class="login-btn text-center">
+                                            <button >
+                                                <a href="{% url 'register' %}" style="color: white;" > I am ready to Register</a>
+                                            </button>
+                                            
+                                        </div>
+                                        
+                                    
+                                </div>
+
+                            </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sign In Section End -->
+{% endblock %}

@@ -1,0 +1,394 @@
+{% extends "main_base.html" %}
+{% load static %}
+
+
+
+{% block content %}
+        <!-- Page Title Start -->
+        <section class="page-title title-bg1-payment">
+            <div class="d-table">
+                <div class="d-table-cell">
+                    <h2>Publication Fees</h2>
+                    
+                </div>
+            </div>
+            <div class="lines">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+        </section>
+        <!-- Page Title End -->
+
+          <!-- About Area Start -->
+    <section class="about-section pt-100 pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+               
+                        <div class="about-information accordions">
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="active">
+                                        About Karpagam Journal of Computer Science
+                                    </a>
+                                </li>
+                            
+                                <li>
+                                    <div class="accordion-item" >
+                                        
+                                        <div class="accordion-title" data-tab="iteml1">
+                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml1">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml2">
+                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                            
+                                        </div>
+                                        <div class="accordion-content" id="iteml2">
+                                            <ul >
+                                                {% for journal in journals %}
+                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml3">
+                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml3">
+                                            <ul>
+                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml4">
+                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml4">
+                                            <ul>
+                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- <li>
+                                    <a href="#">
+                                        Abstracting and indexing
+                                    </a>
+                                </li> -->
+                                <li>
+                                    <div class="accordion-item">
+                                        <div class="accordion-title" data-tab="iteml5">
+                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml5">
+                                            <ul>
+                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml6">
+                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml6"> 
+                                            <ul>
+                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
+                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                    {% if user.is_authenticated %}
+                                        {% for group in user.groups.all %}
+                                            {% if group.name == 'Author' %}
+                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                            
+                                            {% else %}
+                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                    {% endif %}
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml7">
+                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml7"> 
+                                            <ul>
+                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
+                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
+                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            </ul>
+                                        </div> 
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="accordion-item" >
+                                        <div class="accordion-title" data-tab="iteml8">
+                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                        </div>
+                                        <div class="accordion-content" id="iteml8"> 
+                                            <ul>
+                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
+                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
+                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                            </ul>
+                            
+                        </div>
+                   
+                </div>
+
+                    <div class="col-md-8" style="text-align:left;">                    
+                        <div class="section-title-space">
+                            <h2>Publication Fees</h2>
+                        </div>
+
+                        <div class="editor-card-table table-responsive" style="text-align:left;">                      
+                            <table cellpadding="10" style="width:100%;">
+                                <tbody>
+                                <tr>
+                                <td style="border-top:1px solid #d9dbdf;"><b>International Authors</b></td>
+                                <td style="border-top:1px solid #d9dbdf;">$100 USD <a href="javascript:void(0);" onclick="openPaymentPopup('Indian')">Click here to Pay</a></td>
+                                </tr>
+                                <tr>
+                                <td><b>Indian Authors</b></td>
+                                <td>Rs.2000 <a href="javascript:void(0);" onclick="openPaymentPopup('Indian')">Click here to Pay</a></td>
+                                </tr>
+                            
+                                </tbody>
+                            </table>
+                        </div> 
+                        <!-- Popup Modal HTML -->
+<div id="paymentPopup" class="popup" style="display:none;">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePaymentPopup()">×</span>
+        <h3>Online Payment for Paper Submission</h3>
+        <form id="paymentForm">
+            <label for="authorName">Author Name:</label><br>
+            <input type="text" id="authorName" name="authorName" required><br><br>
+
+            <label for="authorEmail">Author Email:</label><br>
+            <input type="email" id="authorEmail" name="authorEmail" required><br><br>
+
+            <label for="authorMobile">Author Mobile No:</label><br>
+            <input type="tel" id="authorMobile" name="authorMobile" required><br><br>
+
+            <label for="authorAddress">Author Address:</label><br>
+            <input type="text" id="authorAddress" name="authorAddress" required><br><br>
+
+            <label for="authorCity">Author City:</label><br>
+            <input type="text" id="authorCity" name="authorCity" required><br><br>
+
+            <button type="button" onclick="processPayment()">Pay Now</button>
+        </form>
+    </div>
+</div>
+
+<!-- CSS for Popup -->
+<style>
+    .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    /* .popup-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+    } */
+    .popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 1000px; /* Adjust the width here */
+    max-width: 100%; /* This will ensure the popup is responsive */
+    height: auto; /* Adjust height based on content */
+    max-height: 800px; /* You can set a max-height if the form content becomes too long */
+    overflow-y: auto; /* Enables scrolling if the content overflows */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    .popup input {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .popup button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+    }
+    .popup button:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<!-- JavaScript for Popup Logic -->
+<script>
+    function openPaymentPopup(authorType) {
+        document.getElementById('paymentPopup').style.display = 'flex';
+        // You can optionally pass authorType here to customize the form or payment details.
+        console.log('Selected Author Type: ' + authorType);
+    }
+
+    function closePaymentPopup() {
+        document.getElementById('paymentPopup').style.display = 'none';
+    }
+
+    function processPayment() {
+        const form = document.getElementById('paymentForm');
+        if (form.checkValidity()) {
+            // Implement payment processing logic here
+            alert('Payment process initiated!');
+            closePaymentPopup();  // Close popup after processing
+        } else {
+            alert('Please fill out all the fields.');
+        }
+    }
+</script> 
+                            <div class="row pt-30 pb-30">
+                                <div class="about-text-list">
+                                    <h3>Publication Charge includes:</h3>
+                                        <div class="col-md-12">
+                                        <ul>
+                                            <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Publication of one entire research paper Online
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Printing Cost of Individual Certificate Hard Copy (Within India)
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Soft Copy of Certificates to all author.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Fee for DOI (Digital Object Identifier) Number by Crossref
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Editorial Fee/Review Fee
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Indexing, maintenance of link resolvers and journal infrastructures.
+                                </li>
+                                <li>
+                                    <i class='bx bx-chevrons-right bx-tada'></i>
+                                    Hard Copy Dispatch Charges by Speed Post/Registered Post will be Extra i.e.(Rs._____)
+                                </li>
+                                </ul>
+                                        </div>
+                                </div>  
+                            </div>
+                        
+                            <div class="editor-card-table table-responsive" style="text-align:left;">                      
+                                <table cellpadding="10" style="width:100%;">
+                                    <thead>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf;">Name</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf;  border-right: 1px solid #d9dbdf;">Account Number</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf; ">Account Type</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf;">Bank</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf;">IFSC Code</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf;">Branch Code</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; border-right: 1px solid #d9dbdf;">MICR Code</th>
+                                        <th style="border-bottom: 1px solid #d9dbdf; ">Mode</th>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    </tr>
+                                   
+                                    </tbody>
+                                    </table>
+                            </div> 
+                            <p class="pt-30"><b>Publication Fee Submission Proof is Required:</b> All are advised to submit fee submission proof after submission of fee. Please send following details to us via E-Mail</p> 
+                       
+                            <div class="about-text-list">
+                                <div class="col-md-12">
+                                <ul>
+                                    <li>
+                                <i class='bx bx-chevrons-right bx-tada'></i>
+                                <b>Online Payment:</b> Name of Account Holder, Account No, Bank Name, UTR No, Transaction ID, Amount, Date, Mode (NEFT/RTGS/IMPS).
+                            </li>
+                            <!-- <li>
+                                <i class='bx bx-chevrons-right bx-tada'></i>
+                                <b>Offline Payment:</b> Scan Copy of the Receipt with Paper Id written on it.
+                            </li> -->
+                            </ul>
+                        </div>
+                    </div> 
+                </div>           
+            </div>              
+        </div>
+    </div>
+</section>
+    <!-- About Area End -->
+    {% endblock %}

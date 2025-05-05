@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<section class="account-section ptb-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="account-information">
+                    <div class="profile-thumb">
+                        <img src="{% static 'assets/img/vector-img-4.jpg' %}" alt="">
+                        <h3>{{ editor.user.first_name }} {{ editor.user.last_name }}</h3>
+                        <p>
+                            {% for group in editor.user.groups.all %}
+                                {{ group.name }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+                    </div>
+
+                    <ul>
+                        <li>
+                            <a href="#" class="active">
+                                <i class='bx bx-user'></i>
+                                My Profile
+                            </a>
+                        </li>
+                        
+                        <li>
+                            <a href="{% url 'change_password' %}">
+                                <i class='bx bx-lock-alt'></i>
+                                Change Password
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'login' %}">
+                                <i class='bx bx-log-out'></i>
+                                Log Out
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="account-details" >
+                    <h3>Basic Information</h3>
+                    <form class="basic-info profile-basicdata " method="post" action="{% url 'editor_profile' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="custom-label">First Name</label><br>
+                                    <input type="text" class="form-control" value="{{ editor.user.first_name }}" disabled>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="custom-label">Last Name</label><br>
+                                    <input type="text" class="form-control" value="{{ editor.user.last_name }}" disabled>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="custom-label">Email</label><br>
+                                    <input type="email" class="form-control" value="{{ editor.user.email }}" disabled>   
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group">
+                                    <label class="custom-label">Mobile Number</label><br>
+                                    {{ form.mobile_number }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label class="custom-label">Institution / Affiliation</label><br>
+                                    {{ form.affliation }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary mb-50">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

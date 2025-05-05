@@ -1,0 +1,185 @@
+<!-- register.html -->
+
+{% extends 'main_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .custom-label {
+        font-size: 18px;
+    }
+    .custom-select {
+        font-size: 16px;
+    }
+    .required-field::after {
+        content: '*';
+        color: red;
+        margin-left: 5px;
+    }
+
+    .input-group {
+        display: flex;
+    }
+    .input-group select {
+        max-width: 100px;
+        border-radius: 0;
+    }
+    .input-group input {
+        flex: 1;
+        border-radius: 0;
+        margin-left: -1px; /* To make sure there's no gap between the select and input */
+    }
+
+    /* Additional styling as needed */
+</style>
+
+<!-- Sign up Section Start -->
+<div class="signup-section ptb-60">
+    <div class="container">
+        <form class="signup-form" method="post" id="userRegistrationForm">
+            {% csrf_token %}
+            <h2 align=center>Create an account</h2><br>
+            <br>
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group">
+                        <label class="custom-label required-field">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+        <div class="alert alert-danger">
+            {% for error in form.title.errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+                    </div><br>
+
+                    <br><div class="form-group">
+                        <label class="custom-label required-field">Last Name</label>
+                        {{ form.last_name }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label required-field">Institution / Affiliation</label>
+                        {{ form.institution }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label required-field">City</label>
+                        {{ form.city }}
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group">
+                        <label class="custom-label required-field">First Name</label>
+                        {{ form.first_name }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label required-field">Enter Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label required-field">Address</label>
+                        {{ form.address }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label required-field">State</label>
+                        {{ form.state }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group">
+                        <label class="custom-label required-field">Country</label>
+                        {{ form.country }}
+                        {% if form.country.errors %}
+        <div class="alert alert-danger">
+            {% for error in form.country.errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+                    </div><br>
+
+                    <br><div class="form-group">
+                        <label class="custom-label required-field">Zipcode</label>
+                        {{ form.zipcode }}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="custom-label">Scopus id</label>
+                        {{ form.scopus_id }}
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group">
+                        <label class="custom-label required-field">Mobile Number</label>
+                        <div class="input-group" style="display: flex; align-items: center;">
+                            
+                            <div>  <select id="phone_code" name="phone_code" class="custom-select" style="flex: 0 0 auto; margin-right: 10px;">
+                                {% for country in countries %}
+                                    <option value="{{ country.ph_code }}">+{{ country.ph_code }}</option>
+                                {% endfor %}
+                            </select></div>
+                           <div class="regmob"> {{ form.mobile_no }}</div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="form-group">
+                        <label class="custom-label">Orcid id</label>
+                        {{ form.orcid_id }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="signup-btn text-center">
+                <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
+                <h3><div id="loadingMessage" style="display:none;">Please Wait...</div></h3>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('submitButton').addEventListener('click', function() {
+        // Show loading message
+        $('#loadingMessage').show();
+    });
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('userRegistrationForm');
+    var phoneCodeSelect = document.getElementById('phone_code');
+    var mobileNoInput = document.getElementById('id_mobile_no');  // Update ID to match Django's generated ID
+
+   
+
+    var orcidInput = document.getElementById('id_orcid_id');
+    orcidInput.addEventListener('input', function() {
+        var value = this.value.replace(/[\W_]/g, ''); // Remove non-word characters (letters, digits, underscore)
+        var formattedValue = '';
+        for (var i = 0; i < value.length; i++) {
+            if (i > 0 && i % 4 === 0) {
+                formattedValue += '-';
+            }
+            formattedValue += value[i];
+        }
+        this.value = formattedValue;
+    });
+});
+</script>
+{% endblock %}
