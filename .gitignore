@@ -67,4 +67,3 @@ htmlcov/
 .cache
 coverage.xml
 *.cover
-requirements.txt
