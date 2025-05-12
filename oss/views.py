@@ -117,9 +117,10 @@ from django.template.loader import render_to_string
 @login_required
 @user_passes_test(is_author)
 def startnew(request):
-    submission_statuses = check_submission_status(request.user)
+    author = Author.objects.get(user=request.user)
+    submission_statuses = check_submission_status(author)
     status_filter = request.GET.get('article_status', '')
-    submissions = Submission.objects.filter(author=request.user)
+    submissions = Submission.objects.filter(author=author)
     
     if status_filter:
         submissions = submissions.filter(article_status__article_status=status_filter)

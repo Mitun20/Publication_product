@@ -967,4 +967,35 @@ def download_article(request, article_id):
         # Handle case where the file doesn't exist
         return redirect('index') 
     
- 
+#  feedback
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Feedback
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+@login_required
+def submit_feedback(request):
+    if request.method == 'POST':
+        feedback_text = request.POST.get('feedback', '').strip()
+        if feedback_text:
+            Feedback.objects.create(user=request.user, feedback=feedback_text)
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Feedback submitted successfully.'
+            })
+        return JsonResponse({
+            'status': 'error', 
+            'message': 'Feedback cannot be empty.'
+        }, status=400)
+    return JsonResponse({
+        'status': 'error', 
+        'message': 'Invalid request method.'
+    }, status=405)
+
+def feedback_list(request):
+    feedbacks = Feedback.objects.filter(is_active=True).order_by('-submitted_on')
+    print("feedbacks",feedbacks)
+    return render(request, 'feedback_popup.html', {'feedbacks': feedbacks})

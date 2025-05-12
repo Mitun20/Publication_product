@@ -42,5 +42,11 @@ class Editor(models.Model):
     def __str__(self):
         return self.affliation
 
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feedback = models.TextField()
+    submitted_on = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
-# Create your models here.
+    def __str__(self):
+        return self.user.username
