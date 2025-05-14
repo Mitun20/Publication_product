@@ -150,3 +150,7 @@ class EditorProfileForm(forms.ModelForm):
             'affliation': forms.TextInput(attrs={'class': 'form-control'}),
             'mobile_number': forms.TextInput(attrs={'class': 'form-control'}),
         }
+        
+
+class DocumentForm(forms.Form):
+    document = forms.FileField(label='Upload DOCX/PDF')

@@ -59,4 +59,8 @@ urlpatterns = [
     # feedback
     path('feedback/',submit_feedback, name='submit_feedback'),
     path('feedback_list/',feedback_list, name='feedback_list'),
+    
+    # path('upload-docx/', convert_docx_to_pdf, name='convert_docx'),
+    path('upload/', upload_file, name='upload'),
+    path('compile-pdf/', compile_pdf, name='compile_pdf'),
 ]

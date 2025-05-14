@@ -1,0 +1,46 @@
+<h2>Review LaTeX Code</h2>
+<textarea id="latex-code" rows="20" cols="80">{{ latex_code }}</textarea>
+<button onclick="compileLatex()" class="btn btn-primary">Generate PDF</button>
+<div id="error-message" style="color: red; margin-top: 10px;"></div>
+
+<script>
+function compileLatex() {
+    const latex = document.getElementById("latex-code").value;
+    const errorDiv = document.getElementById("error-message");
+    errorDiv.textContent = "";
+    
+    fetch("/compile-pdf/", {
+        method: "POST",
+        body: JSON.stringify({ latex: latex }),
+        headers: { 
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        if (blob.size === 0) throw new Error("Empty PDF generated");
+        
+        // Windows-friendly download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'converted.pdf';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        errorDiv.textContent = error.message || "PDF generation failed. Check LaTeX syntax.";
+    });
+}
+</script>
