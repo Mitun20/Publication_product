@@ -106,12 +106,30 @@
 
                     <!-- Monthly Trends Chart -->
                     <div class="card p-3">
-                        <h5 class="card-title">Monthly Submission Trends</h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Monthly Submission Trends</h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                        id="yearDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ selected_year }}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="yearDropdown">
+                                    {% for year in years_range %}
+                                        <li>
+                                            <a class="dropdown-item {% if year == selected_year %}active{% endif %}" 
+                                            href="?year={{ year }}">
+                                                {{ year }}
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
                         <div class="chart-container" style="position: relative; height:300px; width:100%">
                             <canvas id="monthlyTrendsChart"></canvas>
                         </div>
                         <div class="text-center mt-2">
-                            <span class="badge bg-primary me-2">Incoming</span>
+                            <span class="badge bg-primary me-2">Submissions</span>
                             <span class="badge bg-success">Accepted</span>
                         </div>
                     </div>
@@ -133,6 +151,17 @@
                         </div>
                         <div id="hierarchyMap" style="height: 600px; width: 100%;"></div>
                     </div>
+                    <!-- Add this section where you want the reviewer map to appear -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Reviewers Geographic Distribution</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="reviewerMap" style="height: 400px;"></div>
+                    </div>
+                </div>
+
+
                 </div>
             </div>
         </div>
@@ -141,17 +170,86 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+<!-- Add these scripts at the bottom of your template -->
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize reviewer map
+    const reviewerMap = L.map('reviewerMap').setView([20, 0], 2);
 
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(reviewerMap);
+
+    // Parse reviewer data
+    const reviewerData = JSON.parse('{{ reviewer_locations|escapejs }}');
+    const reviewerMarkers = L.layerGroup().addTo(reviewerMap);
+
+    // Helper: Geocode address to lat/lng using Nominatim
+    function geocodeLocation(address) {
+        return fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+                }
+                return null;
+            })
+            .catch(() => null);
+    }
+
+    // Build a map of unique addresses to reviewers
+    const addressMap = {};
+    reviewerData.forEach(reviewer => {
+        const address = [reviewer.city, reviewer.state, reviewer.country].filter(Boolean).join(', ');
+        if (!addressMap[address]) {
+            addressMap[address] = [];
+        }
+        addressMap[address].push(reviewer);
+    });
+
+    // Geocode unique addresses with delay to avoid rate limits
+    const addresses = Object.keys(addressMap);
+    let i = 0;
+
+    function processNext() {
+        if (i >= addresses.length) {
+            // Fit map to markers after all are added
+            if (reviewerMarkers.getLayers().length > 0) {
+                reviewerMap.fitBounds(reviewerMarkers.getBounds());
+            }
+            return;
+        }
+        const address = addresses[i];
+        geocodeLocation(address).then(coords => {
+            if (coords) {
+                // Combine all reviewers at this address in one popup
+                const reviewers = addressMap[address];
+                const popupHtml = reviewers.map(reviewer =>
+                    `<b>${reviewer.name}</b><br>${reviewer.city ? reviewer.city + ', ' : ''}${reviewer.state ? reviewer.state + ', ' : ''}${reviewer.country}`
+                ).join('<hr style="margin:4px 0;">');
+                L.marker(coords).addTo(reviewerMarkers)
+                    .bindPopup(popupHtml);
+            }
+            i++;
+            setTimeout(processNext, 1100); // 1.1s delay per Nominatim usage policy
+        });
+    }
+    processNext();
+});
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const map = L.map('hierarchyMap').setView([20, 0], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    
+
     const locations = JSON.parse('{{ locations|escapejs }}');
     const markers = L.layerGroup().addTo(map);
-    
+
     // Custom icon with hierarchical styling
     function createIcon(count, level) {
         const colors = {
@@ -164,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
             'state': 30,
             'city': 20
         };
-        
+
         return L.divIcon({
             className: 'hierarchy-marker',
             html: `
@@ -174,19 +272,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     background: ${colors[level]};
                     border-color: ${colors[level]};
                 ">
-                    ${level === 'city' ? count : ''}
+                    ${count > 1 ? count : (level === 'city' ? count : '')}
                 </div>
             `,
             iconSize: [sizes[level], sizes[level]],
             iconAnchor: [sizes[level]/2, sizes[level]/2]
         });
     }
-    
-    // Process locations and create hierarchical markers
+
+    // Process locations and group papers by city/state/country
     const processedLocations = {};
-    
+
     locations.forEach(loc => {
-        // Create country marker if not exists
+        // Country
         if (!processedLocations[loc.country]) {
             processedLocations[loc.country] = {
                 type: 'country',
@@ -196,8 +294,8 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
         processedLocations[loc.country].paper_count += loc.paper_count;
-        
-        // Create state marker if not exists
+
+        // State
         if (!processedLocations[loc.country].states[loc.state]) {
             processedLocations[loc.country].states[loc.state] = {
                 type: 'state',
@@ -207,16 +305,32 @@ document.addEventListener('DOMContentLoaded', function() {
             };
         }
         processedLocations[loc.country].states[loc.state].paper_count += loc.paper_count;
-        
-        // Store city data
-        processedLocations[loc.country].states[loc.state].cities[loc.city] = {
-            type: 'city',
-            paper_count: loc.paper_count,
-            sample_title: loc.sample_title,
-            coords: null
-        };
+
+        // City: group all papers in same city
+        if (!processedLocations[loc.country].states[loc.state].cities[loc.city]) {
+            processedLocations[loc.country].states[loc.state].cities[loc.city] = {
+                type: 'city',
+                paper_count: 0,
+                titles: [],
+                coords: null
+            };
+        }
+        processedLocations[loc.country].states[loc.state].cities[loc.city].paper_count += loc.paper_count;
+        // Always push all titles, not just sample_title
+        if (loc.titles && Array.isArray(loc.titles)) {
+            loc.titles.forEach(t => {
+                if (t && !processedLocations[loc.country].states[loc.state].cities[loc.city].titles.includes(t)) {
+                    processedLocations[loc.country].states[loc.state].cities[loc.city].titles.push(t);
+                }
+            });
+        } else if (loc.sample_title) {
+            // fallback for old data
+            if (!processedLocations[loc.country].states[loc.state].cities[loc.city].titles.includes(loc.sample_title)) {
+                processedLocations[loc.country].states[loc.state].cities[loc.city].titles.push(loc.sample_title);
+            }
+        }
     });
-    
+
     // Geocode and add markers
     Object.entries(processedLocations).forEach(([country, countryData]) => {
         // Geocode country
@@ -227,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     icon: createIcon(countryData.paper_count, 'country'),
                     zIndexOffset: 1000
                 }).addTo(markers);
-                
+
                 marker.bindPopup(`
                     <div class="country-popup">
                         <h4><i class="fas fa-globe-asia"></i> ${country}</h4>
@@ -235,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p><strong>States:</strong> ${Object.keys(countryData.states).length}</p>
                     </div>
                 `);
-                
+
                 // Process states for this country
                 Object.entries(countryData.states).forEach(([state, stateData]) => {
                     geocodeLocation(`${state}, ${country}`).then(coords => {
@@ -245,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 icon: createIcon(stateData.paper_count, 'state'),
                                 zIndexOffset: 500
                             }).addTo(markers);
-                            
+
                             marker.bindPopup(`
                                 <div class="state-popup">
                                     <h5><i class="fas fa-map-marked-alt"></i> ${state}, ${country}</h5>
@@ -253,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <p><strong>Cities:</strong> ${Object.keys(stateData.cities).length}</p>
                                 </div>
                             `);
-                            
+
                             // Process cities for this state
                             Object.entries(stateData.cities).forEach(([city, cityData]) => {
                                 geocodeLocation(`${city}, ${state}, ${country}`).then(coords => {
@@ -263,14 +377,24 @@ document.addEventListener('DOMContentLoaded', function() {
                                             icon: createIcon(cityData.paper_count, 'city'),
                                             zIndexOffset: 0
                                         }).addTo(markers);
-                                        
+
+                                        // Show all paper titles if more than one in this city
+                                        let titlesHtml = '';
+                                        if (cityData.titles.length > 1) {
+                                            titlesHtml = `<ul style="padding-left:18px;">` +
+                                                cityData.titles.map(t => `<li>${t}</li>`).join('') +
+                                                `</ul>`;
+                                        } else if (cityData.titles.length === 1) {
+                                            titlesHtml = `<p><strong>Title:</strong> ${cityData.titles[0]}</p>`;
+                                        }
+
                                         marker.bindPopup(`
                                             <div class="city-popup">
                                                 <h6><i class="fas fa-map-marker-alt"></i> ${city}</h6>
                                                 <p><strong>State:</strong> ${state}</p>
                                                 <p><strong>Country:</strong> ${country}</p>
                                                 <p><strong>Papers:</strong> ${cityData.paper_count}</p>
-                                                ${cityData.sample_title ? `<p><strong>Sample:</strong> ${cityData.sample_title}</p>` : ''}
+                                                ${titlesHtml}
                                             </div>
                                         `);
                                     }
@@ -282,14 +406,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Auto-fit the map after all markers are added
     setTimeout(() => {
         if (markers.getLayers().length > 0) {
             map.fitBounds(markers.getBounds());
         }
     }, 2000);
-    
+
     // Geocoding helper function
     function geocodeLocation(address) {
         return new Promise(resolve => {
@@ -347,18 +471,17 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 </script>
 
-
 <!-- Dashboard Chart Scripts -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Monthly Trends Chart
         const monthlyCtx = document.getElementById('monthlyTrendsChart').getContext('2d');
         const monthlyData = {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: {{ monthly_data.labels|safe }},
             datasets: [
                 {
-                    label: 'Incoming',
-                    data: [12, 19, 15, 8, 10, 12, 15, 18, 14, 16, 12, 10],
+                    label: 'Submissions',
+                    data: {{ monthly_data.submissions }},
                     borderColor: '#2196F3',
                     backgroundColor: 'rgba(33, 150, 243, 0.1)',
                     tension: 0.3,
@@ -366,7 +489,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 {
                     label: 'Accepted',
-                    data: [4, 7, 5, 3, 4, 5, 6, 8, 5, 6, 4, 3],
+                    data: {{ monthly_data.accepted }},
                     borderColor: '#4CAF50',
                     backgroundColor: 'rgba(76, 175, 80, 0.1)',
                     tension: 0.3,
@@ -385,6 +508,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     legend: {
                         display: true,
                         position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.raw;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -397,9 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-
-});
-
+    });
 </script>
 
 {% endblock %}

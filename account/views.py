@@ -1116,43 +1116,38 @@ def feedback_list(request):
 #     return render(request, 'upload_docx.html')
 
 import os
+import re
+import json
+import subprocess
 from django.shortcuts import render
 from django.http import FileResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
-import subprocess
 from .forms import DocumentForm
 from .extractors import extract_docx, extract_pdf, extract_pdf_ocr
 from .converter import text_to_latex
-
 def upload_file(request):
     """Handle file upload and LaTeX conversion."""
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES['document']
-            # Save the uploaded file temporarily
             fs = FileSystemStorage()
             filename = fs.save(file.name, file)
             filepath = fs.path(filename)
-            
+
             # Extract text based on file type
             if file.name.endswith('.docx'):
                 text = extract_docx(filepath)
             elif file.name.endswith('.pdf'):
                 try:
-                    text = extract_pdf(filepath)  # Try text extraction first
-                except:
-                    text = extract_pdf_ocr(filepath)  # Fallback to OCR
+                    text = extract_pdf(filepath)
+                except Exception:
+                    text = extract_pdf_ocr(filepath)
             else:
-                text = file.read().decode('utf-8')  # For .txt files
-            
-            # Convert to LaTeX
+                text = file.read().decode('utf-8')
+
             latex_code = text_to_latex(text)
-            
-            # Clean up the temporary file
             os.remove(filepath)
-            
-            # Render the LaTeX for review
             return render(request, 'review.html', {
                 'latex_code': latex_code,
                 'filename': file.name
@@ -1161,206 +1156,45 @@ def upload_file(request):
         form = DocumentForm()
     return render(request, 'upload.html', {'form': form})
 
-import os
-import re
-import json
-import subprocess
-from django.http import JsonResponse, FileResponse
-from docx import Document
-
-
-import re
-
-def sanitize_latex(text):
-    """Enhanced LaTeX sanitization with proper structure preservation"""
-    
-    # Preserve original line breaks
-    text = text.replace('\r\n', '\n').replace('\r', '\n')
-    
-    # Special character escaping
-    replacements = {
-        '\\': r'\textbackslash{}',
-        '_': r'\_',
-        '&': r'\&',
-        '%': r'\%',
-        '$': r'\$',
-        '#': r'\#',
-        '{': r'\{',
-        '}': r'\}',
-        '~': r'\textasciitilde{}',
-        '^': r'\textasciicircum{}',
-        '–': '--',  # en-dash
-        '—': '---', # em-dash
-        '“': r'``',
-        '”': r"''",
-        '‘': r'`',
-        '’': r"'",
-    }
-    
-    for char, escape in replacements.items():
-        text = text.replace(char, escape)
-
-    # Fix author blocks and email addresses
-    text = re.sub(
-        r'([A-Z]\.[A-Za-z]+)(.*?)([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})',
-        r'\\textbf{\1}\2\\texttt{\3}\\newline',
-        text
-    )
-    
-    # Preserve section numbering
-    text = re.sub(r'^(\d+\.)\s*([A-Z][A-Z\s]+)$', 
-                 r'\\section*{\2}', text, flags=re.MULTILINE)
-    
-    # Handle lists properly
-    lines = text.split('\n')
-    output = []
-    in_itemize = False
-    in_enumerate = False
-    in_author_block = False
-    
-    for line in lines:
-        stripped = line.strip()
-        
-        # Skip empty lines in author block
-        if "Professor" in line or "@" in line:
-            if not in_author_block:
-                output.append(r'\begin{center}')
-                in_author_block = True
-            if stripped:
-                output.append(line)
-            continue
-        elif in_author_block:
-            output.append(r'\end{center}')
-            in_author_block = False
-        
-        # Numbered lists
-        if re.match(r'^\d+\.\s', stripped):
-            if not in_enumerate:
-                output.append(r'\begin{enumerate}[label=\arabic*.]')
-                in_enumerate = True
-            content = re.sub(r'^\d+\.\s*', '', stripped)
-            output.append(r'\item ' + content)
-        
-        # Bullet points
-        elif re.match(r'^(•|-|)\s+', stripped):
-            if not in_itemize:
-                output.append(r'\begin{itemize}')
-                in_itemize = True
-            content = re.sub(r'^(•|-|)\s+', '', stripped)
-            output.append(r'\item ' + content)
-        
-        # Regular text
-        else:
-            if in_enumerate:
-                output.append(r'\end{enumerate}')
-                in_enumerate = False
-            if in_itemize:
-                output.append(r'\end{itemize}')
-                in_itemize = False
-            
-            # Preserve empty lines as paragraph breaks
-            if stripped == '':
-                output.append(r'\par')
-            else:
-                # Handle figure references
-                line = re.sub(r'Fig(\d+)\.', r'\\textbf{Figure \1}:', line)
-                output.append(line)
-    
-    # Close any open environments
-    if in_enumerate:
-        output.append(r'\end{enumerate}')
-    if in_itemize:
-        output.append(r'\end{itemize}')
-    if in_author_block:
-        output.append(r'\end{center}')
-    
-    text = '\n'.join(output)
-    
-    # Clean up excessive whitespace
-    text = re.sub(r'\n{3,}', '\n\n', text)
-    
-    return text
-
-def text_to_latex(text):
-    """Professional LaTeX template with proper document structure"""
-    latex = sanitize_latex(text)
-    
-    # Extract author content if it exists
-    author_match = re.search(r'\\\\begin\{center\}(.*?)\\\\end\{center\}', latex, re.DOTALL)
-    author_content = author_match.group(1) if author_match else ''
-    
-    # Remove author block from main content
-    main_content = re.sub(r'\\\\begin\{center\}.*?\\\\end\{center\}', '', latex, flags=re.DOTALL).strip()
-    
-    # Build LaTeX document using raw strings and proper escaping
-    latex_template = r"""\documentclass{article}
-\usepackage[utf8]{inputenc}
-\usepackage{enumitem}
-\usepackage{parskip}
-\usepackage{hyperref}
-\usepackage{xcolor}
-\usepackage{graphicx}
-\usepackage{amsmath}
-\usepackage[a4paper, total={6in, 8in}]{geometry}
-
-% Custom command for author blocks
-\newcommand{\authorblock}[3]{
-\textbf{#1} \\ #2 \\ \texttt{#3}
-}
-
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{1em}
-\setlist[itemize]{leftmargin=*,nosep}
-\setlist[enumerate]{leftmargin=*}
-
-\title{Towards Transparent Phishing Email Detection: A Transformer-Based Explainable AI Approach}
-\author{
-\begin{center}
-""" + author_content + r"""
-\end{center}
-}
-\date{}
-
-\begin{document}
-
-\maketitle
-
-""" + main_content + r"""
-
-\end{document}"""
-    
-    return latex_template
 
 def compile_pdf(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
             latex_code = data.get('latex', '')
-            
             if not latex_code:
                 return JsonResponse({'error': 'No LaTeX code provided'}, status=400)
 
             output_dir = 'latex_output'
             os.makedirs(output_dir, exist_ok=True)
-            
             tex_path = os.path.join(output_dir, 'output.tex')
             with open(tex_path, 'w', encoding='utf-8') as f:
                 f.write(latex_code)
-            
+            print("Generated LaTeX code:\n", latex_code)  # Add this line for debugging
+
             try:
+                # Use xelatex for better Unicode/font/image support
                 result = subprocess.run(
-                    ['pdflatex', '-interaction=nonstopmode', 
+                    ['xelatex', '-interaction=nonstopmode',
                      '-output-directory', output_dir, tex_path],
                     capture_output=True,
                     text=True,
-                    timeout=30
+                    encoding='utf-8',  # Ensure UTF-8 decoding for output
+                    timeout=60
                 )
-                
                 pdf_path = os.path.join(output_dir, 'output.pdf')
-                
                 if os.path.exists(pdf_path):
+                    # Optional: Clean up auxiliary files
+                    for ext in ['.aux', '.log', '.out', '.toc']:
+                        aux_file = os.path.join(output_dir, 'output' + ext)
+                        if os.path.exists(aux_file):
+                            try:
+                                os.remove(aux_file)
+                            except Exception:
+                                pass
+                    pdf_file = open(pdf_path, 'rb')  # <-- Do NOT use 'with'
                     response = FileResponse(
-                        open(pdf_path, 'rb'),
+                        pdf_file,
                         content_type='application/pdf'
                     )
                     response['Content-Disposition'] = 'inline; filename="converted.pdf"'
@@ -1368,11 +1202,9 @@ def compile_pdf(request):
                 else:
                     error_msg = result.stderr or "PDF generation failed"
                     return JsonResponse({'error': error_msg}, status=500)
-                    
             except subprocess.TimeoutExpired:
                 return JsonResponse({'error': 'PDF generation timed out'}, status=500)
-                
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    
     return JsonResponse({'error': 'Invalid request'}, status=400)
+

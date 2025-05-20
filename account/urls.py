@@ -63,4 +63,6 @@ urlpatterns = [
     # path('upload-docx/', convert_docx_to_pdf, name='convert_docx'),
     path('upload/', upload_file, name='upload'),
     path('compile-pdf/', compile_pdf, name='compile_pdf'),
+    
+
 ]

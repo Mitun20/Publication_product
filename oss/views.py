@@ -24,6 +24,9 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_protect
 from .services import send_email
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.db.models import Count, Q
+import datetime
 
 
 # sms
@@ -1968,7 +1971,85 @@ def dashboard_view(request):
     # Format for visualization
     countries = [item['author__country__country'] for item in country_data]
     country_counts = [item['count'] for item in country_data]
+    # Add this section for reviewer map data
+    reviewer_locations = (
+        Author.objects
+        .filter(is_reviewer=True)
+        .exclude(country__isnull=True)
+        .values(
+            'country__country',
+            'country__code',
+            'state',
+            'city',
+            'user__first_name',
+            'user__last_name'
+        )
+        .annotate(count=Count('id'))
+    )
 
+    # Normalize reviewer city names using your existing mapping
+    normalized_reviewers = []
+    city_mapping = {
+        'kovai': 'Coimbatore',
+        'trichy': 'Tiruchirappalli'
+    }
+    
+    for reviewer in reviewer_locations:
+        city = city_mapping.get(reviewer['city'].lower(), reviewer['city'])
+        normalized_reviewers.append({
+            'country': reviewer['country__country'],
+            'country_code': reviewer['country__code'],
+            'state': reviewer['state'],
+            'city': city,
+            'count': reviewer['count'],
+            'name': f"{reviewer['user__first_name']} {reviewer['user__last_name']}"
+        })
+
+    # Get the earliest and latest submission years for the filter
+    earliest_year = Submission.objects.earliest('submitted_on').submitted_on.year
+    current_year = datetime.now().year
+    years_range = range(earliest_year, current_year + 1)
+    
+    # Get selected year from request (default to current year)
+    selected_year = int(request.GET.get('year', current_year))
+    
+    # Monthly submissions data (all submissions)
+    monthly_submissions = (
+        Submission.objects
+        .filter(submitted_on__year=selected_year)
+        .annotate(month=ExtractMonth('submitted_on'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    
+    # Monthly accepted papers data
+    monthly_accepted = (
+        Submission.objects
+        .filter(
+            Q(article_status__article_status='Accepted') & 
+            Q(submitted_on__year=selected_year))
+        .annotate(month=ExtractMonth('submitted_on'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+    
+    # Prepare data for chart - initialize all months with 0
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    # Initialize data arrays with zeros
+    submissions_data = [0] * 12
+    accepted_data = [0] * 12
+    
+    # Fill in actual data
+    for item in monthly_submissions:
+        submissions_data[item['month'] - 1] = item['count']
+    
+    for item in monthly_accepted:
+        accepted_data[item['month'] - 1] = item['count']
+    
     context = {
         'total_submissions': total_submissions,
         'accepted_papers': accepted_papers,
@@ -1982,6 +2063,14 @@ def dashboard_view(request):
         'country_counts': country_counts,
         'country_data': country_data,
         'locations': json.dumps(normalized_locations),
+        'reviewer_locations': json.dumps(normalized_reviewers),
+        'years_range': years_range,
+        'selected_year': selected_year,
+        'monthly_data': {
+            'labels': month_names,
+            'submissions': submissions_data,
+            'accepted': accepted_data,
+        },
     }
 
     return render(request, 'dashboard.html', context)
