@@ -23,6 +23,8 @@ class Author(models.Model):
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     mobile_no = models.CharField(max_length=25)
     zipcode = models.CharField(max_length=10)
     orcid_id = models.CharField(max_length=19)

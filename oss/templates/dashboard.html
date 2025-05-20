@@ -152,15 +152,36 @@
                         <div id="hierarchyMap" style="height: 600px; width: 100%;"></div>
                     </div>
                     <!-- Add this section where you want the reviewer map to appear -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>Reviewers Geographic Distribution</h4>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h4>Reviewers Geographic Distribution</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="reviewerMap" style="height: 400px;"></div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div id="reviewerMap" style="height: 400px;"></div>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Reviewers by Specialization
+                        </div>
+                        <div class="card-body">
+                            <canvas id="specializationChart" width="100%" height="40"></canvas>
+                        </div>
                     </div>
-                </div>
 
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-book me-1"></i>
+                            Published Articles by Specialization
+                        </div>
+                        <div class="card-body">
+                            <canvas id="publishedSpecChart" width="100%" height="40"></canvas>
+                        </div>
+                        <div class="card-footer small text-muted">
+                            Shows distribution of published articles across different specializations
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -527,6 +548,87 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    });
+</script>
+<script>
+    // Reviewer Specialization Bar Chart
+    const specCtx = document.getElementById('specializationChart').getContext('2d');
+    const specChart = new Chart(specCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ specialization_data.labels|safe }},
+            datasets: [{
+                label: 'Number of Reviewers',
+                data: {{ specialization_data.counts|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' reviewers';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    // Published Articles by Specialization Bar Chart
+    const pubSpecCtx = document.getElementById('publishedSpecChart').getContext('2d');
+    const pubSpecChart = new Chart(pubSpecCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ published_spec_data.labels|safe }},
+            datasets: [{
+                label: 'Number of Published Articles',
+                data: {{ published_spec_data.counts|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' articles';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
     });
 </script>
 

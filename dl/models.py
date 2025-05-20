@@ -1,7 +1,6 @@
 # dl/models
 from django.db import models
-from oss.models import Journal, Accepted_Submission
-
+from oss.models import Journal, Accepted_Submission, Specialization
 # Create your models here.
 
 
@@ -34,6 +33,7 @@ class Published_article(models.Model):
     abstract = models.TextField(null=True, blank=True)
     author = models.CharField(max_length=255, null=True, blank=True)
     file = models.FileField(upload_to='submissions/', null=True, blank=True)
+    area = models.ForeignKey(Specialization, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.accepted_submission.corrected_title) if self.accepted_submission else str(self.title)

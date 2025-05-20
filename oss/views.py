@@ -6,7 +6,7 @@ import logging
 from django.http import  HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, JsonResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
-from dl.models import Issue, Volume
+from dl.models import Issue, Published_article, Volume
 from .auth import *
 from .forms import *
 from .models import *
@@ -2049,6 +2049,30 @@ def dashboard_view(request):
     
     for item in monthly_accepted:
         accepted_data[item['month'] - 1] = item['count']
+        
+    # Get reviewer specialization data
+    reviewer_specializations = (
+        Reviewer_Specialization.objects
+        .values('specialization__specialization')
+        .annotate(count=Count('reviewer', distinct=True))
+        .order_by('-count')
+    )
+    
+    # Prepare data for the specialization bar chart
+    specialization_labels = [spec['specialization__specialization'] for spec in reviewer_specializations]
+    specialization_counts = [spec['count'] for spec in reviewer_specializations]
+        # Get published articles by specialization data
+    published_by_specialization = (
+        Published_article.objects
+        .exclude(area__isnull=True)
+        .values('area__specialization')
+        .annotate(count=Count('id'))
+        .order_by('-count')
+    )
+    
+    # Prepare data for the published articles specialization bar chart
+    pub_spec_labels = [spec['area__specialization'] for spec in published_by_specialization]
+    pub_spec_counts = [spec['count'] for spec in published_by_specialization]
     
     context = {
         'total_submissions': total_submissions,
@@ -2070,6 +2094,14 @@ def dashboard_view(request):
             'labels': month_names,
             'submissions': submissions_data,
             'accepted': accepted_data,
+        },
+        'specialization_data': {
+            'labels': specialization_labels,
+            'counts': specialization_counts,
+        },
+        'published_spec_data': {
+            'labels': pub_spec_labels,
+            'counts': pub_spec_counts,
         },
     }
 
