@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'dl',
     'static_templates',
     'ckeditor',
+    'chatbot',
 ]
 
 MIDDLEWARE = [

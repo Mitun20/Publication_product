@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('account.urls')),
     path('', include('oss.urls')),
     path('', include('dl.urls')),
-    path('', include('static_templates.urls'))
+    path('', include('static_templates.urls')),
+    path('', include('chatbot.urls')),
 ]
