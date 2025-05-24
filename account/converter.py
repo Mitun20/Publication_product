@@ -25,13 +25,13 @@ class LatexConverter:
             '>': r'\textgreater{}',
         }
         self.table_count = 0
-        self.figure_count = 0
+        self.figure_count = 0  # Initialize figure counter
 
     def escape_special_chars(self, text: str) -> str:
         for char, escape in self.special_chars.items():
             text = text.replace(char, escape)
         return text
-
+    
     def format_sections(self, text: str) -> str:
         # Convert numbered sections (1. Introduction) to LaTeX sections
         text = re.sub(r'^(\d+)\.\s+([^\n]+)$', r'\\section{\2}', text, flags=re.MULTILINE)
@@ -110,15 +110,21 @@ class LatexConverter:
         
         return text
 
+
     def format_images(self, text: str) -> str:
         """Convert all image formats to proper LaTeX figures"""
+        # Ensure figure_count starts at 1 if this is the first run
+        if not hasattr(self, 'figure_count'):
+            self.figure_count = 1
+        
         # Handle both <<IMAGE:path>> and \textless{}\textless{}IMAGE... formats
         text = re.sub(
-            r'(?:<<IMAGE:|\\textless{}\\textless{}IMAGE:)([^>]+)(?:>>|\\textgreater{}\\textgreater{})',
+            r'(?:<<IMAGE:|\\textless{}\\textless{}IMAGE:)([^>]+?)(?:>>|\\textgreater{}\\textgreater{})',
             self._generate_figure_latex_custom,
             text
         )
         return text
+
 
     def _generate_figure_latex_custom(self, match: re.Match) -> str:
         """Special handler for the <<IMAGE:path>> format to generate expected figure output"""
@@ -126,29 +132,46 @@ class LatexConverter:
             path = match.group(1).strip()
             if not path:
                 raise ValueError("Empty image path")
-            
+
             # Clean path by removing unwanted characters and normalizing
-            clean_path = (path.replace('\\textbackslash{}', '')
-                            .replace('\\textbackslash', '')
-                            .replace('\\', '/')
-                            .replace('{', '')
-                            .replace('}', '')
-                            .replace('//', '/'))
+            clean_path = (
+                path.replace('\\textbackslash{}', '')
+                    .replace('\\textbackslash', '')
+                    .replace('\\', '/')
+                    .replace('{', '')
+                    .replace('}', '')
+                    .replace('//', '/')
+            )
+
+            # Extract directory and filename parts
+            import os
+            dir_path, filename = os.path.split(clean_path)
             
-            # Extract the numeric part from the filename (no os module needed)
-            if '_' in clean_path:
-                num = clean_path.split('_')[-1].split('.')[0]
-                clean_path = f"extracted_images/image_{num}.png"  # Add 'image_' prefix
-                
+            # Strip leading underscore and extension from filename (e.g., "_0.png" → "0")
+            base_name, ext = os.path.splitext(filename)
+            if base_name.startswith('_'):
+                index = base_name[1:]
+            else:
+                index = base_name
+
+            # Reconstruct new filename as "image_N.png"
+            new_filename = f"image_{index}{ext}"
+            
+            # Construct final path without "_images" or other nested folders
+            final_path = f"extracted_images/{new_filename}"
+
             # Generate proper LaTeX figure environment
-            return (
+            figure_output = (
                 r'\begin{figure}[h!]' + '\n' +
                 r'\centering' + '\n' +
-                fr'\includegraphics[width=0.8\textwidth]{{{clean_path}}}' + '\n' +
+                fr'\includegraphics[width=0.8\textwidth]{{{final_path}}}' + '\n' +
                 r'\caption{}' + '\n' +
-                r'\label{fig:ai_image}' + '\n' +
+                fr'\label{{fig:image_{self.figure_count}}}' + '\n' +
                 r'\end{figure}'
             )
+
+            self.figure_count += 1  # Increment the counter for the next image
+            return figure_output
         except Exception as e:
             return f"% ERROR: Could not process image: {str(e)}"
 
@@ -236,8 +259,7 @@ def text_to_latex(text: str) -> str:
     
     Args:
         text: Input text to convert (can include Markdown or HTML image syntax)
-        
-    Returns:
+        Returns:
         str: Complete LaTeX document as a string
     """
     converter = LatexConverter()
