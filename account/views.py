@@ -1146,16 +1146,25 @@ def upload_file(request):
             else:
                 text = file.read().decode('utf-8')
 
+            print("Extracted text:\n", text)  # Debug output
+            # Clean and normalize the text
+            text = text.strip()
+            text = re.sub(r'\n{3,}', '\n\n', text)  # Remove extra blank lines
+            
             latex_code = text_to_latex(text)
             os.remove(filepath)
+            
+            # Debug output
+            print("Final LaTeX output:\n", latex_code)
+            
             return render(request, 'review.html', {
                 'latex_code': latex_code,
-                'filename': file.name
+                'filename': file.name,
+                'extracted_text': text,
             })
     else:
         form = DocumentForm()
     return render(request, 'upload.html', {'form': form})
-
 
 def compile_pdf(request):
     if request.method == 'POST':
