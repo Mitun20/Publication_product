@@ -25,12 +25,28 @@ class LatexConverter:
             '>': r'\textgreater{}',
         }
         self.table_count = 0
-        self.figure_count = 0  # Initialize figure counter
+        self.figure_count = 1  # Initialize figure counter at 1
 
     def escape_special_chars(self, text: str) -> str:
-        for char, escape in self.special_chars.items():
-            text = text.replace(char, escape)
-        return text
+        # Skip escaping for LaTeX commands and environments
+        escaped_lines = []
+        in_latex_env = False
+        
+        for line in text.split('\n'):
+            if line.strip().startswith(('\\begin{', '\\end{', '\\caption', '\\label', '\\includegraphics')):
+                escaped_lines.append(line)
+                in_latex_env = line.strip().startswith('\\begin{') and not line.strip().startswith('\\end{')
+                continue
+            
+            if in_latex_env or line.strip().startswith('\\'):
+                escaped_lines.append(line)
+            else:
+                escaped_line = line
+                for char, escape in self.special_chars.items():
+                    escaped_line = escaped_line.replace(char, escape)
+                escaped_lines.append(escaped_line)
+        
+        return '\n'.join(escaped_lines)
     
     def format_sections(self, text: str) -> str:
         # Convert numbered sections (1. Introduction) to LaTeX sections
@@ -110,71 +126,46 @@ class LatexConverter:
         
         return text
 
-
     def format_images(self, text: str) -> str:
-        """Convert all image formats to proper LaTeX figures"""
-        # Ensure figure_count starts at 1 if this is the first run
-        if not hasattr(self, 'figure_count'):
-            self.figure_count = 1
-        
-        # Handle both <<IMAGE:path>> and \textless{}\textless{}IMAGE... formats
-        text = re.sub(
-            r'(?:<<IMAGE:|\\textless{}\\textless{}IMAGE:)([^>]+?)(?:>>|\\textgreater{}\\textgreater{})',
-            self._generate_figure_latex_custom,
-            text
-        )
-        return text
+        """Convert image placeholders to LaTeX figures with captions from preceding 'Fig:' lines."""
+        lines = text.splitlines()
+        output_lines = []
+        current_caption = None
 
+        fig_caption_re = re.compile(r'fig\s*\d*\s*:\s*(.+)', re.I)
+        image_placeholder_re = re.compile(r'<<IMAGE:([^>]+)>>')
 
-    def _generate_figure_latex_custom(self, match: re.Match) -> str:
-        """Special handler for the <<IMAGE:path>> format to generate expected figure output"""
-        try:
-            path = match.group(1).strip()
-            if not path:
-                raise ValueError("Empty image path")
+        for line in lines:
+            # Detect figure caption like "Fig: Deadpool" or "Fig 2: Something"
+            caption_match = fig_caption_re.match(line.strip())
+            if caption_match:
+                current_caption = caption_match.group(1).strip()
+                # do not output original caption line, replace with LaTeX figure caption instead
+                continue
 
-            # Clean path by removing unwanted characters and normalizing
-            clean_path = (
-                path.replace('\\textbackslash{}', '')
-                    .replace('\\textbackslash', '')
-                    .replace('\\', '/')
-                    .replace('{', '')
-                    .replace('}', '')
-                    .replace('//', '/')
-            )
+            # Detect image placeholder
+            image_match = image_placeholder_re.search(line)
+            if image_match:
+                image_path = image_match.group(1).replace('\\', '/')
+                caption = current_caption or ''
+                label = f"fig:image_{self.figure_count}"
 
-            # Extract directory and filename parts
-            import os
-            dir_path, filename = os.path.split(clean_path)
-            
-            # Strip leading underscore and extension from filename (e.g., "_0.png" → "0")
-            base_name, ext = os.path.splitext(filename)
-            if base_name.startswith('_'):
-                index = base_name[1:]
+                figure_latex = '\n'.join([
+                    r'\begin{figure}[h!]',
+                    r'\centering',
+                    fr'\includegraphics[width=0.8\textwidth]{{{image_path}}}',
+                    fr'\caption{{{caption}}}',
+                    fr'\label{{{label}}}',
+                    r'\end{figure}'
+                ])
+
+                output_lines.append(figure_latex)
+                self.figure_count += 1
+                current_caption = None  # Reset after using
             else:
-                index = base_name
+                output_lines.append(line)
 
-            # Reconstruct new filename as "image_N.png"
-            new_filename = f"image_{index}{ext}"
-            
-            # Construct final path without "_images" or other nested folders
-            final_path = f"extracted_images/{new_filename}"
-
-            # Generate proper LaTeX figure environment
-            figure_output = (
-                r'\begin{figure}[h!]' + '\n' +
-                r'\centering' + '\n' +
-                fr'\includegraphics[width=0.8\textwidth]{{{final_path}}}' + '\n' +
-                r'\caption{}' + '\n' +
-                fr'\label{{fig:image_{self.figure_count}}}' + '\n' +
-                r'\end{figure}'
-            )
-
-            self.figure_count += 1  # Increment the counter for the next image
-            return figure_output
-        except Exception as e:
-            return f"% ERROR: Could not process image: {str(e)}"
-
+        return '\n'.join(output_lines)
 
     def format_email(self, text: str) -> str:
         # Format contact section with email
@@ -193,12 +184,13 @@ class LatexConverter:
         return text.strip()
 
     def convert(self, text: str) -> str:
+        # Put format_images before escape_special_chars to prevent placeholder escaping before conversion
         processing_order = [
-            self.escape_special_chars,
             self.format_sections,
             self.format_lists,
             self.format_tables,
             self.format_images,
+            self.escape_special_chars,
             self.format_email,
             self.clean_whitespace,
         ]
@@ -264,3 +256,4 @@ def text_to_latex(text: str) -> str:
     """
     converter = LatexConverter()
     return converter.generate_latex_document(text)
+
