@@ -45,10 +45,11 @@ class Editor(models.Model):
         return self.affliation
 
 class Feedback(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='feedback_by')
+    feedback_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedback_to', null=True, blank=True)
     feedback = models.TextField()
     submitted_on = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.user.username
+        return f"Feedback from {self.user.username} to {self.feedback_to.username if self.feedback_to else 'N/A'}"
