@@ -65,8 +65,9 @@ from django.http import JsonResponse
 @user_passes_test(is_author)
 
 def Draftview(request):
-    submissions = Submission.objects.filter(article_status__article_status='Draft', author=request.user)
-    submission_statuses = check_submission_status(request.user)
+    author = Author.objects.get(user=request.user)
+    submissions = Submission.objects.filter(article_status__article_status='Draft', author=author)
+    submission_statuses = check_submission_status(author)
     
     if request.method =="POST":
         action = request.POST.get('action')
@@ -85,6 +86,7 @@ def Draftview(request):
 @login_required
 @user_passes_test(is_author)
 def Submittedview(request):
+    author = Author.objects.get(user=request.user)
     submissions = Submission.objects.filter(
         article_status__article_status__in=[
             'Submitted', 
@@ -95,14 +97,14 @@ def Submittedview(request):
             'Awaiting for EIC Decision',
             'Awaiting for Revision',
             'Published',
-            ], author=request.user)
+            ], author=author)
     
     paginator = Paginator(submissions, 10)  # Show 10 submissions per page
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
-    submission_statuses = check_submission_status(request.user)
+    submission_statuses = check_submission_status(author)
     
-    submission_statuses = check_submission_status(request.user)
+    submission_statuses = check_submission_status(author)
     
     admin_group = Group.objects.get(name='Admin Office')
 
@@ -176,8 +178,9 @@ def upload_additional_file(request):
 @login_required
 @user_passes_test(is_author)
 def Revisionview(request):
-    submissions = Submission.objects.filter(article_status__article_status__in=['Minor Revision' , 'Major Revision'], author=request.user)
-    submission_statuses = check_submission_status(request.user)
+    author = Author.objects.get(user=request.user)
+    submissions = Submission.objects.filter(article_status__article_status__in=['Minor Revision' , 'Major Revision'], author=author)
+    submission_statuses = check_submission_status(author)
     return render(request,'revisionview.html', {
         'submissions': submissions,
         **submission_statuses,
@@ -187,12 +190,13 @@ def Revisionview(request):
 @login_required
 @user_passes_test(is_author)
 def Acceptedview(request):
-    submissions = Submission.objects.filter(article_status__article_status__in=['Accepted'], decision__decision='Accepted',author=request.user)
+    author = Author.objects.get(user=request.user)
+    submissions = Submission.objects.filter(article_status__article_status__in=['Accepted'], decision__decision='Accepted',author=author)
     paginator = Paginator(submissions, 10)  # Show 10 submissions per page
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
     
-    submission_statuses = check_submission_status(request.user)
+    submission_statuses = check_submission_status(author)
     return render(request,'acceptedview.html', {
         'submissions': submissions,
         **submission_statuses,
@@ -203,7 +207,8 @@ def Acceptedview(request):
 @user_passes_test(is_author)
 def upload_copyright_form(request, submission_id):
     if request.method == 'POST':
-        submission = get_object_or_404(Submission, id=submission_id, author=request.user)
+        author = Author.objects.get(user=request.user)
+        submission = get_object_or_404(Submission, id=submission_id, author=author)
         # accepted_submission = get_object_or_404(Accepted_Submission, submission=submission)
         
         # Handle file upload
@@ -222,13 +227,14 @@ def upload_copyright_form(request, submission_id):
 @login_required
 @user_passes_test(is_author)
 def Rejectedview(request):
-    submissions = Submission.objects.filter(decision__decision='Rejected', author=request.user)
+    author = Author.objects.get(user=request.user)
+    submissions = Submission.objects.filter(decision__decision='Rejected', author=author)
     
     paginator = Paginator(submissions, 10)  # Show 10 submissions per page
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
     reviewer = Author.objects.get(user=User.objects.get(username="mukesh@gmail.com"))
-    submission_statuses = check_submission_status(request.user)
+    submission_statuses = check_submission_status(author)
     admin_group = Group.objects.get(name='Admin Office')
     admin_user = admin_group.user_set.first()
     return render(request,'rejectedview.html', {

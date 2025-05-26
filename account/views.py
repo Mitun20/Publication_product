@@ -975,30 +975,53 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 
-@csrf_exempt
-@login_required
-def submit_feedback(request):
-    if request.method == 'POST':
-        feedback_text = request.POST.get('feedback', '').strip()
-        if feedback_text:
-            Feedback.objects.create(user=request.user, feedback=feedback_text)
-            return JsonResponse({
-                'status': 'success', 
-                'message': 'Feedback submitted successfully.'
-            })
-        return JsonResponse({
-            'status': 'error', 
-            'message': 'Feedback cannot be empty.'
-        }, status=400)
-    return JsonResponse({
-        'status': 'error', 
-        'message': 'Invalid request method.'
-    }, status=405)
-
 def feedback_list(request):
     feedbacks = Feedback.objects.filter(is_active=True).order_by('-submitted_on')
     print("feedbacks",feedbacks)
     return render(request, 'feedback_popup.html', {'feedbacks': feedbacks})
+
+@login_required
+def submit_feedback(request):
+    if request.method == 'POST':
+        feedback_to_id = request.POST.get('feedback_to')
+        feedback_text = request.POST.get('feedback')
+
+        feedback_to = User.objects.get(id=feedback_to_id)
+        user = request.user
+        submission_title = request.POST.get('submission_title', '')
+        print("submission_title",submission_title)
+        # If feedback is to admin, feedback_to becomes the logged-in user (self)
+        if feedback_to.groups.filter(name='Admin').exists():
+            feedback_to = user
+            
+        full_feedback = f"{feedback_text} (for manuscript: {submission_title})"
+        Feedback.objects.create(
+            user=user,
+            feedback_to=feedback_to,
+            feedback=full_feedback
+        )
+
+        send_mail(
+            subject='Feedback Received',
+            message=f"Dear {feedback_to.get_full_name() or feedback_to.username},\n\n"
+                    f"You have received new feedback from {user.get_full_name() or user.username}:\n\n"
+                    f"\"{feedback_text}\"\n\n"
+                    f"For manuscript: \"{submission_title}\"\n\n"
+                    "Best regards,\nEditorial System",
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[feedback_to.email],
+            fail_silently=False,
+        )
+        if user.groups.filter(name='Author').exists():
+            return redirect('startnew')
+        elif user.groups.filter(name='Reviewer').exists():
+            return redirect('reviewed_manuscripts')
+        else:
+            # Default fallback redirect
+            return redirect('home')  # or any other page
+
+    # If GET or other method, redirect somewhere safe
+    return redirect('home')
 
 import os
 import re

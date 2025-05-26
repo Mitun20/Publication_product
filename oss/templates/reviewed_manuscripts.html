@@ -56,6 +56,17 @@
                                         {% else %}
                                         --
                                     {% endif %}
+                                    |
+                                    <a href="#" class="nav-link"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#reviewerFeedbackModal"
+                                    data-feedback-to="{{ submission.author.user.id }}"
+                                    data-submission-title="{{ submission.title }}">
+                                    Feedback
+                                    </a>
+
+
+
                                     </td>
                                     <td>{{ submission.submitted_on }}</td>
                                 </tr>
@@ -86,6 +97,50 @@
         </div>
     </div>
 </section>
+
+<!-- Reviewer Feedback Modal -->
+<div class="modal fade" id="reviewerFeedbackModal" tabindex="-1" aria-labelledby="reviewerFeedbackModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form method="POST" action="{% url 'submit_feedback' %}" class="modal-content">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewerFeedbackModalLabel">Submit Feedback</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+         <!-- Hidden input for feedback_to user id -->
+        <input type="hidden" name="feedback_to" id="reviewerFeedbackTo">
+
+        <!-- Hidden input for submission title -->
+        <input type="hidden" name="submission_title" id="submissionTitleInput">
+
+        <div class="mb-3">
+          <label for="reviewerFeedbackText" class="form-label">Your Feedback:</label>
+          <textarea name="feedback" id="reviewerFeedbackText" class="form-control" rows="4" placeholder="Write your feedback here..." required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+ const reviewerFeedbackModal = document.getElementById('reviewerFeedbackModal');
+reviewerFeedbackModal.addEventListener('show.bs.modal', function (event) {
+  const button = event.relatedTarget;
+  const feedbackToId = button.getAttribute('data-feedback-to');
+  const submissionTitle = button.getAttribute('data-submission-title');
+
+  reviewerFeedbackModal.querySelector('#reviewerFeedbackTo').value = feedbackToId;
+  reviewerFeedbackModal.querySelector('#submissionTitleInput').value = submissionTitle;
+});
+
+</script>
 
 
 {% endblock %}
