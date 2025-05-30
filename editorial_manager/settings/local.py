@@ -12,6 +12,15 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()  # This loads the variables from the .env file into environment variables
+
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_WHATSAPP_NUMBER = os.getenv('TWILIO_WHATSAPP_NUMBER')
+TWILIO_SMS_NUMBER = os.getenv('TWILIO_SMS_NUMBER')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 OPENAI_API_KEY = "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"
@@ -27,6 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost','172.16.156.76']
 
+# settings.py
 
 
 

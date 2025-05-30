@@ -1,457 +1,135 @@
 PROJECT_KNOWLEDGE = {
-   # AUTHOR SECTION
-   "hallo": "Hello! I am your assistant. Please specify a role and your question.",
-   "author work flow": """
-   AUTHOR COMPLETE WORKFLOW:
+   # === GENERAL/GREETINGS ===
+   "hi": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "hello": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "hey": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "greetings": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "good morning": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "good afternoon": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "howdy": "Hello! I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
+   "help": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin: Check plagiarism?', or 'Reviewer: Submit Reviews?'.",
+   "support": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin: Check plagiarism?', or 'Reviewer: Submit Reviews?'.",
+   "guide me": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin: Check plagiarism?', or 'Reviewer: Submit Reviews?'.",
+   "what can you do?": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin: Check plagiarism?', or 'Reviewer: Submit Reviews?'.",
 
-   1. Submission Flow:
-      - Login/register → 'Start New Submission' → 'Begin New Submission'
-
-   2. Step 1: Title, Category & Abstract
-      - Enter title and abstract
-      - Select manuscript category
-      - Click 'Save and Continue'
-
-   3. Step 2: File Upload
-      - Read instructions
-      - Choose file and add article type
-      - For multiple files: 'Add File'
-      - Verify and click 'Upload Files'
-
-   4. Step 3: Keywords
-      - Add multiple keywords
-      - Click 'Save and Continue'
-
-   5. Step 4: Authors & Affiliation
-      - Add co-authors (Name, Email, Affiliation)
-      - Click 'Save and Continue'
-
-   6. Step 5: Details & Comments
-      - Enter cover letter
-      - Answer remaining questions
-      - Click 'Save and Continue'
-
-   7. Step 6: Review & Submit
-      - System shows missing fields
-      - Verify details → 'View Proof'
-      - 'I have viewed the proof' → 'Submit'
-      - Confirmation email sent
-   """,
-   "author complete flow": """
-   AUTHOR COMPLETE WORKFLOW:
-
-   1. Submission Flow:
-      - Login/register → 'Start New Submission' → 'Begin New Submission'
-
-   2. Step 1: Title, Category & Abstract
-      - Enter title and abstract
-      - Select manuscript category
-      - Click 'Save and Continue'
-
-   3. Step 2: File Upload
-      - Read instructions
-      - Choose file and add article type
-      - For multiple files: 'Add File'
-      - Verify and click 'Upload Files'
-
-   4. Step 3: Keywords
-      - Add multiple keywords
-      - Click 'Save and Continue'
-
-   5. Step 4: Authors & Affiliation
-      - Add co-authors (Name, Email, Affiliation)
-      - Click 'Save and Continue'
-
-   6. Step 5: Details & Comments
-      - Enter cover letter
-      - Answer remaining questions
-      - Click 'Save and Continue'
-
-   7. Step 6: Review & Submit
-      - System shows missing fields
-      - Verify details → 'View Proof'
-      - 'I have viewed the proof' → 'Submit'
-      - Confirmation email sent
-   """,
-   # Multiple keys for the same value
-   "author workflow": """
-   AUTHOR COMPLETE WORKFLOW:
-
-   1. Submission Flow:
-      - Login/register → 'Start New Submission' → 'Begin New Submission'
-
-   2. Step 1: Title, Category & Abstract
-      - Enter title and abstract
-      - Select manuscript category
-      - Click 'Save and Continue'
-
-   3. Step 2: File Upload
-      - Read instructions
-      - Choose file and add article type
-      - For multiple files: 'Add File'
-      - Verify and click 'Upload Files'
-
-   4. Step 3: Keywords
-      - Add multiple keywords
-      - Click 'Save and Continue'
-
-   5. Step 4: Authors & Affiliation
-      - Add co-authors (Name, Email, Affiliation)
-      - Click 'Save and Continue'
-
-   6. Step 5: Details & Comments
-      - Enter cover letter
-      - Answer remaining questions
-      - Click 'Save and Continue'
-
-   7. Step 6: Review & Submit
-      - System shows missing fields
-      - Verify details → 'View Proof'
-      - 'I have viewed the proof' → 'Submit'
-      - Confirmation email sent
-   """,
-   "author submission flow": """
-   AUTHOR COMPLETE WORKFLOW:
-
-   1. Submission Flow:
-      - Login/register → 'Start New Submission' → 'Begin New Submission'
-
-   2. Step 1: Title, Category & Abstract
-      - Enter title and abstract
-      - Select manuscript category
-      - Click 'Save and Continue'
-
-   3. Step 2: File Upload
-      - Read instructions
-      - Choose file and add article type
-      - For multiple files: 'Add File'
-      - Verify and click 'Upload Files'
-
-   4. Step 3: Keywords
-      - Add multiple keywords
-      - Click 'Save and Continue'
-
-   5. Step 4: Authors & Affiliation
-      - Add co-authors (Name, Email, Affiliation)
-      - Click 'Save and Continue'
-
-   6. Step 5: Details & Comments
-      - Enter cover letter
-      - Answer remaining questions
-      - Click 'Save and Continue'
-
-   7. Step 6: Review & Submit
-      - System shows missing fields
-      - Verify details → 'View Proof'
-      - 'I have viewed the proof' → 'Submit'
-      - Confirmation email sent
-   """,
-   "author": {
-      "overview": "Author can submit manuscripts and track their progress through the system.",
-      "complete_flow": """
-      AUTHOR COMPLETE WORKFLOW:
-
-      1. Submission Flow:
-         - Login/register → 'Start New Submission' → 'Begin New Submission'
-
-      2. Step 1: Title, Category & Abstract
-         - Enter title and abstract
-         - Select manuscript category
-         - Click 'Save and Continue'
-
-      3. Step 2: File Upload
-         - Read instructions
-         - Choose file and add article type
-         - For multiple files: 'Add File'
-         - Verify and click 'Upload Files'
-
-      4. Step 3: Keywords
-         - Add multiple keywords
-         - Click 'Save and Continue'
-
-      5. Step 4: Authors & Affiliation
-         - Add co-authors (Name, Email, Affiliation)
-         - Click 'Save and Continue'
-
-      6. Step 5: Details & Comments
-         - Enter cover letter
-         - Answer remaining questions
-         - Click 'Save and Continue'
-
-      7. Step 6: Review & Submit
-         - System shows missing fields
-         - Verify details → 'View Proof'
-         - 'I have viewed the proof' → 'Submit'
-         - Confirmation email sent
-      """,
-      "submission_flow": "Login/register → 'Start New Submission' → 'Begin New Submission'",
-      "step1": "Title/Category/Abstract: Enter details, select category, click 'Save and Continue'",
-      "step2": "File Upload: Read instructions, add files, verify, click 'Upload Files'",
-      "step3": "Keywords: Add multiple keywords, click 'Save and Continue'",
-      "step4": "Authors & Affiliation: Add co-authors' details, click 'Save and Continue'",
-      "step5": "Details & Comments: Enter cover letter, answer questions, click 'Save and Continue'",
-      "step6": "Review & Submit: Verify details, view proof, confirm and submit",
-      "contact_admin": "Use the 'Contact Admin' button for queries"
-   },
-   # ADMIN SECTION
-   "admin office": {
-      "overview": "Admin manages submissions, checks plagiarism, and assigns manuscripts.",
-      "complete_flow": """
-      ADMIN COMPLETE WORKFLOW:
-      
-      1. Submitted Manuscripts:
-         - Check format and plagiarism
-         - Upload plagiarism report
-         - Reject with comments or 'Assign AE'
-      
-      2. Rejected Manuscripts:
-         - View rejection comments
-      
-      3. Accepted Manuscripts:
-         - Send correction reports
-         - After payment: 'Upload Corrected File'
-      
-      4. Manuscripts Under Review:
-         - View in-progress reviews
-      
-      5. Manuscripts Waiting for Revision:
-         - View pending reviewer assignments
-      
-      6. Overdue Manuscripts:
-         - View past-due reviews
-      
-      7. Typesetting/Proofreading:
-         - Upload final document
-         - Mark as 'Proof Read Done'
-      """,
-      "submitted_flow": "Check format/plagiarism → Upload report → Reject or 'Assign AE'",
-      "rejected_flow": "View rejected manuscripts with comments",
-      "accepted_flow": "Send correction reports → After payment → 'Upload Corrected File'",
-      "under_review": "View manuscripts currently being reviewed",
-      "waiting_revision": "View manuscripts awaiting reviewers",
-      "overdue": "View manuscripts past review due dates",
-      "typesetting": "Upload final document → Author confirmation → 'Proof Read Done'"
-   },
-   # Multiple keys for the same value (admin office)
-   "admin office workflow": """
-   ADMIN COMPLETE WORKFLOW:
+   # === AUTHOR-SPECIFIC ===
+   # Submission Process
    
-   1. Submitted Manuscripts:
-      - Check format and plagiarism
-      - Upload plagiarism report
-      - Reject with comments or 'Assign AE'
+   "steps to submit a paper": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "manuscript submission process": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "what are the submission steps": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "how do i start a submission": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "how to submit a manuscript": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "how to submit a paper": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "how to submit a manuscript online": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+   "How do I submit my article": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
    
-   2. Rejected Manuscripts:
-      - View rejection comments
-   
-   3. Accepted Manuscripts:
-      - Send correction reports
-      - After payment: 'Upload Corrected File'
-   
-   4. Manuscripts Under Review:
-      - View in-progress reviews
-   
-   5. Manuscripts Waiting for Revision:
-      - View pending reviewer assignments
-   
-   6. Overdue Manuscripts:
-      - View past-due reviews
-   
-   7. Typesetting/Proofreading:
-      - Upload final document
-      - Mark as 'Proof Read Done'
-   """,
-   "admin office complete flow": """
-   ADMIN COMPLETE WORKFLOW:
-   
-   1. Submitted Manuscripts:
-      - Check format and plagiarism
-      - Upload plagiarism report
-      - Reject with comments or 'Assign AE'
-   
-   2. Rejected Manuscripts:
-      - View rejection comments
-   
-   3. Accepted Manuscripts:
-      - Send correction reports
-      - After payment: 'Upload Corrected File'
-   
-   4. Manuscripts Under Review:
-      - View in-progress reviews
-   
-   5. Manuscripts Waiting for Revision:
-      - View pending reviewer assignments
-   
-   6. Overdue Manuscripts:
-      - View past-due reviews
-   
-   7. Typesetting/Proofreading:
-      - Upload final document
-      - Mark as 'Proof Read Done'
-   """,
-   "admin basic flow": "Check format/plagiarism → Upload report → Reject or 'Assign AE'",
+   # File Upload
+   "where to upload manuscript": "In Step 2 (File Upload), click 'Choose File'. Supported formats: PDF/DOCX. Use 'Add File' for multiple uploads.",
+   "how to attach files": "In Step 2 (File Upload), click 'Choose File'. Supported formats: PDF/DOCX. Use 'Add File' for multiple uploads.",
+   "file upload steps": "In Step 2 (File Upload), click 'Choose File'. Supported formats: PDF/DOCX. Use 'Add File' for multiple uploads.",
+   "can i upload multiple files": "Yes! In Step 2, use 'Add File' for each additional document after the first upload.",
+   "what formats are accepted": "Typically PDF, DOCX, or LaTeX files. Check the journal's guidelines for specifics.",
 
-   # ASSOCIATE EDITOR SECTION
-   "associate editor": {
-      "overview": "AE manages review process and makes recommendations.",
-      "complete_flow": """
-      ASSOCIATE EDITOR COMPLETE WORKFLOW:
-      
-      1. Manuscripts to Review:
-         - 'Invite' reviewers
-         - 'Reject' manuscript
-         - View plagiarism report
-      
-      2. Manuscripts with Review Reports:
-         - View reviewer comments
-         - Contact reviewers
-         - 'Recommend' manuscript
-      
-      3. Manuscripts Under Review:
-         - View assigned reviewers' progress
-      
-      4. Manuscripts to EIC:
-         - After recommendation → Goes to Editor-in-Chief
-      """,
-      "to_review": "'Invite' reviewers, 'Reject', or view plagiarism report",
-      "with_reports": "View comments, contact reviewers, 'Recommend'",
-      "under_review": "View assigned reviewers' progress",
-      "to_eic": "After recommendation → Goes to Editor-in-Chief"
-   },
-   # Multiple keys for the same value (associate editor)
-   "associate editor workflow": """
-   ASSOCIATE EDITOR COMPLETE WORKFLOW:
-   
-   1. Manuscripts to Review:
-      - 'Invite' reviewers
-      - 'Reject' manuscript
-      - View plagiarism report
-   
-   2. Manuscripts with Review Reports:
-      - View reviewer comments
-      - Contact reviewers
-      - 'Recommend' manuscript
-   
-   3. Manuscripts Under Review:
-      - View assigned reviewers' progress
-   
-   4. Manuscripts to EIC:
-      - After recommendation → Goes to Editor-in-Chief
-   """,
-   "associate editor complete flow": """
-   ASSOCIATE EDITOR COMPLETE WORKFLOW:
-   
-   1. Manuscripts to Review:
-      - 'Invite' reviewers
-      - 'Reject' manuscript
-      - View plagiarism report
-   
-   2. Manuscripts with Review Reports:
-      - View reviewer comments
-      - Contact reviewers
-      - 'Recommend' manuscript
-   
-   3. Manuscripts Under Review:
-      - View assigned reviewers' progress
-   
-   4. Manuscripts to EIC:
-      - After recommendation → Goes to Editor-in-Chief
-   """,
+   # Co-authors
+   "how to add co-authors": "In Step 4 (Authors & Affiliations), enter each author’s Name, Email, and Affiliation. Click 'Add Author' if needed.",
+   "include collaborators": "In Step 4 (Authors & Affiliations), enter each author’s Name, Email, and Affiliation. Click 'Add Author' if needed.",
+   "author affiliation steps": "In Step 4 (Authors & Affiliations), enter each author’s Name, Email, and Affiliation. Click 'Add Author' if needed.",
 
-   # REVIEWER SECTION
-   "reviewer": {
-      "overview": "Reviewer evaluates manuscripts and provides feedback.",
-      "complete_flow": """
-      REVIEWER COMPLETE WORKFLOW:
-      
-      1. Invitation Flow:
-         - View/respond to invitations (Accept/Reject)
-      
-      2. Manuscripts to Review:
-         - 'View PDF' to examine manuscript
-         - 'Recommend' to submit comments
-      
-      3. Reviewed Manuscripts:
-         - View your completed reviews
-      """,
-      "invitation": "View and respond to review invitations (Accept/Reject)",
-      "to_review": "'View PDF' to examine, 'Recommend' to submit comments",
-      "reviewed": "View your completed reviews"
-   },
-   # Multiple keys for the same value (reviewer)
-   "reviewer workflow": """
-   REVIEWER COMPLETE WORKFLOW:
-   
-   1. Invitation Flow:
-      - View/respond to invitations (Accept/Reject)
-   
-   2. Manuscripts to Review:
-      - 'View PDF' to examine manuscript
-      - 'Recommend' to submit comments
-   
-   3. Reviewed Manuscripts:
-      - View your completed reviews
-   """,
-   "reviewer complete flow": """
-   REVIEWER COMPLETE WORKFLOW:
-   
-   1. Invitation Flow:
-      - View/respond to invitations (Accept/Reject)
-   
-   2. Manuscripts to Review:
-      - 'View PDF' to examine manuscript
-      - 'Recommend' to submit comments
-   
-   3. Reviewed Manuscripts:
-      - View your completed reviews
-   """,
+   # Post-Submission
+   "can i edit after submission": "No direct edits post-submission. Contact the admin office for corrections.",
+   "change manuscript after uploading": "No direct edits post-submission. Contact the admin office for corrections.",
+   "fix errors in submitted paper": "No direct edits post-submission. Contact the admin office for corrections.",
 
-   # EDITOR-IN-CHIEF SECTION
-   "editor in chief": {
-      "overview": "EIC makes final decisions on manuscripts.",
-      "complete_flow": """
-      EDITOR-IN-CHIEF COMPLETE WORKFLOW:
-      
-      1. Manuscripts Waiting for Decision:
-         - 'View' AE comments
-         - 'View PDF' to examine manuscript
-         - 'Make Decision' for final recommendation
-      """,
-      "waiting_decision": "'View' AE comments, 'View PDM', 'Make Decision'"
-   },
-   # Multiple keys for the same value (editor in chief)
-   "editor in chief workflow": """
-   EDITOR-IN-CHIEF COMPLETE WORKFLOW:
-   
-   1. Manuscripts Waiting for Decision:
-      - 'View' AE comments
-      - 'View PDF' to examine manuscript
-      - 'Make Decision' for final recommendation
-   """,
-   "editor in chief complete flow": """
-   EDITOR-IN-CHIEF COMPLETE WORKFLOW:
-   
-   1. Manuscripts Waiting for Decision:
-      - 'View' AE comments
-      - 'View PDF' to examine manuscript
-      - 'Make Decision' for final recommendation
-   """,
+   # === ADMIN-SPECIFIC ===
+   # Plagiarism Check
+   "how to check plagiarism": "Use an online plagiarism tool, then upload the report in the 'Manuscripts Submitted' section.",
+   "run similarity test": "Use an online plagiarism tool, then upload the report in the 'Manuscripts Submitted' section.",
+   "upload plagiarism report": "After generating the report, attach it to the manuscript in 'Manuscripts Submitted'.",
+    "I need to export an Excel file": "Yes, there is an option to export an Excel file in the ‘Manuscripts with Acceptance’ tab. Click that to export the Excel file. It exports only the accepted papers.",
 
-    # DEFAULT RESPONSE
-    "default": "I can answer about author, admin, associate editor, reviewer, or editor-in-chief workflows. Please specify a role and question."
+   # Rejecting Manuscripts
+   "how to reject a paper": "Click 'Reject' in the selected paper's row, add comments, and notify the author.",
+   "decline submission steps": "Click 'Reject' in the selected paper's row, add comments, and notify the author.",
+
+   # Assigning Editors
+   "how to assign ae": "Under 'Manuscripts Submitted', click 'Assign AE' and select an editor from the list.",
+   "steps to select associate editor": "Under 'Manuscripts Submitted', click 'Assign AE' and select an editor from the list.",
+
+   # === ASSOCIATE EDITOR (AE) ===
+   # Inviting Reviewers
+   "how to invite reviewers": "Under 'Manuscripts to Review', click 'Invite' and select reviewers. They’ll receive an email.",
+   "add referees to manuscript": "Under 'Manuscripts to Review', click 'Invite' and select reviewers. They’ll receive an email.",
+
+   # Post-Review Actions
+   "what to do after reviews": "Evaluate reviewer comments, then click 'Recommend' to send to the Editor-in-Chief (EIC).",
+   "how to forward to eic": "Click 'Recommend' in 'Manuscripts with Review Reports' to send the manuscript to the EIC.",
+
+   # === REVIEWER ===
+   # Accept/Decline Review
+   "how to accept review request": "Under 'Invitation', click 'Accept'. You’ll see the manuscript in 'Manuscripts to Review'.",
+   "decline to review": "Under 'Invitation', click 'Reject' to decline the review request.",
+
+   # Submit Review
+   "where to upload review comments": "Under 'Manuscripts to Review', click 'Recommend' to submit your comments.",
+   "how to submit review": "Under 'Manuscripts to Review', click 'Recommend' to submit your comments.",
+   
+   # === EDITOR-IN-CHIEF (EIC) ===
+   "how to make final decision": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
+   "accept/reject manuscript steps": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
+   "final decision process": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
+   "finalize manuscript": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
+   
+   # === DEFAULT RESPONSE ===
+   "default": "I am your assistant. Please specify your role (Author/Admin/Associate Editor/Reviewer/EIC) and question.",
 }
-
 def get_answer(question):
     question = question.lower().strip()
-    # First, check for direct keys (like "hallo")
+    
+    # First check exact matches
     if question in PROJECT_KNOWLEDGE:
         return PROJECT_KNOWLEDGE[question]
-    # Then, check for role and sub-question
-    for role in ["author", "admin office", "associate editor", "reviewer", "editor in chief"]:
-        if role in question:
-            role_dict = PROJECT_KNOWLEDGE[role]
-            for subkey in role_dict:
-                if subkey in question:
-                    return role_dict[subkey]
-            return role_dict.get("overview", PROJECT_KNOWLEDGE["default"])
-    return PROJECT_KNOWLEDGE["default"]
+    
+    # Then check keyword matches
+    keyword_map = {
+        # Author keywords
+         "submit": "How do I submit my article",
+         "publish": "How do I submit my article",
+         "upload file": "where to upload",
+         "file upload": "where to upload manuscript",
+         "co-authors": "how to add co-authors",
+         "edit submission": "can i edit after submission",
+         
+         # Admin keywords
+         "plagiarism": "how to check plagiarism",
+         "reject": "how to reject a paper",
+         "decline": "how to reject a paper",
+         "assign ae": "how to assign ae",
+         
+         # Associate Editor keywords
+         "invite reviewer": "how to invite reviewers",
+         "add referee": "add referees to manuscript",
+         "post review": "what to do after reviews",
+         "forward to eic": "what to do after reviews",
+         "recommend": "what to do after reviews",
+         "submit review": "where to upload review comments",
+         
+         # Reviewer keywords
+         "accept invitation": "accept review",
+         "decline invitation": "decline to review",
+         "reject invitation": "decline to review",
+         
+         # Editor keywords
+         "decision": "make decision"
+    }
+    
+    for keyword, response_key in keyword_map.items():
+        if keyword in question:
+            return PROJECT_KNOWLEDGE[response_key]
+    
+    # Fallback with suggestions
+    return ("I can help with:\n"
+            "- Submission questions (upload, status)\n"
+            "- Review processes (Review, accept\Reject)\n"
+            "- Editorial decisions\n\n"
+           )

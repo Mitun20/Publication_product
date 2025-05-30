@@ -5,6 +5,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.views import PasswordChangeDoneView
 from oss.views import Draftview
 from dl.views import bridge
+from .whatsapp import send_message_view
+from .sms import send_sms_view
 
 urlpatterns = [
     path('register/',register, name='register'),
@@ -64,5 +66,6 @@ urlpatterns = [
     path('upload/', upload_file, name='upload'),
     path('compile-pdf/', compile_pdf, name='compile_pdf'),
     
-
+    path('send_whatsapp/', send_message_view, name='send_whatsapp'),
+    path('send_sms/', send_sms_view, name='send_sms'),
 ]

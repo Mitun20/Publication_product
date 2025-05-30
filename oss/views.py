@@ -1864,6 +1864,7 @@ def contact(request):
             message = form.cleaned_data['message']
             user =  User.objects.get(email=to_email)  # Assuming 'user' in send_email corresponds to the 'to_email'
             context = {'message': message}
+            print(f"Sending email to {to_email} with subject '{subject}' and message '{message}'")
             send_email(
                 to_email=to_email,
                 subject=subject,
@@ -1871,10 +1872,11 @@ def contact(request):
                 user=user,
                 context=context,
             )
+            print(f"Sending email to {to_email} with subjecxfgjghjt ")
             return redirect(reverse('success_page'))  # Redirect to a success page or back to the list
     else:
         form = ContactForm(to_email=to_email)  # Pre-fill the to_email field
-
+        print(f"Sending email to {to_email} with subject ")
     return render(request, 'contact_form.html', {'form': form})
 # -----------success for mail-------------------------------------------------------------------------------------------------------
 
@@ -1972,7 +1974,7 @@ def dashboard_view(request):
             'state': item['author__state'],
             'city': city,
             'paper_count': item['paper_count'],
-            'sample_title': item['sample_title']
+            # 'sample_title': item['sample_title']
         })
     # Format for visualization
     countries = [item['author__country__country'] for item in country_data]
