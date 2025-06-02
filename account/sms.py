@@ -1,5 +1,7 @@
 from twilio.rest import Client
 from editorial_manager.settings import local
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 def send_sms_message(to, message):
     client = Client(local.TWILIO_ACCOUNT_SID, local.TWILIO_AUTH_TOKEN)
@@ -16,6 +18,13 @@ def send_sms_message(to, message):
         return None
 
 from django.http import JsonResponse
+
+def send_sms(user, template_name, context):
+    html_content = render_to_string(template_name, context)
+    message = strip_tags(html_content)
+    # to = user.phone_number
+    to = '+917395829944'
+    return send_sms_message(to, message)
 
 def send_sms_view(request):
     to = '+917395829944'  # recipient phone number with plus and country code

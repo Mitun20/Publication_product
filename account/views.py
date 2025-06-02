@@ -4,6 +4,8 @@ from django.contrib.auth.models import User,Group
 from django.contrib.auth.decorators import login_required , user_passes_test
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError  
+from account.sms import send_sms
+from account.whatsapp import send_whatsapp
 from oss.services import send_email
 from .forms import *
 from oss.forms import *
@@ -127,14 +129,27 @@ def create_user(request):
                 password=temp_password,  # Use the generated random password
                 is_active=is_active
             )
-            
-            send_email(
-                    to_email=user.email,
-                    subject='Your account has been created',
-                    template_name='email_templates/account_created.html',
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                        to_email=user.email,
+                        subject='Your account has been created',
+                        template_name='email_templates/account_created.html',
+                        user=user,
+                        context={'user': user }
+                    )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
                     user=user,
-                    context={'user': user }
+                    template_name='email_templates/account_created.html',
+                    context={'user': user}
                 )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=user,
+                    template_name='email_templates/account_created.html',
+                    context={'user': user}
+                )
+            
             return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
@@ -280,14 +295,26 @@ def update_user_groups(request):
     
     # Send email with all assigned roles
     if assigned_groups:
-        send_email(
-            to_email=user.email,
-            subject='Roles assigned to you',
-            template_name='email_templates/admin_role.html',
-            user=user,
-            context={'user': user, 'assigned_groups': assigned_groups, 'verification_link': verification_link}
-        )
-    
+        if Modes.objects.filter(name="Email",is_active=True):
+            send_email(
+                to_email=user.email,
+                subject='Roles assigned to you',
+                template_name='email_templates/admin_role.html',
+                user=user,
+                context={'user': user, 'assigned_groups': assigned_groups, 'verification_link': verification_link}
+            )
+        if Modes.objects.filter(name="Whatsapp",is_active=True):
+            send_whatsapp(
+                user=user,
+                template_name='email_templates/admin_role.html',
+                context={'user': user, 'assigned_groups': assigned_groups, 'verification_link': verification_link}
+            )
+        if Modes.objects.filter(name="SMS",is_active=True):
+            send_sms(
+                user=user,
+                template_name='email_templates/admin_role.html',
+                context={'user': user, 'assigned_groups': assigned_groups, 'verification_link': verification_link}
+            )
     # Update Editor model for AE/EIC roles
     if ae_group in user.groups.all() or eic_group in user.groups.all():
         editor, created = Editor.objects.get_or_create(user=user)
@@ -340,15 +367,26 @@ def reset_user_password(request):
                 'verification_link': verification_link,
             }
 
-            
-            send_email(
-                to_email=email,
-                subject='Your password has been reset',
-                template_name='email_templates/reset_password_email.html',
-                user=user,
-                context=context
-            )
-            
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=email,
+                    subject='Your password has been reset',
+                    template_name='email_templates/reset_password_email.html',
+                    user=user,
+                    context=context
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=user,
+                    template_name='email_templates/reset_password_email.html',
+                    context=context
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=user,
+                    template_name='email_templates/reset_password_email.html',
+                    context=context
+                )
             return JsonResponse({'success': True})
         except User.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User does not exist'}, status=404)
@@ -399,13 +437,26 @@ def assign_journal(request):
             }
 
             # Send email
-            send_email(
-                to_email=user.email,
-                subject='Regarding Journal Assignment',
-                template_name='email_templates/journal_assignment_email.html',
-                user=user,
-                context=context
-            )
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=user.email,
+                    subject='Regarding Journal Assignment',
+                    template_name='email_templates/journal_assignment_email.html',
+                    user=user,
+                    context=context
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=user,
+                    template_name='email_templates/journal_assignment_email.html',
+                    context=context
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=user,
+                    template_name='email_templates/journal_assignment_email.html',
+                    context=context
+                )
             return JsonResponse({'success': True})
         except User.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'User does not exist.'})
@@ -603,15 +654,26 @@ def register(request):
                 token = generate_token(user)
                 uid = encode_uid(user)
                 verification_link = f"{settings.SITE_URL}{reverse('set_new_password', kwargs={'uidb64': uid, 'token': token})}"
-        
-                send_email(
-                        to_email=user.email,
-                        subject='Registration Success',
-                        template_name='email_templates/registration_success.html',
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                            to_email=user.email,
+                            subject='Registration Success',
+                            template_name='email_templates/registration_success.html',
+                            user=user,
+                            context={'user': user ,'verification_link': verification_link,}
+                        )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
                         user=user,
+                        template_name='email_templates/registration_success.html',
                         context={'user': user ,'verification_link': verification_link,}
                     )
-                
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=user,
+                        template_name='email_templates/registration_success.html',
+                        context={'user': user ,'verification_link': verification_link,}
+                    )
                 return redirect('registration_complete')
             except IntegrityError:
                 form.add_error('email', 'This email address is already registered.')

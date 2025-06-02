@@ -6,11 +6,13 @@ import logging
 from django.http import  HttpResponse, HttpResponseNotAllowed, HttpResponseNotFound, JsonResponse, HttpResponseBadRequest
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
+from account.sms import send_sms
+from account.whatsapp import send_whatsapp
 from dl.models import Issue, Published_article, Volume
 from .auth import *
 from .forms import *
 from .models import *
-from account.models import Author, Editor
+from account.models import Author, Editor, Modes
 import json
 from django.db.models import Q
 from django.shortcuts import redirect, render, get_object_or_404
@@ -32,31 +34,6 @@ from account.converter import text_to_latex
 from django.core.files.storage import FileSystemStorage
 from django.core.files import File
 import traceback
-
-# sms
-# views.py
-from twilio.rest import Client
-from django.http import JsonResponse
-
-# def send_sms(request):
-#     to_number = request.POST.get('to')  # Reviewer's phone number
-#     message = request.POST.get('message')  # The message from the form
-
-#     # Twilio credentials
-#     account_sid = 'your_account_sid'
-#     auth_token = 'your_auth_token'
-#     client = Client(account_sid, auth_token)
-
-#     try:
-#         message = client.messages.create(
-#             body=message,
-#             from_='+your_twilio_number',
-#             to=to_number
-#         )
-#         return JsonResponse({"status": "success"})
-#     except Exception as e:
-#         return JsonResponse({"status": "error", "message": str(e)})
-
 
 
 # -----------------------------------------------------------------------------Submission Flow------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -798,23 +775,38 @@ def submission_step_six(request, submission_id):
             if request.POST['action'] == 'submit':
                 submission.article_status_id = article_status_submitted.id
                 submission.save()
-                send_email(
-                    to_email=submission.author.email,
-                    subject='Paper Status Update - ICERCS 2024',
-                    template_name='email_templates/submitted_author.html',
-                    user=submission.author,
-                    context={'submission': submission }
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=submission.author.user.email,
+                        subject='Paper Status Update - ICERCS 2024',
+                        template_name='email_templates/submitted_author.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
+                        user=submission.author.user,
+                        template_name='email_templates/submitted_author.html',
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=submission.author.user,
+                        template_name='email_templates/submitted_author.html',
+                        context={'submission': submission }
+                    )
                 admin =User.objects.get(
                     groups__name='Admin Office'
                 )
-                send_email(
-                    to_email=admin.email,
-                    subject='Manuscript Submitted',
-                    template_name='email_templates/submitted_admin.html',
-                    user=admin,
-                    context={'submission': submission , 'admin':admin}
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=admin.email,
+                        subject='Manuscript Submitted',
+                        template_name='email_templates/submitted_admin.html',
+                        user=admin,
+                        context={'submission': submission , 'admin':admin}
+                    )
+                
             # Redirect to a confirmation page or wherever needed
             return redirect('submitted')  # Replace 'confirmation_page' with your actual URL name
     return render(request, 'step-6.html', {'submission': submission})
@@ -922,16 +914,35 @@ def assign_ae(request, submission_id):
         submission.decissioned_on = timezone.now()
         submission.decision_by = request.user
         submission.save()
-        send_email(
-                    to_email=editor.email,
-                    subject='Manuscript Assigned',
-                    template_name='email_templates/ae_assigned.html',
-                    user=editor,
-                    context={
-                        'submission': submission,
-                        'editor': editor,
-                    }
-                )
+        if Modes.objects.filter(name="Email",is_active=True):
+            send_email(
+                        to_email=editor.email,
+                        subject='Manuscript Assigned',
+                        template_name='email_templates/ae_assigned.html',
+                        user=editor,
+                        context={
+                            'submission': submission,
+                            'editor': editor,
+                        }
+                    )
+        if Modes.objects.filter(name="Whatsapp",is_active=True):
+            send_whatsapp(
+                template_name='email_templates/ae_assigned.html',
+                user=editor,
+                context={
+                    'submission': submission,
+                    'editor': editor,
+                }
+            )
+        if Modes.objects.filter(name="SMS",is_active=True):
+            send_sms(
+                template_name='email_templates/ae_assigned.html',
+                user=editor,
+                context={
+                    'submission': submission,
+                    'editor': editor,
+                }
+            )
         return redirect('admin_office')    # Adjust this to your actual redirect path
 
     else:
@@ -961,11 +972,24 @@ def reject_manuscript(request, manuscript_id):
             submission.decissioned_on = timezone.now()
             submission.decision_by = request.user
             submission.save()
-            send_email(
-                    to_email=submission.author.email,
-                    subject='Manuscript Rejected',
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                        to_email=submission.author.user.email,
+                        subject='Manuscript Rejected',
+                        template_name='email_templates/decision_rejected.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=submission.author.user,
                     template_name='email_templates/decision_rejected.html',
-                    user=submission.author,
+                    context={'submission': submission }
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=submission.author.user,
+                    template_name='email_templates/decision_rejected.html',
                     context={'submission': submission }
                 )
             return JsonResponse({'success': True})
@@ -1032,12 +1056,24 @@ def send_correction_report(request):
                     correction_commments=correction_comments,
                     due_date=timezone.now().date() + timedelta(days=due_days)
                 )
-            
-            send_email(
-                    to_email=submission.author.email,
-                    subject='Corrections in Manuscript ',
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                        to_email=submission.author.user.email,
+                        subject='Corrections in Manuscript ',
+                        template_name='email_templates/corrections_to_author.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=submission.author.user,
                     template_name='email_templates/corrections_to_author.html',
-                    user=submission.author,
+                    context={'submission': submission }
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=submission.author.user,
+                    template_name='email_templates/corrections_to_author.html',
                     context={'submission': submission }
                 )
 
@@ -1446,11 +1482,24 @@ def save_decision(request):
                 due_days = date_obj.due_days_to_major_revision
                 submission.revision_due_date=timezone.now().date() + timedelta(days=due_days)
                 
-            send_email(
-                    to_email=submission.author.email,
-                    subject='Manuscript Decision',
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                        to_email=submission.author.user.email,
+                        subject='Manuscript Decision',
+                        template_name='email_templates/decision_revision.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=submission.author.user,
                     template_name='email_templates/decision_revision.html',
-                    user=submission.author,
+                    context={'submission': submission }
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=submission.author.user,
+                    template_name='email_templates/decision_revision.html',
                     context={'submission': submission }
                 )
         else:
@@ -1459,21 +1508,47 @@ def save_decision(request):
                 date_obj = Date.objects.get(journal=journal)
                 due_days = date_obj.due_days_to_payment
                 submission.payment_due_date=timezone.now().date() + timedelta(days=due_days)
-                send_email(
-                    to_email=submission.author.email,
-                    subject='Manuscript Decision',
-                    template_name='email_templates/decision_accepted.html',
-                    user=submission.author,
-                    context={'submission': submission }
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=submission.author.user.email,
+                        subject='Manuscript Decision',
+                        template_name='email_templates/decision_accepted.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
+                        user=submission.author.user,
+                        template_name='email_templates/decision_accepted.html',
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=submission.author.user,
+                        template_name='email_templates/decision_accepted.html',
+                        context={'submission': submission }
+                    )
             else:
-                send_email(
-                    to_email=submission.author.email,
-                    subject='Manuscript Decision',
-                    template_name='email_templates/decision_rejected.html',
-                    user=submission.author,
-                    context={'submission': submission }
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=submission.author.user.email,
+                        subject='Manuscript Decision',
+                        template_name='email_templates/decision_rejected.html',
+                        user=submission.author,
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
+                        user=submission.author.user,
+                        template_name='email_templates/decision_rejected.html',
+                        context={'submission': submission }
+                    )
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=submission.author.user,
+                        template_name='email_templates/decision_rejected.html',
+                        context={'submission': submission }
+                    )
             submission.article_status=Article_Status.objects.get(article_status=decision.decision)
         
         submission.decissioned_on = timezone.now()  
@@ -1583,14 +1658,27 @@ def accept_invitation(request):
                 editor = None
                 logger.error("No AE (editor) assigned to this submission.")
                 return JsonResponse({'status': 'Error', 'message': 'No AE (editor) assigned to this submission.'}, status=500)
-
-            send_email(
-                to_email=editor.email,
-                subject='Invitation Accepted',
-                template_name='email_templates/reviewer_accepted.html',
-                user=editor,
-                context={'submission': submission, 'reviewer': author, 'editor': editor}
-            )
+            
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=editor.email,
+                    subject='Invitation Accepted',
+                    template_name='email_templates/reviewer_accepted.html',
+                    user=editor,
+                    context={'submission': submission, 'reviewer': author, 'editor': editor}
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=editor,
+                    template_name='email_templates/reviewer_accepted.html',
+                    context={'submission': submission, 'reviewer': author, 'editor': editor}
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=editor,
+                    template_name='email_templates/reviewer_accepted.html',
+                    context={'submission': submission, 'reviewer': author, 'editor': editor}
+                )
 
             all_accepted = (
                 Reviewer_Invitation.objects.filter(submission=submission, invite_status='A').count() ==
@@ -1623,15 +1711,27 @@ def reject_invitation(request):
             editor = None
             logger.error("No AE (editor) assigned to this submission.")
             return JsonResponse({'status': 'Error', 'message': 'No AE (editor) assigned to this submission.'}, status=500)
-
-        send_email(
-            to_email=editor.email,
-            subject='Invitation Rejected',
-            template_name='email_templates/reviewer_rejected.html',
-            user=editor,
-            context={'submission': submission, 'reviewer': author, 'editor': editor}
-        )
-
+        
+        if Modes.objects.filter(name="Email",is_active=True):
+            send_email(
+                to_email=editor.email,
+                subject='Invitation Rejected',
+                template_name='email_templates/reviewer_rejected.html',
+                user=editor,
+                context={'submission': submission, 'reviewer': author, 'editor': editor}
+            )
+        if Modes.objects.filter(name="Whatsapp",is_active=True):
+            send_whatsapp(
+                user=editor.email,
+                template_name='email_templates/reviewer_rejected.html',
+                context={'submission': submission, 'reviewer': author, 'editor': editor}
+            )
+        if Modes.objects.filter(name="SMS",is_active=True):
+            send_sms(
+                user=editor.email,
+                template_name='email_templates/reviewer_rejected.html',
+                context={'submission': submission, 'reviewer': author, 'editor': editor}
+            )
         return JsonResponse({'status': 'Rejected'})
     
 @login_required
@@ -1710,13 +1810,26 @@ def submit_review_comments(request):
                 logger.error("No AE (editor) assigned to this submission.")
                 return JsonResponse({'status': 'Error', 'message': 'No AE (editor) assigned to this submission.'}, status=500)
 
-            send_email(
-                to_email=editor.email,
-                subject='Invitation Completed',
-                template_name='email_templates/reviewer_completed.html',
-                user=editor,
-                context={'submission': submission, 'reviewer': user, 'editor': editor}
-            )
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=editor.email,
+                    subject='Invitation Completed',
+                    template_name='email_templates/reviewer_completed.html',
+                    user=editor,
+                    context={'submission': submission, 'reviewer': user, 'editor': editor}
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=editor,
+                    template_name='email_templates/reviewer_completed.html',
+                    context={'submission': submission, 'reviewer': user, 'editor': editor}
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=editor,
+                    template_name='email_templates/reviewer_completed.html',
+                    context={'submission': submission, 'reviewer': user, 'editor': editor}
+                )
             # submission = Submission.objects.get(id=submission_id)
             # submission.article_status = Article_Status.objects.get(article_status='Awaiting AE Recommendation')
                  # Check if all Submission_Reviewer entries for this submission are complete
@@ -1811,13 +1924,26 @@ def send_invitation(request):
                 )
                 date=timezone.now() + timedelta(days=due_days)
                 # Send email
-                send_email(
-                    to_email=reviewer.email,
-                    subject='Invitation to Review Manuscript',
-                    template_name='email_templates/invitation_email.html',
-                    user=reviewer,
-                    context={'submission': submission, 'reviewer': reviewer,'date':date }
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=reviewer.email,
+                        subject='Invitation to Review Manuscript',
+                        template_name='email_templates/invitation_email.html',
+                        user=reviewer,
+                        context={'submission': submission, 'reviewer': reviewer,'date':date }
+                    )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
+                        user=reviewer,
+                        template_name='email_templates/invitation_email.html',
+                        context={'submission': submission, 'reviewer': reviewer,'date':date }
+                    )
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=reviewer,
+                        template_name='email_templates/invitation_email.html',
+                        context={'submission': submission, 'reviewer': reviewer,'date':date }
+                    )
                 
             submission.article_status = Article_Status.objects.get(article_status='Awaiting for Reviewers')
             submission.save()
@@ -1889,13 +2015,26 @@ def submit_recommendation(request):
                 chief_editor = chief_editor_assignment.editor.user
                 
                 # Send email to Chief Editor
-                send_email(
-                    to_email=chief_editor.email,
-                    subject='AE Recommendations',
-                    template_name='email_templates/ae_completed.html',
-                    user=chief_editor,
-                    context={'submission': submission, 'chief_editor': chief_editor}
-                )
+                if Modes.objects.filter(name="Email",is_active=True):
+                    send_email(
+                        to_email=chief_editor.email,
+                        subject='AE Recommendations',
+                        template_name='email_templates/ae_completed.html',
+                        user=chief_editor,
+                        context={'submission': submission, 'chief_editor': chief_editor}
+                    )
+                if Modes.objects.filter(name="Whatsapp",is_active=True):
+                    send_whatsapp(
+                        user=chief_editor,
+                        template_name='email_templates/ae_completed.html',
+                        context={'submission': submission, 'chief_editor': chief_editor}
+                    )
+                if Modes.objects.filter(name="SMS",is_active=True):
+                    send_sms(
+                        user=chief_editor,
+                        template_name='email_templates/ae_completed.html',
+                        context={'submission': submission, 'chief_editor': chief_editor}
+                    )
             else:
                 # Handle the case where no Chief Editor is found
                 return JsonResponse({'status': 'error', 'message': 'Chief Editor not found for this journal.'}, status=404)
@@ -1976,13 +2115,27 @@ def contact(request):
             user =  User.objects.get(email=to_email)
             context = {'message': message}
             print(f"Sending email to {to_email} with subject '{subject}' and message '{message}'")
-            send_email(
-                to_email=to_email,
-                subject=subject,
-                template_name='email_templates/message_form.html',
-                user=user,
-                context=context,
-            )
+            
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=to_email,
+                    subject=subject,
+                    template_name='email_templates/message_form.html',
+                    user=user,
+                    context=context,
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=to_email,
+                    template_name='email_templates/message_form.html',
+                    context=context,
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=to_email,
+                    template_name='email_templates/message_form.html',
+                    context=context,
+                )
             print(f"Sending email to {to_email} with subjecxfgjghjt ")
             return redirect(reverse('success_page'))
     else:
