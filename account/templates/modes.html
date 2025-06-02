@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+ <style>
+  .save-button {
+    background-color: #044d5e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .save-button:hover {
+    background-color: #044d5e;
+  }
+</style>
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    <ul>
+                        <li >
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                User Management
+                            </a>
+                        </li>
+                        <li >
+                            <a class="nav-link" href="{% url 'publication_management' %}">
+                                Publication Management
+                            </a>
+                        </li>
+                        <li >
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml3">
+                                    <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                    
+                                </div>
+                                <div class="accordion-content" id="iteml3">
+                                    <ul>
+                                        <li><a href="{% url 'date_settings' %}">Date Settings</a></li>
+                                        <li><a class="nav-link active" href="{% url 'modes' %}">Modes</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <h2>Modes </h2>
+            <br>
+            <form method="post">
+                {% csrf_token %}
+                {% for mode in modes %}
+                    <label>
+                        <input type="checkbox" name="mode_{{ mode.id }}" {% if mode.is_active %}checked{% endif %}>
+                        {{ mode.name }}
+                    </label><br>
+                {% endfor %}
+                <br>
+                <button type="submit" class="save-button">Save Modes</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

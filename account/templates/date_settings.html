@@ -20,10 +20,20 @@
                             </a>
                         </li>
                         <li >
-                            <a class="nav-link active" href="{% url 'date_settings' %}">
-                                 Date Settings
-                            </a>
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml3">
+                                    <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                    
+                                </div>
+                                <div class="accordion-content" id="iteml3">
+                                    <ul>
+                                        <li><a class="nav-link active"  href="{% url 'date_settings' %}">Date Settings</a></li>
+                                        <li><a href="{% url 'modes' %}">Modes</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
+                        
                         <!-- <li >
                             <a class="nav-link" href="{% url 'add_journal' %}">
                                 Journal Management

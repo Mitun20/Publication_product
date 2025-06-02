@@ -78,13 +78,14 @@ urlpatterns = [
     path('send_invitation/', send_invitation, name='send_invitation'),
     path('cancel_invitation/', cancel_invitation, name='cancel_invitation'),
     path('manuscripts_review_report/',Manuscripts_Review_Report, name='manuscripts_review_report'),
+    
     # success for mail
     path('contact_form/', contact, name='contact_form'),
     path('success/', success_page, name='success_page'),
+    
     path('export_submissions/', export_submissions_to_excel, name='export_submissions'),
 
-    # sms
-    # path('send-sms/', send_sms, name='send_sms'),
+    # dashboard
     path('dashboard/', dashboard_view, name='dashboard'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

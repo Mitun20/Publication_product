@@ -4,17 +4,18 @@ from django.contrib.auth.decorators import login_required
 from .knowledge_base import get_answer
 from .models import ChatHistory
 
-@login_required
+# @login_required
 def chat(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         question = request.POST.get('question')
         answer = get_answer(question)
         # Save to chat history
-        ChatHistory.objects.create(
-            user=request.user,
-            question=question,
-            answer=answer
-        )
+        if request.user.is_authenticated:
+            ChatHistory.objects.create(
+                user=request.user,
+                question=question,
+                answer=answer
+            )
         
         return JsonResponse({'answer': answer})
     

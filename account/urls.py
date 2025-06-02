@@ -14,6 +14,7 @@ urlpatterns = [
     path('user_management/', user_management, name='user_management'),
     path('publication_management/', publication_management, name='publication_management'),
     path('date_settings/', date_settings, name='date_settings'),
+    path('modes/', modes, name='modes'),
     path('search-users/', search_users, name='search_users'),
     path('create_user/', create_user, name='create_user'),
     path('get_journals/', get_journals, name='get_journals'),

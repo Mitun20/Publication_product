@@ -27,7 +27,11 @@ from .services import send_email
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.db.models import Count, Q
 import datetime
-
+from account.extractors import extract_docx, extract_pdf
+from account.converter import text_to_latex
+from django.core.files.storage import FileSystemStorage
+from django.core.files import File
+import traceback
 
 # sms
 # views.py
@@ -1160,6 +1164,49 @@ def Setting_proof(request):
     submissions = paginator.get_page(page_number)
     return render(request, 'setting_proof.html', {'submissions': submissions})
 
+# def upload_typeset_document(request):
+#     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+#         submission_id = request.POST.get('submission_id')
+#         typeset_file = request.FILES.get('typeset_file')
+
+#         if not submission_id or not typeset_file:
+#             return JsonResponse({'success': False, 'error': 'Missing submission ID or file'})
+
+#         submission = get_object_or_404(Submission, manuscript_id=submission_id)
+#         accepted_submission, created = Accepted_Submission.objects.get_or_create(submission=submission)
+#         accepted_submission.typeset_file = typeset_file
+#         accepted_submission.typeset_on = now()
+#         accepted_submission.save()
+#         submission.article_status = Article_Status.objects.get(article_status='Awaiting for Proof Read')
+#         journal = submission.journal  
+#         date_obj = Date.objects.get(journal=journal)
+#         due_days = date_obj.due_days_to_typeset_approval
+#         submission.typeset_due_date=timezone.now().date() + timedelta(days=due_days)
+#         submission.save()
+
+#         # Send email to the author
+#         author_email = submission.author.email  # Assumes Submission model has an author field with an email attribute
+#         subject = 'Your Manuscript Type Set Document'
+#         message = 'Please check the attached type set document for your manuscript.'
+
+#         try:
+#             email = EmailMessage(
+#                 subject=subject,
+#                 body=message,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 to=[author_email]
+#             )
+#             email.attach(typeset_file.name, typeset_file.read(), typeset_file.content_type)
+#             email.send()
+            
+#         except Exception as e:
+#             return JsonResponse({'success': False, 'error': str(e)})
+
+#         return JsonResponse({'success': True})
+
+#     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
 def upload_typeset_document(request):
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         submission_id = request.POST.get('submission_id')
@@ -1168,50 +1215,114 @@ def upload_typeset_document(request):
         if not submission_id or not typeset_file:
             return JsonResponse({'success': False, 'error': 'Missing submission ID or file'})
 
-        submission = get_object_or_404(Submission, manuscript_id=submission_id)
-        accepted_submission, created = Accepted_Submission.objects.get_or_create(submission=submission)
-        accepted_submission.typeset_file = typeset_file
-        accepted_submission.typeset_on = now()
-        accepted_submission.save()
-        submission.article_status = Article_Status.objects.get(article_status='Awaiting for Proof Read')
-        journal = submission.journal  
-        date_obj = Date.objects.get(journal=journal)
-        due_days = date_obj.due_days_to_typeset_approval
-        submission.typeset_due_date=timezone.now().date() + timedelta(days=due_days)
-        submission.save()
-
-        # Send email to the author
-        author_email = submission.author.email  # Assumes Submission model has an author field with an email attribute
-        subject = 'Your Manuscript Type Set Document'
-        message = 'Please check the attached type set document for your manuscript.'
-
         try:
-            email = EmailMessage(
-                subject=subject,
-                body=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[author_email]
-            )
-            email.attach(typeset_file.name, typeset_file.read(), typeset_file.content_type)
-            email.send()
-            
-            # email = send_email(
-            #     to_email=submission.author.email,
-            #     subject='Your Manuscript Type Set Document',
-            #     template_name='email_templates/typeset_submitted.html',
-            #     user=submission.author,
-            #     context={'submission': submission }
-            # )
-           
-            # email.attach(typeset_file.name, typeset_file.read(), typeset_file.content_type)
-            # email.send()
-            
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+            submission = get_object_or_404(Submission, manuscript_id=submission_id)
+            accepted_submission, created = Accepted_Submission.objects.get_or_create(submission=submission)
 
-        return JsonResponse({'success': True})
+            # Save uploaded file temporarily
+            fs = FileSystemStorage()
+            filename = fs.save(typeset_file.name, typeset_file)
+            filepath = fs.path(filename)
+
+            # Extract text based on file extension
+            if filename.endswith('.docx'):
+                text = extract_docx(filepath)
+            elif filename.endswith('.pdf'):
+                text = extract_pdf(filepath)
+            else:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    text = f.read()
+
+            # Convert text to LaTeX code
+            latex_code = text_to_latex(text.strip())
+            print("Generated LaTeX Code:", latex_code)  # Debug print
+
+            # Prepare LaTeX output directory and files
+            output_dir = 'latex_output'
+            os.makedirs(output_dir, exist_ok=True)
+            tex_path = os.path.join(output_dir, 'output.tex')
+
+            with open(tex_path, 'w', encoding='utf-8') as f:
+                f.write(latex_code)
+
+            # Compile LaTeX to PDF
+            result = subprocess.run(
+                ['xelatex', '-interaction=nonstopmode', '-output-directory', output_dir, tex_path],
+                capture_output=True, text=True, encoding='utf-8', timeout=60
+            )
+
+            pdf_path = os.path.join(output_dir, 'output.pdf')
+            if not os.path.exists(pdf_path):
+                error_msg = result.stderr or "PDF generation failed"
+                # Cleanup
+                os.remove(filepath)
+                if os.path.exists(tex_path):
+                    os.remove(tex_path)
+                return JsonResponse({'success': False, 'error': error_msg})
+
+            # Save the generated PDF in the model
+            with open(pdf_path, 'rb') as pdf_file:
+                django_file = File(pdf_file)
+                accepted_submission.typeset_file.save('converted.pdf', django_file, save=True)
+
+            accepted_submission.typeset_on = now()
+            accepted_submission.save()
+
+            # Update submission status and due date
+            submission.article_status = Article_Status.objects.get(article_status='Awaiting for Proof Read')
+            journal = submission.journal
+            date_obj = Date.objects.get(journal=journal)
+            due_days = date_obj.due_days_to_typeset_approval
+            submission.typeset_due_date = now().date() + timedelta(days=due_days)
+            submission.save()
+
+            # Prepare email details
+            author_email = submission.author.user.email
+            subject = 'Your Manuscript Type Set Document'
+            message = 'Please check the attached type set document for your manuscript.'
+
+            try:
+                email = EmailMessage(
+                    subject=subject,
+                    body=message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[author_email]
+                )
+                with open(pdf_path, 'rb') as pdf_file:
+                    email.attach('converted.pdf', pdf_file.read(), 'application/pdf')
+
+                print(f"Sending email to {author_email} with attachment {pdf_path}")
+                email.send(fail_silently=False)
+                print("Email sent successfully")
+
+            except Exception as e:
+                # Cleanup temp files
+                os.remove(filepath)
+                if os.path.exists(pdf_path):
+                    os.remove(pdf_path)
+                if os.path.exists(tex_path):
+                    os.remove(tex_path)
+                print("Error sending email:", str(e))
+                return JsonResponse({'success': False, 'error': f"Email sending failed: {str(e)}"})
+
+            # Cleanup temp files after success
+            os.remove(filepath)
+            if os.path.exists(pdf_path):
+                os.remove(pdf_path)
+            if os.path.exists(tex_path):
+                os.remove(tex_path)
+
+            return JsonResponse({'success': True})
+
+        except Exception as e:
+            # Catch any other errors in processing
+            tb = traceback.format_exc()
+            print("Error in upload_typeset_document:", tb)
+            return JsonResponse({'success': False, 'error': f"Internal error: {str(e)}"})
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+
 
 def mark_proof_read_done(request, submission_id):
     submission = get_object_or_404(Submission, id=submission_id)
@@ -1400,14 +1511,14 @@ def decisioned_manuscripts(request):
             'Awaiting for EIC Decision', 'Corrected', 'Awaiting Changes',
             'Ready to Publish', 'Type Set Done', 'Under Review', 'Submitted',
             'Proof Read Done', 'Awaiting AE Recommendation', 'Accepted'
-        ],journal__in=journals).order_by('-id')
+        ],journal__in=journals,is_decissioned=True).order_by('-id')
     
     
     if selected_status:
-        submissions = submissions.filter(article_status__article_status=selected_status).order_by('-id')
+        submissions = submissions.filter(article_status__article_status=selected_status,is_decissioned=True).order_by('-id')
 
     if search_term:
-        submissions = submissions.filter(title__icontains=search_term).order_by('-id')
+        submissions = submissions.filter(title__icontains=search_term,is_decissioned=True).order_by('-id')
 
     paginator = Paginator(submissions, 20)  # Show 20 submissions per page
     page_number = request.GET.get('page')
@@ -1855,14 +1966,14 @@ def manuscripts_eic(request):
 
 # -----------Contact for mail-------------------------------------------------------------------------------------------------------
 def contact(request):
-    to_email = request.GET.get('email', '')  # Get the email from the query parameters
+    to_email = request.GET.get('email', '')  
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
-            # Send email using the send_email function
+            
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
-            user =  User.objects.get(email=to_email)  # Assuming 'user' in send_email corresponds to the 'to_email'
+            user =  User.objects.get(email=to_email)
             context = {'message': message}
             print(f"Sending email to {to_email} with subject '{subject}' and message '{message}'")
             send_email(
@@ -1873,11 +1984,12 @@ def contact(request):
                 context=context,
             )
             print(f"Sending email to {to_email} with subjecxfgjghjt ")
-            return redirect(reverse('success_page'))  # Redirect to a success page or back to the list
+            return redirect(reverse('success_page'))
     else:
-        form = ContactForm(to_email=to_email)  # Pre-fill the to_email field
+        form = ContactForm(to_email=to_email)  
         print(f"Sending email to {to_email} with subject ")
     return render(request, 'contact_form.html', {'form': form})
+
 # -----------success for mail-------------------------------------------------------------------------------------------------------
 
 def success_page(request):

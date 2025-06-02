@@ -18,7 +18,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
 from .forms import UserRegistrationForm
-from .models import Author, User,Editor
+from .models import Author, Modes, User,Editor
 from django.contrib.auth.forms import SetPasswordForm
 from oss.models import CoAuthor, Journal, Journal_Editor_Assignment
 from django.contrib.auth.forms import SetPasswordForm     #set_new_password
@@ -460,7 +460,18 @@ def date_settings(request):
     dates = {date.journal_id: date for date in Date.objects.all()}
     return render(request, 'date_settings.html', {'journals': journals, 'dates': dates})
 
+# ------------------------------------------------------------------------Modes------------------------------------------------------------------------------------------------
+def modes(request): 
+    modes = Modes.objects.all()
 
+    if request.method == 'POST':
+        for mode in modes:
+            # Checkbox sends 'on' if checked; if missing, unchecked
+            mode.is_active = (f'mode_{mode.id}' in request.POST)
+            mode.save()
+        return redirect('modes')  # or wherever you want to redirect after save
+
+    return render(request, 'modes.html', {'modes': modes})
 # ------------------------------------------------------------------------Index home page ---------------------------------------------------------------------------------------
 from django.db.models import Q
 
@@ -1031,7 +1042,7 @@ from django.shortcuts import render
 from django.http import FileResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
 from .forms import DocumentForm
-from .extractors import extract_docx, extract_pdf, extract_pdf_ocr
+from .extractors import extract_docx, extract_pdf
 from .converter import text_to_latex
 def upload_file(request):
     """Handle file upload and LaTeX conversion."""
@@ -1047,10 +1058,9 @@ def upload_file(request):
             if file.name.endswith('.docx'):
                 text = extract_docx(filepath)
             elif file.name.endswith('.pdf'):
-                try:
-                    text = extract_pdf(filepath)
-                except Exception:
-                    text = extract_pdf_ocr(filepath)
+                
+                text = extract_pdf(filepath)
+                
             else:
                 text = file.read().decode('utf-8')
 

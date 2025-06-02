@@ -199,11 +199,6 @@
                                 {% url 'contact' as contact_url %}
                                 <a href="{{ contact_url }}" class="nav-link {% if request.path == contact_url %}active{% endif %}">Contact Us</a>
                             </li>
-                            <li class="nav-item">
-                                <a href="https://wa.me/your-phone-number" target="_blank" class="nav-link">
-                                    <i class="fab fa-whatsapp"></i> WhatsApp
-                                </a>
-                            </li>
                             
                         </ul>
                         
@@ -215,6 +210,361 @@
     </div>
     <!-- Navbar Area End -->
     <!-- Navbar Area End -->
+    <style>
+        /* Chatbot Widget Styles */
+.chatbot-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #044d5e;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.chatbot-toggle:hover {
+    background: #044d5e;
+    transform: scale(1.1);
+}
+
+.chatbot-container {
+    width: 350px;
+    height: 550px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chatbot-header {
+    background: #044d5e;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chatbot-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.chatbot-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #f9f9f9;
+}
+
+.chatbot-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+    background: white;
+}
+
+.chatbot-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.chatbot-input button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background: #044d5e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Message styles */
+.chat-message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 18px;
+    max-width: 80%;
+}
+
+.user-message {
+    background: #e3f2fd;
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+}
+
+.bot-message {
+    background: #f1f1f1;
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+}
+    </style>
+            <!-- Add this anywhere in your base.html -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- In head section -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Before closing </body> -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Add this to your base.html -->
+<div class="chatbot-widget">
+    <button class="chatbot-toggle">
+        <i class="fas fa-robot"></i>
+    </button>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            <h4 style="color: white;">Publication Assistant</h4>
+            {% if user.is_authenticated %}
+                <div class="chatbot-header-icons">
+                    <button class="chatbot-history" title="View History"><i class="fas fa-history"></i></button>
+                </div>
+            {% endif %}
+            <div class="chatbot-header-icons">
+                <button class="chatbot-close">&times;</button>
+            </div>
+        </div>
+        <div class="chatbot-history-panel" id="chatbotHistory">
+            <h4>Conversation History</h4>
+            <div class="history-list" id="historyList"></div>
+            <button class="close-history">Close History</button>
+        </div>
+        <div class="chatbot-messages" id="chatbotMessages">
+            <div style="display: flex; align-items: center; background:#e6ebee; border:1px solid #eaecec; border-radius:8px; padding:15px 20px; max-width:400px; font-family:Arial, sans-serif; font-size:1.1rem; color:#333;">
+            <span style="font-size: 1.8rem; margin-right: 12px;">🤖</span>
+            <span>Hi! I am here to assist you, how can I help you?</span>
+            </div>
+<br>
+            <!-- Active messages appear here -->
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatbotInput" placeholder="Ask about the project...">
+            <button id="chatbotSend">Send</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Add these styles to your CSS */
+    .chatbot-header-icons {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .chatbot-history {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 5px;
+    }
+    
+    .chatbot-history-panel {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 15px;
+        z-index: 10;
+        overflow-y: auto;
+    }
+    
+    .chatbot-history-panel h4 {
+        margin-top: 0;
+        color: #044d5e;
+    }
+    
+    .history-list {
+        max-height: 80%;
+        overflow-y: auto;
+        margin: 10px 0;
+    }
+    
+    .close-history {
+        background: #044d5e;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    /* Add to your <style> block */
+.history-item {
+    background: #f9f9f9;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    padding: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chatbot widget variables
+    const toggleBtn = document.querySelector('.chatbot-toggle');
+    const closeBtn = document.querySelector('.chatbot-close');
+    const chatContainer = document.querySelector('.chatbot-container');
+    const chatMessages = document.getElementById('chatbotMessages');
+    const chatInput = document.getElementById('chatbotInput');
+    const sendBtn = document.getElementById('chatbotSend');
+
+    // History panel variables
+    const historyBtn = document.querySelector('.chatbot-history');
+    const historyPanel = document.getElementById('chatbotHistory');
+    const historyList = document.getElementById('historyList');
+    const closeHistoryBtn = document.querySelector('.close-history');
+
+    // Toggle chat window
+    toggleBtn.addEventListener('click', function() {
+        chatContainer.style.display = 'flex';
+        toggleBtn.style.display = 'none';
+    });
+
+    // Close chat window
+    closeBtn.addEventListener('click', function() {
+        chatContainer.style.display = 'none';
+        toggleBtn.style.display = 'block';
+    });
+
+    // Show history panel and fetch history from server
+    historyBtn.addEventListener('click', function() {
+        historyPanel.style.display = 'block';
+        fetch('/chat/history/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                renderHistoryFromServer(data.history);
+            } else {
+                historyList.innerHTML = '<p>Could not load history.</p>';
+            }
+        })
+        .catch(() => {
+            historyList.innerHTML = '<p>Error loading history.</p>';
+        });
+    });
+
+    // Close history panel
+    closeHistoryBtn.addEventListener('click', function() {
+        historyPanel.style.display = 'none';
+    });
+
+    // Render history items from server
+    function renderHistoryFromServer(history) {
+        historyList.innerHTML = '';
+        if (!history.length) {
+            historyList.innerHTML = '<p>No conversation history yet.</p>';
+            return;
+        }
+        history.forEach(item => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            historyItem.innerHTML = `
+                <div style="margin-bottom: 8px;">
+                    <div><span style="color:#2196F3;"><strong>You:</strong></span> ${escapeHtml(item.question)}</div>
+                    <span style="font-size: 1rem; margin-right: 10px;">🤖:</span> ${escapeHtml(item.answer)}</div>
+                    <div style="text-align:right;"><small style="color:#888;">${item.created_at}</small></div>
+                </div>
+            `;
+            historyList.appendChild(historyItem);
+        });
+    }
+
+    // Send message to server and display response
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            addMessage(message, 'user');
+            chatInput.value = '';
+            fetch('/chat/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `question=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessage(data.answer, 'bot');
+            })
+            .catch(error => {
+                addMessage("Sorry, I'm having trouble connecting.", 'bot');
+                console.error('Error:', error);
+            });
+        }
+    }
+
+    // Add message to chat window
+    function addMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message ' + (sender === 'user' ? 'user-message' : 'bot-message');
+        // Render newlines as <br> for bot messages
+        if (sender === 'bot') {
+            msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+        } else {
+            msgDiv.textContent = text;
+        }
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+
+    // Get CSRF token from cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
     {% block content %}
 
 

@@ -53,3 +53,10 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f"Feedback from {self.user.username} to {self.feedback_to.username if self.feedback_to else 'N/A'}"
+    
+class Modes(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
