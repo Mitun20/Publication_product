@@ -44,19 +44,31 @@ class Editor(models.Model):
     def __str__(self):
         return self.affliation
 
-class Feedback(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='feedback_by')
-    feedback_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedback_to', null=True, blank=True)
-    feedback = models.TextField()
-    submitted_on = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return f"Feedback from {self.user.username} to {self.feedback_to.username if self.feedback_to else 'N/A'}"
-    
 class Modes(models.Model):
     name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+    
+class Question(models.Model):
+    question = models.TextField()
+
+class FeedbackType(models.Model):
+    type = models.CharField(max_length=100)
+
+class FeedbackQuestion(models.Model):
+    feedback_type = models.ForeignKey(FeedbackType, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    feedback_type = models.ForeignKey(FeedbackType, on_delete=models.CASCADE)
+    assigned_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, related_name='created_feedbacks', on_delete=models.CASCADE)
+
+class FeedbackResponse(models.Model):
+    feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    response = models.TextField()
+    submitted_on = models.DateTimeField(auto_now_add=True)

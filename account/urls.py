@@ -59,10 +59,9 @@ urlpatterns = [
     # Add JOurnal
     path('add_journal/', add_journal, name='add_journal'),
     path('download/<int:article_id>/', download_article, name='download_article'),
-    # feedback
-    path('feedback/',submit_feedback, name='submit_feedback'),
-    path('feedback_list/',feedback_list, name='feedback_list'),
     
+    # feedback
+
     # path('upload-docx/', convert_docx_to_pdf, name='convert_docx'),
     path('upload/', upload_file, name='upload'),
     path('compile-pdf/', compile_pdf, name='compile_pdf'),

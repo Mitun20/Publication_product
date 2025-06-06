@@ -255,19 +255,7 @@
                             <li class="nav-item">
                                 <a href="{% url 'change_password' %}" class="nav-link">Change Password</a>
                             </li>
-                            <!-- feedback -->
-                             <li class="nav-item">
-                                <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#feedbackModal">Feedback</a>
-                            </li>
-
-                            <!-- <li class="nav-item">
-                                <a href="#" class="nav-link"
-                                   data-bs-toggle="offcanvas"
-                                   data-bs-target="#feedbackSidebar"
-                                   onclick="loadFeedbacks()"> 
-                                   Feedback
-                                </a>
-                            </li> -->
+                            
                             <li class="nav-item">
                                 <a href="{% url 'logout' %}" class="nav-link">Logout</a>
                             </li>
@@ -533,56 +521,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-{% include 'feedback_popup.html' %}
-<!-- feed back system -->
+
  
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<!-- Feedback Modal -->
-<div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <form method="POST" action="{% url 'submit_feedback' %}" class="modal-content">
-      {% csrf_token %}
-      <div class="modal-header">
-        <h5 class="modal-title" id="feedbackModalLabel">Submit Feedback</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
 
-      <div class="modal-body">
-
-        <div class="mb-3">
-          <label for="feedback_to" class="form-label">Feedback To:</label>
-          <select name="feedback_to" id="feedback_to" class="form-select select2" required>
-            <option value="" disabled selected>Select a user</option>
-            {% for user in feedback_users %}
-              <option value="{{ user.id }}">
-                {{ user.get_full_name }} {% if user.is_superuser %}(Admin){% elif user.groups.first.name == 'Reviewer' %}(Reviewer){% endif %}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="feedback" class="form-label">Your Feedback:</label>
-          <textarea name="feedback" id="feedback" class="form-control" rows="4" placeholder="Write your feedback here..." required></textarea>
-        </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Submit Feedback</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-  $(document).ready(function() {
-    $('.select2').select2();
-  });
-</script>
 
 
                     {% block content %}
