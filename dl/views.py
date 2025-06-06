@@ -350,7 +350,7 @@ def published_article(request, journal_id):
                 'volume': article.issue.volume.volume,
                 'issue': article.issue.issue,
                 'title': article.accepted_submission.corrected_title,
-                'authors': article.accepted_submission.submission.author.get_full_name(),
+                'authors': article.accepted_submission.submission.author.user.get_full_name(),
             }
         article.article_data = article_data
 

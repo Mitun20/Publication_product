@@ -49,7 +49,7 @@
                                     <td>{{ submission.manuscript_id }}</td>
                                     <!-- <td>{{ submission.journal }}</td> -->
                                     <td>{{ submission.title }}</td>
-                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>{{ submission.author.user.get_full_name }}</td>
                                     <td>
                                         {% if submission.final_file %}
                                             <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>

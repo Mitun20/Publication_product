@@ -83,9 +83,9 @@ a.uploadlink:hover
                                     <td>{{ submission.manuscript_id }}</td>
                                     <!-- <td>{{ submission.journal }}</td> -->
                                     <td>{{ submission.title }}</td>
-                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>{{ submission.author.user.get_full_name }}</td>
                                     <td>
-                                        <p><a href="{% url 'contact_form' %}?email={{ submission.author.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a><br>
+                                        <p><a href="{% url 'contact_form' %}?email={{ submission.author.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a><br>
                                         <a href="#" class="upload_type_set_document-link uploadlink" >Upload Type Set Document</a></p><br>
                                         <form method="post" action="{% url 'mark_proof_read_done' submission.id %}">
                                             {% csrf_token %}

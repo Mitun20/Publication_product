@@ -59,7 +59,7 @@
                                     <td>{{ submission.manuscript_id }}</td>
                                     <!-- <td>{{ submission.journal }}</td> -->
                                     <td>{{ submission.title }}</td>
-                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>{{ submission.author.user.get_full_name }}</td>
                                     <td>
                                         {% for reviewer in submission.submission_reviewer_set.all %}
                                             <p><a href="#" class="reviewer-link" 

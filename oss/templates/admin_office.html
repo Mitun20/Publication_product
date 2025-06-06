@@ -76,7 +76,7 @@
                             <tr>
                                 <td>{{ submission.manuscript_id }}</td>
                                 <td>{{ submission.title }}</td>
-                                <td>{{ submission.author.get_full_name }}</td>
+                                <td>{{ submission.author.user.get_full_name }}</td>
                                 <td>
                                     <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#plagiarismReportModal" data-manuscript-id="{{ submission.id }}">Upload Plagiarism Report</a><br><br>
                                     {% if submission.plag_report %}

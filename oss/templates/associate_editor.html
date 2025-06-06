@@ -56,7 +56,7 @@
                                     <tr>
                                         <td>{{ submission.manuscript_id }}</td>
                                         <td>{{ submission.title }}</td>
-                                        <td>{{ submission.author.get_full_name }}</td>
+                                        <td>{{ submission.author.user.get_full_name }}</td>
                                         <td>                             
                                             {% for invitation in submission.reviewer_invitation_set.all %}
                                                 {% if invitation.invite_status == 'R' %}

@@ -1886,10 +1886,9 @@ def associate_editor(request):
 @login_required
 @user_passes_test(is_ae)
 def get_reviewers(request):
-    reviewers = Author.objects.filter(reviewer_specialization__specialization__id=request.GET.get('specialization_id'))
-    reviewers_data = [{'id': reviewer.id, 'name': reviewer.user.get_full_name()} for reviewer in reviewers]
+    reviewers = User.objects.filter(reviewer_specialization__specialization__id=request.GET.get('specialization_id'))
+    reviewers_data = [{'id': reviewer.id, 'name': reviewer.get_full_name()} for reviewer in reviewers]
     return JsonResponse({'reviewers': reviewers_data})
-
 
 logger = logging.getLogger(__name__)
 

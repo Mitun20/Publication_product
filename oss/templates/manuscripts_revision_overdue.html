@@ -76,7 +76,7 @@
                                     <td>{{ submission.manuscript_id }}</td>
                                     <!-- <td>{{ submission.journal }}</td> -->
                                     <td>{{ submission.title }}</td>
-                                    <td>{{ submission.author.get_full_name }}</td>
+                                    <td>{{ submission.author.user.get_full_name }}</td>
                                     <td>
                                         {% if submission.final_file %}
                                             <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
@@ -87,7 +87,7 @@
                                     <td>{{ submission.submitted_on }}</td>
                                     <td>
                                         <p><button class="btn btn-danger btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#rejectModal" data-manuscript-id="{{ submission.id }}" data-admin-comments="{{ submission.admin_comments }}">Reject</button></p>
-                                        <p><a href="{% url 'contact_form' %}?email={{ submission.author.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></p>
+                                        <p><a href="{% url 'contact_form' %}?email={{ submission.author.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></p>
                                     </td>
                                 </tr>
                                 {% endfor %}

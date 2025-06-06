@@ -87,7 +87,7 @@
                                         <td>{{ submission.manuscript_id }}</td>
                                             <!-- <td>{{ submission.journal }}</td> -->
                                         <td>{{ submission.title }}</td>
-                                        <td>{{ submission.author.get_full_name }}</td>
+                                        <td>{{ submission.author.user.get_full_name }}</td>
                                         <td>
                                             {% if submission.additional_file %}
                                                 <li><a href="{{ submission.additional_file.url }}" download>Additional File</a></li>
@@ -102,7 +102,7 @@
                                             <li><a href="#" class="upload-corrected-file" data-id="{{ submission.id }}" 
                                             {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
                                             style="pointer-events: none; color: #ccc;"{% endif %}>Upload Corrected File</a></li>
-                                            <li><a href="{% url 'contact_form' %}?email={{ submission.author.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
+                                            <li><a href="{% url 'contact_form' %}?email={{ submission..user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
                                         </td>
                                             
                                             <td>

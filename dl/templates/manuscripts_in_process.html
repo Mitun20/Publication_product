@@ -165,7 +165,7 @@
         {% for submission in submissions %}
         <tr>
             <td>{{ submission.title }}</td>
-            <td>{{ submission.author.username }}</td>
+            <td>{{ submission.author.user.username }}</td>
             <td>{{ submission.article_status.article_status }}</td>
             <td>
                 <form method="post" action="">
