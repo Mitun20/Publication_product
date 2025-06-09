@@ -54,12 +54,20 @@ class Modes(models.Model):
 class Question(models.Model):
     question = models.TextField()
 
+    def __str__(self):
+        return self.question[:50]  # Return first 50 characters for brevity
 class FeedbackType(models.Model):
     type = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.type
 
 class FeedbackQuestion(models.Model):
     feedback_type = models.ForeignKey(FeedbackType, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.feedback_type} - {self.question.question[:50]}"
 
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -67,8 +75,14 @@ class Feedback(models.Model):
     assigned_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_feedbacks', on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"Feedback by {self.created_by.username} to {self.user.username}"
+
 class FeedbackResponse(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     response = models.TextField()
     submitted_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Response to {self.question.question[:50]} by {self.feedback.user.username}"

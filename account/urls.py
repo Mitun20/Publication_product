@@ -60,12 +60,18 @@ urlpatterns = [
     path('add_journal/', add_journal, name='add_journal'),
     path('download/<int:article_id>/', download_article, name='download_article'),
     
-    # feedback
-
     # path('upload-docx/', convert_docx_to_pdf, name='convert_docx'),
     path('upload/', upload_file, name='upload'),
     path('compile-pdf/', compile_pdf, name='compile_pdf'),
     
     path('send_whatsapp/', send_message_view, name='send_whatsapp'),
     path('send_sms/', send_sms_view, name='send_sms'),
+    
+    # Feedback related URLs
+    path('feedback_types/', feedback_types, name='feedback_types'),
+    path('feedback_questions/<int:feedback_type_id>/', feedback_questions, name='feedback_questions'),
+    path('remove_feedback_question/', remove_feedback_question, name='remove_feedback_question'),
+    path('add_question_to_type/', add_question_to_type, name='add_question_to_type'),
+    path('create_feedback_type/', create_feedback_type, name='create_feedback_type'),
+    path('update_question_for_feedback_type/', update_question_for_feedback_type, name='update_question_for_feedback_type'),
 ]

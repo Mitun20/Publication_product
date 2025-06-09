@@ -12,7 +12,7 @@ from dl.models import Issue, Published_article, Volume
 from .auth import *
 from .forms import *
 from .models import *
-from account.models import Author, Editor, Modes
+from account.models import Author, Editor, FeedbackType, Modes, Question
 import json
 from django.db.models import Q
 from django.shortcuts import redirect, render, get_object_or_404
@@ -1024,7 +1024,12 @@ def Manuscripts_acceptance(request):
     paginator = Paginator(submissions, 20)  # Show 10 submissions per page
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
-    return render(request, 'manuscripts_acceptance.html', {'submissions': submissions})
+    Context={
+        'submissions': submissions,
+        'feedback_types': FeedbackType.objects.all(),
+        'all_questions': Question.objects.all(),
+    }
+    return render(request, 'manuscripts_acceptance.html', Context)
 
 
 logger = logging.getLogger(__name__)

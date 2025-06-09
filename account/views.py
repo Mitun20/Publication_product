@@ -1144,3 +1144,151 @@ def compile_pdf(request):
             return JsonResponse({'error': str(e)}, status=500)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.forms.models import model_to_dict
+from .models import FeedbackType, Question, FeedbackQuestion
+from .forms import (
+    FeedbackTypeForm,
+    QuestionForm,
+    FeedbackQuestionForm,
+    AddQuestionToTypeForm
+)
+import json
+
+def feedback_types(request):
+    types = FeedbackType.objects.all().values('id', 'type')
+    return JsonResponse(list(types), safe=False)
+
+def feedback_questions(request, feedback_type_id):
+    print(f"Fetching questions for feedback type ID: {feedback_type_id}")
+    mapped = FeedbackQuestion.objects.filter(feedback_type_id=feedback_type_id).select_related('question')
+    
+    # Reformat data to match frontend expectations
+    questions = [{
+        'id': fq.question.id,           # Frontend expects 'id' (not 'question_id')
+        'text': fq.question.question    # Frontend expects 'text' (not 'question_text')
+    } for fq in mapped]
+    
+    # Wrap in 'questions' key and return
+    return JsonResponse({'questions': questions})  # Remove safe=False
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def remove_feedback_question(request):
+    data = json.loads(request.body)
+    form = FeedbackQuestionForm(data)
+    if form.is_valid():
+        try:
+            fq = FeedbackQuestion.objects.get(
+                feedback_type_id=form.cleaned_data['feedback_type'],
+                question_id=form.cleaned_data['question']
+            )
+            fq.delete()
+            return JsonResponse({'success': True})
+        except FeedbackQuestion.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Mapping not found'}, status=400)
+    return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def add_question_to_type(request):
+    data = json.loads(request.body)
+    form = AddQuestionToTypeForm(data)
+
+    if not form.is_valid():
+        return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
+
+    feedback_type_id = form.cleaned_data['feedback_type']
+    question_id = form.cleaned_data.get('question')
+    question_text = form.cleaned_data.get('question_text')
+
+    if question_text and not question_id:
+        # Create new question
+        question = Question.objects.create(question=question_text)
+        question_id = question.id
+    elif question_id:
+        # Verify question exists
+        if not Question.objects.filter(id=question_id).exists():
+            return JsonResponse({'success': False, 'error': 'Question does not exist'}, status=400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Question or text must be provided'}, status=400)
+
+    # Map question to feedback type if not already mapped
+    mapping, created = FeedbackQuestion.objects.get_or_create(
+        feedback_type_id=feedback_type_id,
+        question_id=question_id
+    )
+    return JsonResponse({
+        'success': True,
+        'question': {
+            'id': mapping.question.id,
+            'question': mapping.question.question
+        }
+    })
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def create_feedback_type(request):
+    data = json.loads(request.body)
+    type_text = data.get('type', '').strip()
+
+    if not type_text:
+        return JsonResponse({'success': False, 'error': 'Type cannot be empty'}, status=400)
+
+    if FeedbackType.objects.filter(type__iexact=type_text).exists():
+        return JsonResponse({'success': False, 'exists': True})
+
+    feedback_type = FeedbackType.objects.create(type=type_text)
+
+    return JsonResponse({
+        'success': True,
+        'feedback_type': {
+            'id': feedback_type.id,
+            'type': feedback_type.type
+        }
+    })
+
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from .models import FeedbackType, Question, FeedbackQuestion
+import json
+
+@csrf_exempt
+@require_POST
+def update_question_for_feedback_type(request):
+    data = json.loads(request.body)
+    feedback_type_id = data.get('feedback_type_id')
+    question_id = data.get('question_id')
+    new_text = data.get('new_text', '').strip()
+
+    if not feedback_type_id or not question_id or not new_text:
+        return JsonResponse({'success': False, 'error': 'Missing data'}, status=400)
+
+    try:
+        feedback_type = FeedbackType.objects.get(id=feedback_type_id)
+        question = Question.objects.get(id=question_id)
+    except (FeedbackType.DoesNotExist, Question.DoesNotExist):
+        return JsonResponse({'success': False, 'error': 'Invalid feedback type or question'}, status=400)
+
+    # Check if question is mapped to other feedback types
+    mapped_types_count = FeedbackQuestion.objects.filter(question=question).count()
+
+    if mapped_types_count > 1:
+        # Create new question with new_text and map it to this feedback type
+        new_question = Question.objects.create(question=new_text)
+        # Map new question
+        FeedbackQuestion.objects.create(feedback_type=feedback_type, question=new_question)
+        # Remove old mapping for this feedback type
+        FeedbackQuestion.objects.filter(feedback_type=feedback_type, question=question).delete()
+
+        return JsonResponse({'success': True, 'question': {'id': new_question.id, 'question': new_question.question}})
+
+    else:
+        # Just update the existing question text globally
+        question.question = new_text
+        question.save()
+        return JsonResponse({'success': True, 'question': {'id': question.id, 'question': question.question}})

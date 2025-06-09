@@ -151,6 +151,27 @@ class EditorProfileForm(forms.ModelForm):
             'mobile_number': forms.TextInput(attrs={'class': 'form-control'}),
         }
         
-
 class DocumentForm(forms.Form):
     document = forms.FileField(label='Upload DOCX/PDF')
+    
+from django import forms
+from .models import FeedbackType, Question
+
+class FeedbackTypeForm(forms.ModelForm):
+    class Meta:
+        model = FeedbackType
+        fields = ['type']
+
+class QuestionForm(forms.ModelForm):
+    class Meta:
+        model = Question
+        fields = ['question']
+
+class FeedbackQuestionForm(forms.Form):
+    feedback_type = forms.IntegerField()
+    question = forms.IntegerField()
+
+class AddQuestionToTypeForm(forms.Form):
+    feedback_type = forms.IntegerField()
+    question = forms.IntegerField(required=False)
+    question_text = forms.CharField(required=False)

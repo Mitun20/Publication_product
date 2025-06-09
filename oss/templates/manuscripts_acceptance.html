@@ -4,6 +4,323 @@
 
 
 
+<style>
+/* === Global Reset === */
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Modal Overlay === */
+#feedback-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* === Modal Content === */
+.modal-content {
+  position: relative;
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  padding: 25px 30px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* === Close Button === */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* === Headings === */
+h3, h4, h5 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* === Button Group === */
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0 25px;
+}
+
+.button-group button {
+  flex: 1;
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+}
+
+/* === Form Elements === */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+select, textarea, input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+select:focus, textarea:focus, input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* === Add New Question Buttons === */
+#add-question-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#add-question-btn:hover {
+  background-color: #218838;
+}
+#check-questions-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#check-questions-btn:hover {
+  background-color: #218838;
+}
+#btn-create-question-to-created-type {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#btn-create-question-to-created-type:hover {
+  background-color: #218838;
+}
+#btn-add-question-to-created-type {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#btn-add-question-to-created-type:hover {
+  background-color: #218838;
+}
+#submit-new-feedback-type {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#submit-new-feedback-type:hover {
+  background-color: #0056b3;
+}
+#submit-instant-feedback {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#submit-instant-feedback:hover {
+  background-color: #0056b3;
+}
+/* === Questions List === */
+#instant-feedback-questions > div {
+  background: #f9f9f9;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+}
+
+.question-text {
+  color: #333;
+  font-size: 14.5px;
+}
+
+/* === Action Buttons in Question Block === */
+.edit-question-btn,
+.remove-question-btn {
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.edit-question-btn {
+  color: #007bff;
+}
+
+.edit-question-btn:hover {
+  color: #0056b3;
+}
+
+.remove-question-btn {
+  color: #dc3545;
+}
+
+.remove-question-btn:hover {
+  color: #b52b31;
+}
+
+/* === Feedback Type Input Section === */
+#create-feedback-type-btn {
+  background-color: #17a2b8;
+  color: white;
+  padding: 6px 12px;
+  font-size: 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#create-feedback-type-btn:hover {
+  background-color: #138496;
+}
+
+/* === Form Buttons === */
+button {
+  font-size: 14px;
+}
+
+.feedback-section button {
+  margin-top: 10px;
+}
+
+#save-new-question-instant,
+#save-new-feedback-type,
+#save-new-question-create {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+#cancel-new-question-instant,
+#cancel-new-feedback-type,
+#cancel-new-question-create {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#save-new-question-instant:hover,
+#save-new-feedback-type:hover,
+#save-new-question-create:hover {
+  background-color: #0056b3;
+}
+
+#cancel-new-question-instant:hover,
+#cancel-new-feedback-type:hover,
+#cancel-new-question-create:hover {
+  background-color: #5a6268;
+}
+
+/* === Error Message === */
+#feedback-type-error,
+#edit-question-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: red;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 15px 20px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+</style>
+
+
 <!-- Custom CSS for Sidebar -->
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
@@ -103,6 +420,8 @@
                                             {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
                                             style="pointer-events: none; color: #ccc;"{% endif %}>Upload Corrected File</a></li>
                                             <li><a href="{% url 'contact_form' %}?email={{ submission..user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
+                                            <li><a href="#" onclick="openFeedbackModal(); return false;">Request Feedback</a></li>
+
                                         </td>
                                             
                                             <td>
@@ -246,6 +565,546 @@
         </div>
     </div>
 </div>
+
+<!-- Feedback Modal -->
+<div id="feedback-modal">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <button id="close-feedback-modal" class="close-btn" type="button">&times;</button>
+    <h3>Request Feedback</h3>
+    <div class="button-group">
+      <button id="btn-instant-feedback" type="button">Add Instant Feedback</button>
+      <button id="btn-create-new-feedback" type="button">Create New Feedback</button>
+    </div>
+
+    <!-- Instant Feedback Section -->
+    <div id="instant-feedback-section" class="feedback-section" style="display:none;">
+      <form id="instant-feedback-form">
+        {% csrf_token %}
+        <label for="instant-feedback-type">Select Feedback Type:</label>
+        <select id="instant-feedback-type" name="feedback_type" required>
+          <option value="">-- Select --</option>
+          {% for type in feedback_types %}
+            <option value="{{ type.id }}">{{ type.type }}</option>
+          {% endfor %}
+        </select>
+
+        <div id="instant-feedback-questions" style="margin-top:1em;">Show</div>
+        <button id="check-questions-btn" type="button" style="margin-top: 1em;">Check Questions</button>
+        <button id="add-question-btn" type="button" style="margin-top: 1em;">Add New Question</button>
+
+        <div id="add-new-question-instant" style="display:none; margin-top:1em;">
+          <textarea id="new-question-text-instant" name="new_question" rows="3" placeholder="Enter question text"></textarea>
+          <button id="save-new-question-instant" type="submit">Save Question</button>
+          <button id="cancel-new-question-instant" type="button">Cancel</button>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" id="submit-instant-feedback" class="btn-primary">Submit Feedback Request</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Edit Question Modal (hidden by default) -->
+    <div id="edit-question-modal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; z-index:11000; background:rgba(0,0,0,0.3); align-items:center; justify-content:center;">
+      <div style="background:#fff; padding:20px; border-radius:8px; max-width:400px; margin:auto; position:relative;">
+        <button id="close-edit-question-modal" type="button" style="position:absolute; top:8px; right:12px; background:none; border:none; font-size:22px;">&times;</button>
+        <h5>Edit Question</h5>
+        <textarea id="edit-question-text" rows="3" style="width:100%; margin-bottom:10px;"></textarea>
+        <div>
+          <button id="save-edit-question-btn" type="button" class="btn btn-primary btn-sm">Save</button>
+          <button id="cancel-edit-question-btn" type="button" class="btn btn-secondary btn-sm">Cancel</button>
+        </div>
+        <div id="edit-question-error" style="color:red; font-size:13px; margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- Create New Feedback Section -->
+    <div id="create-new-feedback-section" class="feedback-section" style="display:none;">
+      <form id="create-feedback-form">
+        {% csrf_token %}
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label for="new-feedback-type-input">Create New Feedback Type:</label>
+          <input type="text" id="new-feedback-type-input" name="new_feedback_type" placeholder="Enter new feedback type name" />
+          <button id="save-new-feedback-type" type="button" title="Create new feedback type">➕</button>
+        </div>
+        <div id="feedback-type-error" style="color: red; margin-top: 5px;"></div>
+
+        <div id="after-feedback-type-created" style="margin-top:1em; display: none;">
+          <div style="display: flex; gap: 10px; margin-bottom: 1em;">
+            <button id="btn-add-question-to-created-type" type="button">Add Existing Question</button>
+            <button id="btn-create-question-to-created-type" type="button">Create New Question</button>
+          </div>
+
+          <!-- Existing Questions Section -->
+          <div id="add-existing-question-div" style="display:none;">
+            <h4>Available Questions:</h4>
+            <div id="all-questions-list" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;">
+                {% for question in all_questions %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #eee;">
+                        <span>{{ question.question }}</span>
+                        <button class="add-existing-question-btn" data-question-id="{{ question.id }}" type="button">Add</button>
+                    </div>
+                {% endfor %}
+            </div>
+          </div>
+
+          <!-- Create New Question Section -->
+          <div id="create-new-question-div" style="display:none; margin-top:1em;">
+            <textarea id="new-question-text-create" name="new_question" rows="3" placeholder="Enter question text"></textarea>
+            <div style="margin-top: 10px;">
+              <button id="save-new-question-create" type="button">Save Question</button>
+              <button id="cancel-new-question-create" type="button">Cancel</button>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" id="submit-new-feedback-type" class="btn-primary">Submit Feedback Template</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CSRF helper function from Django docs
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  // Open modal function
+  function openFeedbackModal() {
+    document.getElementById('feedback-modal').style.display = 'flex';
+    resetModal();
+  }
+
+  // Close modal
+  document.getElementById('close-feedback-modal').addEventListener('click', () => {
+    document.getElementById('feedback-modal').style.display = 'none';
+  });
+
+  // Click outside modal closes it
+  document.querySelector('#feedback-modal .modal-overlay').addEventListener('click', () => {
+    document.getElementById('feedback-modal').style.display = 'none';
+  });
+
+  // Reset modal to initial state
+  function resetModal() {
+    // Hide sections
+    document.getElementById('instant-feedback-section').style.display = 'none';
+    document.getElementById('create-new-feedback-section').style.display = 'none';
+
+    // Reset buttons styles
+    document.getElementById('btn-instant-feedback').disabled = false;
+    document.getElementById('btn-create-new-feedback').disabled = false;
+
+    // Clear forms and fields for instant feedback
+    document.getElementById('instant-feedback-type').value = "";
+    document.getElementById('instant-feedback-questions').innerHTML = "";
+    document.getElementById('add-new-question-instant').style.display = 'none';
+    document.getElementById('add-question-btn').style.display = 'inline-block';
+    document.getElementById('new-question-text-instant').value = "";
+
+    // Clear forms and fields for create new feedback (updated to match current structure)
+    document.getElementById('new-feedback-type-input').value = "";
+    document.getElementById('new-feedback-type-input').disabled = false;
+    document.getElementById('feedback-type-error').innerText = "";
+    document.getElementById('after-feedback-type-created').style.display = 'none';
+    document.getElementById('add-existing-question-div').style.display = 'none';
+    document.getElementById('create-new-question-div').style.display = 'none';
+    document.getElementById('new-question-text-create').value = "";
+    
+    // Reset any "Added" buttons in the questions list
+    const addButtons = document.querySelectorAll('.add-existing-question-btn');
+    addButtons.forEach(button => {
+        button.textContent = 'Add';
+        button.disabled = false;
+        button.style.backgroundColor = '';
+    });
+
+    // Hide edit modal if open
+    document.getElementById('edit-question-modal').style.display = 'none';
+    document.getElementById('edit-question-error').innerText = "";
+  }
+  // check-questions-btn
+  document.getElementById('check-questions-btn').addEventListener('click', async function() {
+    const feedbackTypeId = document.getElementById('instant-feedback-type').value;
+    const container = document.getElementById('instant-feedback-questions');
+    container.innerHTML = "";
+
+    if (!feedbackTypeId) {
+      alert('Please select a feedback type first.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/feedback_questions/${feedbackTypeId}/`);
+      if (!response.ok) throw new Error('Failed to load questions');
+      const data = await response.json();
+
+      if (data.questions && data.questions.length === 0) {
+        container.innerHTML = "<em>No questions available for this feedback type.</em>";
+      } else if (data.questions) {
+        data.questions.forEach(q => {
+          const div = document.createElement('div');
+          div.dataset.questionId = q.id;
+          div.innerHTML = `
+            <span class="question-text">${q.text}</span>
+            <span>
+              <button class="edit-question-btn" type="button" title="Edit question" style="color:#007bff; background:none; border:none; font-size:16px; margin-right:8px;">&#9998;</button>
+              <button class="remove-question-btn" type="button" title="Remove question" style="color:#dc3545; background:none; border:none; font-size:18px;">&times;</button>
+            </span>
+          `;
+          container.appendChild(div);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      container.innerHTML = `<em style="color:red;">Error loading questions</em>`;
+    }
+  });
+  // Show instant feedback form
+  document.getElementById('btn-instant-feedback').addEventListener('click', () => {
+    resetModal();
+    document.getElementById('instant-feedback-section').style.display = 'block';
+  });
+
+  // Show create new feedback form
+  document.getElementById('btn-create-new-feedback').addEventListener('click', () => {
+    resetModal();
+    document.getElementById('create-new-feedback-section').style.display = 'block';
+  });
+
+  // Load questions when feedback type selected (instant feedback)
+  
+
+  // Remove or edit question from instant feedback
+  document.getElementById('instant-feedback-questions').addEventListener('click', async (e) => {
+    const questionDiv = e.target.closest('div');
+    if (!questionDiv) return;
+    const questionId = questionDiv.dataset.questionId;
+    const feedbackTypeId = document.getElementById('instant-feedback-type').value;
+
+    // Remove
+    if (e.target.classList.contains('remove-question-btn') || (e.target.closest('button') && e.target.closest('button').classList.contains('remove-question-btn'))) {
+      if (!feedbackTypeId || !questionId) return;
+      if (!confirm('Remove this question from the feedback type?')) return;
+
+      try {
+        const response = await fetch('/remove_feedback_question/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+          body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          questionDiv.remove();
+        } else {
+          alert(result.error || 'Failed to remove question.');
+        }
+      } catch (error) {
+        alert('Error occurred while removing question.');
+      }
+      return;
+    }
+
+    // Edit
+    if (e.target.classList.contains('edit-question-btn') || (e.target.closest('button') && e.target.closest('button').classList.contains('edit-question-btn'))) {
+      // Show edit modal
+      const questionText = questionDiv.querySelector('.question-text').innerText;
+      document.getElementById('edit-question-text').value = questionText;
+      document.getElementById('edit-question-modal').style.display = 'flex';
+      document.getElementById('edit-question-error').innerText = "";
+      document.getElementById('edit-question-modal').dataset.questionId = questionId;
+      document.getElementById('edit-question-modal').dataset.feedbackTypeId = feedbackTypeId;
+      document.getElementById('edit-question-modal').dataset.questionDivIndex = Array.from(questionDiv.parentNode.children).indexOf(questionDiv);
+    }
+  });
+
+  // Close edit modal
+  document.getElementById('close-edit-question-modal').addEventListener('click', () => {
+    document.getElementById('edit-question-modal').style.display = 'none';
+    document.getElementById('edit-question-error').innerText = "";
+  });
+  document.getElementById('cancel-edit-question-btn').addEventListener('click', () => {
+    document.getElementById('edit-question-modal').style.display = 'none';
+    document.getElementById('edit-question-error').innerText = "";
+  });
+
+  // Save edited question
+  document.getElementById('save-edit-question-btn').addEventListener('click', async () => {
+    const modal = document.getElementById('edit-question-modal');
+    const questionId = modal.dataset.questionId;
+    const feedbackTypeId = modal.dataset.feedbackTypeId;
+    const newText = document.getElementById('edit-question-text').value.trim();
+
+    if (!newText) {
+      document.getElementById('edit-question-error').innerText = "Question text cannot be empty.";
+      return;
+    }
+
+    try {
+      // Call API to edit question (handles mapping logic on backend)
+      const response = await fetch('/update_question_for_feedback_type/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+        body: JSON.stringify({
+          question_id: questionId,
+          feedback_type_id: feedbackTypeId,
+          new_text: newText
+        })
+      });
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // If a new question was created, update the questionId in the DOM
+        const container = document.getElementById('instant-feedback-questions');
+        const idx = parseInt(modal.dataset.questionDivIndex, 10);
+        const questionDiv = container.children[idx];
+        if (questionDiv) {
+          questionDiv.querySelector('.question-text').innerText = newText;
+          if (result.new_question_id) {
+            questionDiv.dataset.questionId = result.new_question_id;
+          }
+        }
+        modal.style.display = 'none';
+        document.getElementById('edit-question-error').innerText = "";
+      } else {
+        document.getElementById('edit-question-error').innerText = result.error || 'Failed to edit question.';
+      }
+    } catch (error) {
+      document.getElementById('edit-question-error').innerText = 'Error occurred while editing question.';
+    }
+  });
+
+  // Show add new question textarea (instant feedback)
+  document.getElementById('add-question-btn').addEventListener('click', () => {
+    document.getElementById('add-new-question-instant').style.display = 'block';
+    document.getElementById('add-question-btn').style.display = 'none';
+  });
+
+  // Cancel new question (instant feedback)
+  document.getElementById('cancel-new-question-instant').addEventListener('click', () => {
+    document.getElementById('new-question-text-instant').value = "";
+    document.getElementById('add-new-question-instant').style.display = 'none';
+    document.getElementById('add-question-btn').style.display = 'inline-block';
+  });
+
+  // Save new question and map to selected feedback type (instant feedback)
+  
+  document.getElementById('instant-feedback-form').addEventListener('submit', async (e) => {
+    // Only handle add new question, not feedback submit
+    if (e.submitter && e.submitter.id !== 'save-new-question-instant') return;
+    e.preventDefault();
+
+    const feedbackTypeId = document.getElementById('instant-feedback-type').value;
+    const questionText = document.getElementById('new-question-text-instant').value.trim();
+
+    if (!feedbackTypeId) {
+        alert('Please select a feedback type.');
+        return;
+    }
+    if (!questionText) {
+        alert('Please enter a question text.');
+        return;
+    }
+
+    try {
+        const response = await fetch('/add_question_to_type/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({feedback_type: feedbackTypeId, question_text: questionText})
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // Reset input area
+            document.getElementById('new-question-text-instant').value = "";
+            document.getElementById('add-new-question-instant').style.display = 'none';
+            document.getElementById('add-question-btn').style.display = 'inline-block';
+            
+            // Instead of directly adding the question, trigger the Check Questions functionality
+            document.getElementById('check-questions-btn').click();
+        } else {
+            alert(result.error || 'Failed to add question.');
+        }
+    } catch (error) {
+        alert('Error occurred while adding question.');
+    }
+});
+
+  // Submit instant feedback request (simulate form submission)
+  document.getElementById('submit-instant-feedback').addEventListener('click', function(e) {
+    e.preventDefault();
+    // Implement your actual submission logic here as needed.
+    alert('Instant feedback request submitted!');
+    document.getElementById('feedback-modal').style.display = 'none';
+  });
+
+  // Create new feedback type flow
+  // Save new feedback type
+  document.getElementById('save-new-feedback-type').addEventListener('click', async () => {
+    const newType = document.getElementById('new-feedback-type-input').value.trim();
+    const errorDiv = document.getElementById('feedback-type-error');
+    errorDiv.innerText = "";
+
+    if (!newType) {
+      errorDiv.innerText = 'Feedback type cannot be empty.';
+      return;
+    }
+
+    try {
+      const response = await fetch('/create_feedback_type/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+        body: JSON.stringify({type: newType})
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        document.getElementById('after-feedback-type-created').style.display = 'block';
+        document.getElementById('new-feedback-type-input').disabled = true;
+        document.getElementById('save-new-feedback-type').disabled = true;
+        document.getElementById('create-feedback-form').dataset.feedbackTypeId = result.feedback_type.id;
+      } else if (result.exists) {
+        errorDiv.innerText = 'This feedback type already exists.';
+      } else {
+        errorDiv.innerText = result.error || 'Failed to create feedback type.';
+      }
+    } catch (error) {
+      errorDiv.innerText = 'Error occurred while creating feedback type.';
+    }
+  });
+
+  // Show add existing question section
+  document.getElementById('btn-add-question-to-created-type').addEventListener('click', () => {
+    document.getElementById('add-existing-question-div').style.display = 'block';
+    document.getElementById('create-new-question-div').style.display = 'none';
+  });
+
+  // Show create new question section
+  document.getElementById('btn-create-question-to-created-type').addEventListener('click', () => {
+    document.getElementById('add-existing-question-div').style.display = 'none';
+    document.getElementById('create-new-question-div').style.display = 'block';
+  });
+
+  // Add existing question to feedback type
+  const allQuestionsList = document.getElementById('all-questions-list');
+  if (allQuestionsList) {
+    allQuestionsList.addEventListener('click', async (e) => {
+      if (!e.target.classList.contains('add-existing-question-btn')) return;
+
+      const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
+      const questionId = e.target.dataset.questionId;
+
+      if (!feedbackTypeId) {
+        alert('Please create a feedback type first.');
+        return;
+      }
+
+      try {
+        const response = await fetch('/add_question_to_type/', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+          body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          e.target.textContent = 'Added';
+          e.target.disabled = true;
+          e.target.style.backgroundColor = '#28a745';
+        } else {
+          alert(result.error || 'Failed to add question.');
+        }
+      } catch (error) {
+        alert('Error occurred while adding question.');
+      }
+    });
+  }
+
+  // Cancel create new question
+  document.getElementById('cancel-new-question-create').addEventListener('click', () => {
+    document.getElementById('new-question-text-create').value = "";
+    document.getElementById('create-new-question-div').style.display = 'none';
+  });
+
+  // Save new question (create new feedback section)
+  document.getElementById('save-new-question-create').addEventListener('click', async () => {
+    const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
+    const questionText = document.getElementById('new-question-text-create').value.trim();
+
+    if (!feedbackTypeId) {
+      alert('Please create a feedback type first.');
+      return;
+    }
+    if (!questionText) {
+      alert('Please enter a question.');
+      return;
+    }
+
+    try {
+      const response = await fetch('/add_question_to_type/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+        body: JSON.stringify({feedback_type: feedbackTypeId, question_text: questionText})
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        alert('Question created and added to feedback type.');
+        document.getElementById('new-question-text-create').value = "";
+        document.getElementById('create-new-question-div').style.display = 'none';
+
+        // Optionally add the new question to the existing questions list
+        const newQuestionDiv = document.createElement('div');
+        newQuestionDiv.style.display = 'flex';
+        newQuestionDiv.style.justifyContent = 'space-between';
+        newQuestionDiv.style.alignItems = 'center';
+        newQuestionDiv.style.padding = '5px 0';
+        newQuestionDiv.style.borderBottom = '1px solid #eee';
+        newQuestionDiv.innerHTML = `
+          <span>${questionText}</span>
+          <button class="add-existing-question-btn" data-question-id="${result.question.id}" type="button" style="background-color: #28a745;" disabled>Added</button>
+        `;
+        document.getElementById('all-questions-list').prepend(newQuestionDiv);
+      } else {
+        alert(result.error || 'Failed to add question.');
+      }
+    } catch (error) {
+      alert('Error occurred while adding question.');
+    }
+  });
+
+  // Submit new feedback template form
+  document.getElementById('create-feedback-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('Feedback template submitted!');
+    document.getElementById('feedback-modal').style.display = 'none';
+  });
+  
+</script>
+<!-- Font Awesome for icons (edit, remove) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 
 <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script><!-- JavaScript -->
  <!-- Include jQuery -->
