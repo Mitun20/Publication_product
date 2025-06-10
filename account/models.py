@@ -74,7 +74,8 @@ class Feedback(models.Model):
     feedback_type = models.ForeignKey(FeedbackType, on_delete=models.CASCADE)
     assigned_on = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, related_name='created_feedbacks', on_delete=models.CASCADE)
-
+    is_active = models.BooleanField(default=False)
+    
     def __str__(self):
         return f"Feedback by {self.created_by.username} to {self.user.username}"
 
@@ -85,4 +86,4 @@ class FeedbackResponse(models.Model):
     submitted_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Response to {self.question.question[:50]} by {self.feedback.user.username}"
+        return f"Response for Ques: {self.question.question[:50]} by User: {self.feedback.user.username}"

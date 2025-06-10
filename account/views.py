@@ -10,7 +10,7 @@ from oss.services import send_email
 from .forms import *
 from oss.forms import *
 from oss.auth import *
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 import logging
 from django.core.mail import send_mail
@@ -20,7 +20,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.conf import settings
 from .forms import UserRegistrationForm
-from .models import Author, Modes, User,Editor
+from .models import Author, Feedback, FeedbackResponse, Modes, User,Editor
 from django.contrib.auth.forms import SetPasswordForm
 from oss.models import CoAuthor, Journal, Journal_Editor_Assignment
 from django.contrib.auth.forms import SetPasswordForm     #set_new_password
@@ -1292,3 +1292,72 @@ def update_question_for_feedback_type(request):
         question.question = new_text
         question.save()
         return JsonResponse({'success': True, 'question': {'id': question.id, 'question': question.question}})
+@require_POST
+@csrf_exempt
+def create_feedback(request):
+    try:
+        data = json.loads(request.body)
+        submission_id = data.get('submission_id')
+        feedback_type_id = data.get('feedback_type_id')
+        
+        if not submission_id or not feedback_type_id:
+            return JsonResponse({'success': False, 'error': 'Missing required parameters'}, status=400)
+            
+        submission = Submission.objects.get(id=submission_id)
+        author_user = submission.author.user
+        
+        # Create the feedback record
+        feedback = Feedback.objects.create(
+            user=author_user,
+            feedback_type_id=feedback_type_id,
+            created_by=request.user
+        )
+        
+        site_url = f"{settings.SITE_URL}{reverse('feedback_response_form', args=[feedback.id])}"
+        send_email(
+                to_email=submission.author.user.email,
+                subject='Requested feedback from publication',
+                template_name='email_templates/feedback_content.html',
+                user=submission.author.user,
+                context={ 'site_url': site_url, 'user': submission.author.user,}
+                )
+        
+        return JsonResponse({'success': True})
+        
+    except Submission.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Submission not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+# feedback response form view
+@login_required  # Optional: If you want to require login
+def feedback_response_form(request, feedback_id):
+    try:
+        feedback = Feedback.objects.get(id=feedback_id)
+    except Feedback.DoesNotExist:
+        return HttpResponse("Invalid feedback link.", status=404)
+
+    if feedback.is_active:
+        return render(request, 'thank_you.html', {'user': feedback.user})
+
+    if request.method == "POST":
+        questions = FeedbackQuestion.objects.filter(feedback_type=feedback.feedback_type)
+        for fq in questions:
+            response_text = request.POST.get(f'question_{fq.question.id}', '').strip()
+            if response_text:
+                FeedbackResponse.objects.create(
+                    feedback=feedback,
+                    question=fq.question,
+                    response=response_text
+                )
+        # Mark feedback as completed
+        feedback.is_active = True
+        feedback.save()
+        return render(request, 'thank_you.html', {'user': feedback.user})
+
+    questions = FeedbackQuestion.objects.filter(feedback_type=feedback.feedback_type)
+    return render(request, 'feedback_response_form.html', {'feedback': feedback, 'questions': questions})
+
+
+def thank_you(request):
+    return render(request, 'thank_you.html')

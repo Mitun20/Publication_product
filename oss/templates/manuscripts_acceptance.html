@@ -419,9 +419,8 @@ button {
                                             <li><a href="#" class="upload-corrected-file" data-id="{{ submission.id }}" 
                                             {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
                                             style="pointer-events: none; color: #ccc;"{% endif %}>Upload Corrected File</a></li>
-                                            <li><a href="{% url 'contact_form' %}?email={{ submission..user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
-                                            <li><a href="#" onclick="openFeedbackModal(); return false;">Request Feedback</a></li>
-
+                                            <li><a href="{% url 'contact_form' %}?email={{ submission.author.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
+                                            <li><a href="#" onclick="openFeedbackModal('{{ submission.id }}'); return false;">Request Feedback</a></li>
                                         </td>
                                             
                                             <td>
@@ -669,40 +668,47 @@ button {
 
 <script>
   // CSRF helper function from Django docs
-  function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-          const cookies = document.cookie.split(';');
-          for (let i = 0; i < cookies.length; i++) {
-              const cookie = cookies[i].trim();
-              if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
-  }
-  const csrftoken = getCookie('csrftoken');
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
 
-  // Open modal function
-  function openFeedbackModal() {
-    document.getElementById('feedback-modal').style.display = 'flex';
+// Track the current submission ID
+let currentSubmissionId = null;
+
+// Open modal function
+function openFeedbackModal(submissionId) {
+    console.log("Opening modal with submission ID:", submissionId);
     resetModal();
-  }
+    currentSubmissionId = submissionId;
+    document.getElementById('feedback-modal').style.display = 'flex';
+    
+}
 
-  // Close modal
-  document.getElementById('close-feedback-modal').addEventListener('click', () => {
+// Close modal
+document.getElementById('close-feedback-modal').addEventListener('click', () => {
     document.getElementById('feedback-modal').style.display = 'none';
-  });
+});
 
-  // Click outside modal closes it
-  document.querySelector('#feedback-modal .modal-overlay').addEventListener('click', () => {
+// Click outside modal closes it
+document.querySelector('#feedback-modal .modal-overlay').addEventListener('click', () => {
     document.getElementById('feedback-modal').style.display = 'none';
-  });
+});
 
-  // Reset modal to initial state
-  function resetModal() {
+// Reset modal to initial state
+function resetModal() {
+    // currentSubmissionId = null;
     // Hide sections
     document.getElementById('instant-feedback-section').style.display = 'none';
     document.getElementById('create-new-feedback-section').style.display = 'none';
@@ -738,176 +744,172 @@ button {
     // Hide edit modal if open
     document.getElementById('edit-question-modal').style.display = 'none';
     document.getElementById('edit-question-error').innerText = "";
-  }
-  // check-questions-btn
-  document.getElementById('check-questions-btn').addEventListener('click', async function() {
+}
+
+// Show instant feedback form
+document.getElementById('btn-instant-feedback').addEventListener('click', () => {
+    resetModal();
+    document.getElementById('instant-feedback-section').style.display = 'block';
+});
+
+// Show create new feedback form
+document.getElementById('btn-create-new-feedback').addEventListener('click', () => {
+    resetModal();
+    document.getElementById('create-new-feedback-section').style.display = 'block';
+});
+
+// Load questions for selected feedback type
+document.getElementById('check-questions-btn').addEventListener('click', async function() {
     const feedbackTypeId = document.getElementById('instant-feedback-type').value;
     const container = document.getElementById('instant-feedback-questions');
     container.innerHTML = "";
 
     if (!feedbackTypeId) {
-      alert('Please select a feedback type first.');
-      return;
+        alert('Please select a feedback type first.');
+        return;
     }
 
     try {
-      const response = await fetch(`/feedback_questions/${feedbackTypeId}/`);
-      if (!response.ok) throw new Error('Failed to load questions');
-      const data = await response.json();
+        const response = await fetch(`/feedback_questions/${feedbackTypeId}/`);
+        if (!response.ok) throw new Error('Failed to load questions');
+        const data = await response.json();
 
-      if (data.questions && data.questions.length === 0) {
-        container.innerHTML = "<em>No questions available for this feedback type.</em>";
-      } else if (data.questions) {
-        data.questions.forEach(q => {
-          const div = document.createElement('div');
-          div.dataset.questionId = q.id;
-          div.innerHTML = `
-            <span class="question-text">${q.text}</span>
-            <span>
-              <button class="edit-question-btn" type="button" title="Edit question" style="color:#007bff; background:none; border:none; font-size:16px; margin-right:8px;">&#9998;</button>
-              <button class="remove-question-btn" type="button" title="Remove question" style="color:#dc3545; background:none; border:none; font-size:18px;">&times;</button>
-            </span>
-          `;
-          container.appendChild(div);
-        });
-      }
+        if (data.questions && data.questions.length === 0) {
+            container.innerHTML = "<em>No questions available for this feedback type.</em>";
+        } else if (data.questions) {
+            data.questions.forEach(q => {
+                const div = document.createElement('div');
+                div.dataset.questionId = q.id;
+                div.innerHTML = `
+                    <span class="question-text">${q.text}</span>
+                    <span>
+                        <button class="edit-question-btn" type="button" title="Edit question" style="color:#007bff; background:none; border:none; font-size:16px; margin-right:8px;">&#9998;</button>
+                        <button class="remove-question-btn" type="button" title="Remove question" style="color:#dc3545; background:none; border:none; font-size:18px;">&times;</button>
+                    </span>
+                `;
+                container.appendChild(div);
+            });
+        }
     } catch (error) {
-      console.error('Error loading questions:', error);
-      container.innerHTML = `<em style="color:red;">Error loading questions</em>`;
+        console.error('Error loading questions:', error);
+        container.innerHTML = `<em style="color:red;">Error loading questions</em>`;
     }
-  });
-  // Show instant feedback form
-  document.getElementById('btn-instant-feedback').addEventListener('click', () => {
-    resetModal();
-    document.getElementById('instant-feedback-section').style.display = 'block';
-  });
+});
 
-  // Show create new feedback form
-  document.getElementById('btn-create-new-feedback').addEventListener('click', () => {
-    resetModal();
-    document.getElementById('create-new-feedback-section').style.display = 'block';
-  });
-
-  // Load questions when feedback type selected (instant feedback)
-  
-
-  // Remove or edit question from instant feedback
-  document.getElementById('instant-feedback-questions').addEventListener('click', async (e) => {
+// Handle question operations in instant feedback
+document.getElementById('instant-feedback-questions').addEventListener('click', async (e) => {
     const questionDiv = e.target.closest('div');
     if (!questionDiv) return;
     const questionId = questionDiv.dataset.questionId;
     const feedbackTypeId = document.getElementById('instant-feedback-type').value;
 
-    // Remove
+    // Remove question
     if (e.target.classList.contains('remove-question-btn') || (e.target.closest('button') && e.target.closest('button').classList.contains('remove-question-btn'))) {
-      if (!feedbackTypeId || !questionId) return;
-      if (!confirm('Remove this question from the feedback type?')) return;
+        if (!feedbackTypeId || !questionId) return;
+        if (!confirm('Remove this question from the feedback type?')) return;
 
-      try {
-        const response = await fetch('/remove_feedback_question/', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
-          body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
-        });
+        try {
+            const response = await fetch('/remove_feedback_question/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+                body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (response.ok && result.success) {
-          questionDiv.remove();
-        } else {
-          alert(result.error || 'Failed to remove question.');
+            if (response.ok && result.success) {
+                questionDiv.remove();
+            } else {
+                alert(result.error || 'Failed to remove question.');
+            }
+        } catch (error) {
+            alert('Error occurred while removing question.');
         }
-      } catch (error) {
-        alert('Error occurred while removing question.');
-      }
-      return;
+        return;
     }
 
-    // Edit
+    // Edit question
     if (e.target.classList.contains('edit-question-btn') || (e.target.closest('button') && e.target.closest('button').classList.contains('edit-question-btn'))) {
-      // Show edit modal
-      const questionText = questionDiv.querySelector('.question-text').innerText;
-      document.getElementById('edit-question-text').value = questionText;
-      document.getElementById('edit-question-modal').style.display = 'flex';
-      document.getElementById('edit-question-error').innerText = "";
-      document.getElementById('edit-question-modal').dataset.questionId = questionId;
-      document.getElementById('edit-question-modal').dataset.feedbackTypeId = feedbackTypeId;
-      document.getElementById('edit-question-modal').dataset.questionDivIndex = Array.from(questionDiv.parentNode.children).indexOf(questionDiv);
+        // Show edit modal
+        const questionText = questionDiv.querySelector('.question-text').innerText;
+        document.getElementById('edit-question-text').value = questionText;
+        document.getElementById('edit-question-modal').style.display = 'flex';
+        document.getElementById('edit-question-error').innerText = "";
+        document.getElementById('edit-question-modal').dataset.questionId = questionId;
+        document.getElementById('edit-question-modal').dataset.feedbackTypeId = feedbackTypeId;
+        document.getElementById('edit-question-modal').dataset.questionDivIndex = Array.from(questionDiv.parentNode.children).indexOf(questionDiv);
     }
-  });
+});
 
-  // Close edit modal
-  document.getElementById('close-edit-question-modal').addEventListener('click', () => {
+// Close edit modal
+document.getElementById('close-edit-question-modal').addEventListener('click', () => {
     document.getElementById('edit-question-modal').style.display = 'none';
     document.getElementById('edit-question-error').innerText = "";
-  });
-  document.getElementById('cancel-edit-question-btn').addEventListener('click', () => {
+});
+document.getElementById('cancel-edit-question-btn').addEventListener('click', () => {
     document.getElementById('edit-question-modal').style.display = 'none';
     document.getElementById('edit-question-error').innerText = "";
-  });
+});
 
-  // Save edited question
-  document.getElementById('save-edit-question-btn').addEventListener('click', async () => {
+// Save edited question
+document.getElementById('save-edit-question-btn').addEventListener('click', async () => {
     const modal = document.getElementById('edit-question-modal');
     const questionId = modal.dataset.questionId;
     const feedbackTypeId = modal.dataset.feedbackTypeId;
     const newText = document.getElementById('edit-question-text').value.trim();
 
     if (!newText) {
-      document.getElementById('edit-question-error').innerText = "Question text cannot be empty.";
-      return;
+        document.getElementById('edit-question-error').innerText = "Question text cannot be empty.";
+        return;
     }
 
     try {
-      // Call API to edit question (handles mapping logic on backend)
-      const response = await fetch('/update_question_for_feedback_type/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
-        body: JSON.stringify({
-          question_id: questionId,
-          feedback_type_id: feedbackTypeId,
-          new_text: newText
-        })
-      });
-      const result = await response.json();
+        const response = await fetch('/update_question_for_feedback_type/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({
+                question_id: questionId,
+                feedback_type_id: feedbackTypeId,
+                new_text: newText
+            })
+        });
+        const result = await response.json();
 
-      if (response.ok && result.success) {
-        // If a new question was created, update the questionId in the DOM
-        const container = document.getElementById('instant-feedback-questions');
-        const idx = parseInt(modal.dataset.questionDivIndex, 10);
-        const questionDiv = container.children[idx];
-        if (questionDiv) {
-          questionDiv.querySelector('.question-text').innerText = newText;
-          if (result.new_question_id) {
-            questionDiv.dataset.questionId = result.new_question_id;
-          }
+        if (response.ok && result.success) {
+            const container = document.getElementById('instant-feedback-questions');
+            const idx = parseInt(modal.dataset.questionDivIndex, 10);
+            const questionDiv = container.children[idx];
+            if (questionDiv) {
+                questionDiv.querySelector('.question-text').innerText = newText;
+                if (result.new_question_id) {
+                    questionDiv.dataset.questionId = result.new_question_id;
+                }
+            }
+            modal.style.display = 'none';
+            document.getElementById('edit-question-error').innerText = "";
+        } else {
+            document.getElementById('edit-question-error').innerText = result.error || 'Failed to edit question.';
         }
-        modal.style.display = 'none';
-        document.getElementById('edit-question-error').innerText = "";
-      } else {
-        document.getElementById('edit-question-error').innerText = result.error || 'Failed to edit question.';
-      }
     } catch (error) {
-      document.getElementById('edit-question-error').innerText = 'Error occurred while editing question.';
+        document.getElementById('edit-question-error').innerText = 'Error occurred while editing question.';
     }
-  });
+});
 
-  // Show add new question textarea (instant feedback)
-  document.getElementById('add-question-btn').addEventListener('click', () => {
+// Show add new question textarea (instant feedback)
+document.getElementById('add-question-btn').addEventListener('click', () => {
     document.getElementById('add-new-question-instant').style.display = 'block';
     document.getElementById('add-question-btn').style.display = 'none';
-  });
+});
 
-  // Cancel new question (instant feedback)
-  document.getElementById('cancel-new-question-instant').addEventListener('click', () => {
+// Cancel new question (instant feedback)
+document.getElementById('cancel-new-question-instant').addEventListener('click', () => {
     document.getElementById('new-question-text-instant').value = "";
     document.getElementById('add-new-question-instant').style.display = 'none';
     document.getElementById('add-question-btn').style.display = 'inline-block';
-  });
+});
 
-  // Save new question and map to selected feedback type (instant feedback)
-  
-  document.getElementById('instant-feedback-form').addEventListener('submit', async (e) => {
+// Save new question and map to selected feedback type (instant feedback)
+document.getElementById('instant-feedback-form').addEventListener('submit', async (e) => {
     // Only handle add new question, not feedback submit
     if (e.submitter && e.submitter.id !== 'save-new-question-instant') return;
     e.preventDefault();
@@ -934,12 +936,9 @@ button {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Reset input area
             document.getElementById('new-question-text-instant').value = "";
             document.getElementById('add-new-question-instant').style.display = 'none';
             document.getElementById('add-question-btn').style.display = 'inline-block';
-            
-            // Instead of directly adding the question, trigger the Check Questions functionality
             document.getElementById('check-questions-btn').click();
         } else {
             alert(result.error || 'Failed to add question.');
@@ -949,158 +948,219 @@ button {
     }
 });
 
-  // Submit instant feedback request (simulate form submission)
-  document.getElementById('submit-instant-feedback').addEventListener('click', function(e) {
+// Submit instant feedback request
+document.getElementById('submit-instant-feedback').addEventListener('click', async function(e) {
     e.preventDefault();
-    // Implement your actual submission logic here as needed.
-    alert('Instant feedback request submitted!');
-    document.getElementById('feedback-modal').style.display = 'none';
-  });
+    console.log("Submitting new feedback template form",submissionId);
+    // currentSubmissionId is already set when opening the modal, no need to set it here
+    if (!currentSubmissionId) {
+        alert('No submission selected');
+        return;
+    }
+    
+    const feedbackTypeId = document.getElementById('instant-feedback-type').value;
+    if (!feedbackTypeId) {
+        alert('Please select a feedback type');
+        return;
+    }
 
-  // Create new feedback type flow
-  // Save new feedback type
-  document.getElementById('save-new-feedback-type').addEventListener('click', async () => {
+    try {
+        const response = await fetch('/create_feedback/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({
+                submission_id: currentSubmissionId,
+                feedback_type_id: feedbackTypeId
+            })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            alert('Feedback request submitted successfully!');
+            document.getElementById('feedback-modal').style.display = 'none';
+        } else {
+            alert(result.error || 'Failed to create feedback request');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating feedback request');
+    }
+});
+
+// Create new feedback type flow
+document.getElementById('save-new-feedback-type').addEventListener('click', async () => {
     const newType = document.getElementById('new-feedback-type-input').value.trim();
     const errorDiv = document.getElementById('feedback-type-error');
     errorDiv.innerText = "";
 
     if (!newType) {
-      errorDiv.innerText = 'Feedback type cannot be empty.';
-      return;
+        errorDiv.innerText = 'Feedback type cannot be empty.';
+        return;
     }
 
     try {
-      const response = await fetch('/create_feedback_type/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
-        body: JSON.stringify({type: newType})
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        document.getElementById('after-feedback-type-created').style.display = 'block';
-        document.getElementById('new-feedback-type-input').disabled = true;
-        document.getElementById('save-new-feedback-type').disabled = true;
-        document.getElementById('create-feedback-form').dataset.feedbackTypeId = result.feedback_type.id;
-      } else if (result.exists) {
-        errorDiv.innerText = 'This feedback type already exists.';
-      } else {
-        errorDiv.innerText = result.error || 'Failed to create feedback type.';
-      }
-    } catch (error) {
-      errorDiv.innerText = 'Error occurred while creating feedback type.';
-    }
-  });
-
-  // Show add existing question section
-  document.getElementById('btn-add-question-to-created-type').addEventListener('click', () => {
-    document.getElementById('add-existing-question-div').style.display = 'block';
-    document.getElementById('create-new-question-div').style.display = 'none';
-  });
-
-  // Show create new question section
-  document.getElementById('btn-create-question-to-created-type').addEventListener('click', () => {
-    document.getElementById('add-existing-question-div').style.display = 'none';
-    document.getElementById('create-new-question-div').style.display = 'block';
-  });
-
-  // Add existing question to feedback type
-  const allQuestionsList = document.getElementById('all-questions-list');
-  if (allQuestionsList) {
-    allQuestionsList.addEventListener('click', async (e) => {
-      if (!e.target.classList.contains('add-existing-question-btn')) return;
-
-      const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
-      const questionId = e.target.dataset.questionId;
-
-      if (!feedbackTypeId) {
-        alert('Please create a feedback type first.');
-        return;
-      }
-
-      try {
-        const response = await fetch('/add_question_to_type/', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
-          body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
+        const response = await fetch('/create_feedback_type/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({type: newType})
         });
+
         const result = await response.json();
 
         if (response.ok && result.success) {
-          e.target.textContent = 'Added';
-          e.target.disabled = true;
-          e.target.style.backgroundColor = '#28a745';
+            document.getElementById('after-feedback-type-created').style.display = 'block';
+            document.getElementById('new-feedback-type-input').disabled = true;
+            document.getElementById('save-new-feedback-type').disabled = true;
+            document.getElementById('create-feedback-form').dataset.feedbackTypeId = result.feedback_type.id;
+        } else if (result.exists) {
+            errorDiv.innerText = 'This feedback type already exists.';
         } else {
-          alert(result.error || 'Failed to add question.');
+            errorDiv.innerText = result.error || 'Failed to create feedback type.';
         }
-      } catch (error) {
-        alert('Error occurred while adding question.');
-      }
-    });
-  }
+    } catch (error) {
+        errorDiv.innerText = 'Error occurred while creating feedback type.';
+    }
+});
 
-  // Cancel create new question
-  document.getElementById('cancel-new-question-create').addEventListener('click', () => {
+// Show add existing question section
+document.getElementById('btn-add-question-to-created-type').addEventListener('click', () => {
+    document.getElementById('add-existing-question-div').style.display = 'block';
+    document.getElementById('create-new-question-div').style.display = 'none';
+});
+
+// Show create new question section
+document.getElementById('btn-create-question-to-created-type').addEventListener('click', () => {
+    document.getElementById('add-existing-question-div').style.display = 'none';
+    document.getElementById('create-new-question-div').style.display = 'block';
+});
+
+// Add existing question to feedback type
+const allQuestionsList = document.getElementById('all-questions-list');
+if (allQuestionsList) {
+    allQuestionsList.addEventListener('click', async (e) => {
+        if (!e.target.classList.contains('add-existing-question-btn')) return;
+
+        const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
+        const questionId = e.target.dataset.questionId;
+
+        if (!feedbackTypeId) {
+            alert('Please create a feedback type first.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/add_question_to_type/', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+                body: JSON.stringify({feedback_type: feedbackTypeId, question: questionId})
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                e.target.textContent = 'Added';
+                e.target.disabled = true;
+                e.target.style.backgroundColor = '#28a745';
+            } else {
+                alert(result.error || 'Failed to add question.');
+            }
+        } catch (error) {
+            alert('Error occurred while adding question.');
+        }
+    });
+}
+
+// Cancel create new question
+document.getElementById('cancel-new-question-create').addEventListener('click', () => {
     document.getElementById('new-question-text-create').value = "";
     document.getElementById('create-new-question-div').style.display = 'none';
-  });
+});
 
-  // Save new question (create new feedback section)
-  document.getElementById('save-new-question-create').addEventListener('click', async () => {
+// Save new question (create new feedback section)
+document.getElementById('save-new-question-create').addEventListener('click', async () => {
     const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
     const questionText = document.getElementById('new-question-text-create').value.trim();
 
     if (!feedbackTypeId) {
-      alert('Please create a feedback type first.');
-      return;
+        alert('Please create a feedback type first.');
+        return;
     }
     if (!questionText) {
-      alert('Please enter a question.');
-      return;
+        alert('Please enter a question.');
+        return;
     }
 
     try {
-      const response = await fetch('/add_question_to_type/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
-        body: JSON.stringify({feedback_type: feedbackTypeId, question_text: questionText})
-      });
+        const response = await fetch('/add_question_to_type/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({feedback_type: feedbackTypeId, question_text: questionText})
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (response.ok && result.success) {
-        alert('Question created and added to feedback type.');
-        document.getElementById('new-question-text-create').value = "";
-        document.getElementById('create-new-question-div').style.display = 'none';
+        if (response.ok && result.success) {
+            alert('Question created and added to feedback type.');
+            document.getElementById('new-question-text-create').value = "";
+            document.getElementById('create-new-question-div').style.display = 'none';
 
-        // Optionally add the new question to the existing questions list
-        const newQuestionDiv = document.createElement('div');
-        newQuestionDiv.style.display = 'flex';
-        newQuestionDiv.style.justifyContent = 'space-between';
-        newQuestionDiv.style.alignItems = 'center';
-        newQuestionDiv.style.padding = '5px 0';
-        newQuestionDiv.style.borderBottom = '1px solid #eee';
-        newQuestionDiv.innerHTML = `
-          <span>${questionText}</span>
-          <button class="add-existing-question-btn" data-question-id="${result.question.id}" type="button" style="background-color: #28a745;" disabled>Added</button>
-        `;
-        document.getElementById('all-questions-list').prepend(newQuestionDiv);
-      } else {
-        alert(result.error || 'Failed to add question.');
-      }
+            const newQuestionDiv = document.createElement('div');
+            newQuestionDiv.style.display = 'flex';
+            newQuestionDiv.style.justifyContent = 'space-between';
+            newQuestionDiv.style.alignItems = 'center';
+            newQuestionDiv.style.padding = '5px 0';
+            newQuestionDiv.style.borderBottom = '1px solid #eee';
+            newQuestionDiv.innerHTML = `
+                <span>${questionText}</span>
+                <button class="add-existing-question-btn" data-question-id="${result.question.id}" type="button" style="background-color: #28a745;" disabled>Added</button>
+            `;
+            document.getElementById('all-questions-list').prepend(newQuestionDiv);
+        } else {
+            alert(result.error || 'Failed to add question.');
+        }
     } catch (error) {
-      alert('Error occurred while adding question.');
+        alert('Error occurred while adding question.');
     }
-  });
+});
 
-  // Submit new feedback template form
-  document.getElementById('create-feedback-form').addEventListener('submit', (e) => {
+// Submit new feedback template form
+document.getElementById('create-feedback-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('Feedback template submitted!');
-    document.getElementById('feedback-modal').style.display = 'none';
-  });
-  
+    
+    if (!currentSubmissionId) {
+        alert('No submission selected');
+        return;
+    }
+    
+    const feedbackTypeId = document.getElementById('create-feedback-form').dataset.feedbackTypeId;
+    if (!feedbackTypeId) {
+        alert('Please create a feedback type first');
+        return;
+    }
+
+    try {
+        const response = await fetch('/create_feedback/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+            body: JSON.stringify({
+                submission_id: currentSubmissionId,
+                feedback_type_id: feedbackTypeId
+            })
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            alert('Feedback request submitted successfully!');
+            document.getElementById('feedback-modal').style.display = 'none';
+        } else {
+            alert(result.error || 'Failed to create feedback request');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error creating feedback request');
+    }
+});
 </script>
 <!-- Font Awesome for icons (edit, remove) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
