@@ -1053,6 +1053,8 @@ from django.core.files.storage import FileSystemStorage
 from .forms import DocumentForm
 from .extractors import extract_docx, extract_pdf
 from .converter import text_to_latex
+
+@login_required
 def upload_file(request):
     """Handle file upload and LaTeX conversion."""
     if request.method == 'POST':
@@ -1093,6 +1095,7 @@ def upload_file(request):
         form = DocumentForm()
     return render(request, 'upload.html', {'form': form})
 
+@login_required
 def compile_pdf(request):
     if request.method == 'POST':
         try:
@@ -1157,11 +1160,11 @@ from .forms import (
     AddQuestionToTypeForm
 )
 import json
-
+@login_required
 def feedback_types(request):
     types = FeedbackType.objects.all().values('id', 'type')
     return JsonResponse(list(types), safe=False)
-
+@login_required
 def feedback_questions(request, feedback_type_id):
     print(f"Fetching questions for feedback type ID: {feedback_type_id}")
     mapped = FeedbackQuestion.objects.filter(feedback_type_id=feedback_type_id).select_related('question')
@@ -1175,6 +1178,7 @@ def feedback_questions(request, feedback_type_id):
     # Wrap in 'questions' key and return
     return JsonResponse({'questions': questions})  # Remove safe=False
 
+@login_required
 @csrf_exempt
 @require_http_methods(['POST'])
 def remove_feedback_question(request):
@@ -1192,6 +1196,7 @@ def remove_feedback_question(request):
             return JsonResponse({'success': False, 'error': 'Mapping not found'}, status=400)
     return JsonResponse({'success': False, 'error': 'Invalid data'}, status=400)
 
+@login_required
 @csrf_exempt
 @require_http_methods(['POST'])
 def add_question_to_type(request):
@@ -1228,7 +1233,7 @@ def add_question_to_type(request):
             'question': mapping.question.question
         }
     })
-
+@login_required
 @csrf_exempt
 @require_http_methods(['POST'])
 def create_feedback_type(request):
@@ -1259,6 +1264,7 @@ import json
 
 @csrf_exempt
 @require_POST
+@login_required
 def update_question_for_feedback_type(request):
     data = json.loads(request.body)
     feedback_type_id = data.get('feedback_type_id')
@@ -1293,6 +1299,7 @@ def update_question_for_feedback_type(request):
         question.save()
         return JsonResponse({'success': True, 'question': {'id': question.id, 'question': question.question}})
 @require_POST
+@login_required
 @csrf_exempt
 def create_feedback(request):
     try:
@@ -1361,3 +1368,31 @@ def feedback_response_form(request, feedback_id):
 
 def thank_you(request):
     return render(request, 'thank_you.html')
+
+from django.shortcuts import render
+from .models import Feedback, FeedbackType, FeedbackResponse
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import user_passes_test
+
+@login_required
+@user_passes_test(lambda u: is_eic(u) or is_super_admin(u))
+def feedback_list(request):
+    feedback_type_id = request.GET.get('feedback_type')  # get filter param
+    
+    feedbacks = FeedbackResponse.objects.all().select_related('feedback__user', 'feedback__feedback_type')
+    feedback_types = FeedbackType.objects.all()
+    
+    if feedback_type_id:
+        feedbacks = feedbacks.filter(feedback__feedback_type_id=feedback_type_id)
+    
+    paginator = Paginator(feedbacks, 7)  # Show 7 feedbacks per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'feedbacks': page_obj,  # Using page_obj instead of feedbacks
+        'feedback_types': feedback_types,
+        'selected_feedback_type': int(feedback_type_id) if feedback_type_id else None,
+    }
+    return render(request, 'feedback_list.html', context)

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+    
+</style>
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    {% if user.is_superuser %}
+                        <ul >
+                            <li >
+                                <a class="nav-link" href="{% url 'user_management' %}">
+                                    User Management
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link" href="{% url 'publication_management' %}">
+                                    Publication Management
+                                </a>
+                            </li>
+                            <li >
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
+                                            <li><a class="nav-link" href="{% url 'modes' %}">Modes</a></li>
+                                            <li><a class="nav-link active" href="{% url 'feedback_list' %}">Feedbacks</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    {% else %}
+                        <ul>
+                            <li>
+                                <a class="nav-link" href="{% url 'editor_in_chief' %}">
+                                    Manuscripts waiting for decision
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="{% url 'decisioned_manuscripts' %}">
+                                    Manuscripts decisioned
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" href="{% url 'feedback_list' %}">
+                                    Feedbacks
+                                </a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h2>Feedbacks</h2>
+
+                    <form method="get" class="filter-form" style="margin-bottom: 32px; display: flex; align-items: center; gap: 18px; background: #f4f6fa; padding: 22px 32px; border-radius: 10px; border: 1.5px solid #d1d7e0; box-shadow: 0 4px 16px rgba(60,72,88,0.07);">
+                        <label for="feedback_type" style="margin-bottom: 0; font-weight: 700; color: #22304a; font-size: 1.08rem; letter-spacing: 0.01em; min-width: 180px;">
+                            Filter by Feedback Type:
+                        </label>
+                        <select name="feedback_type" id="feedback_type" onchange="this.form.submit()" style="padding: 8px 20px; border-radius: 8px; border: 1.5px solid #b0b8c9; background: #f9fafc; font-size: 1.04rem; color: #22304a; min-width: 180px;">
+                            <option value="">-- All --</option>
+                            {% for ft in feedback_types %}
+                                <option value="{{ ft.id }}" {% if selected_feedback_type == ft.id %}selected{% endif %}>{{ ft.type }}</option>
+                            {% endfor %}
+                        </select>
+                        <noscript>
+                            <button type="submit" style="padding: 8px 22px; border-radius: 8px; border: 1.5px solid #b0b8c9; background: #e3e8f0; font-weight: 600; font-size: 1.04rem; color: #22304a;">
+                                Filter
+                            </button>
+                        </noscript>
+                    </form>
+
+                    {% if feedbacks %}
+                        <ul style="list-style: none; padding-left: 0;">
+                        {% for fb in feedbacks %}
+                            <li style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
+                                <strong>{{ fb.question.question }}</strong>
+                                <em>({{ fb.feedback.feedback_type.type }})</em><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;{{ fb.response }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                <small style="color: #555; font-style: italic; margin-left: 40px; display: inline-block;">
+                                    — {{ fb.feedback.user.first_name }} {{ fb.feedback.user.last_name }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No feedback found.</p>
+                    {% endif %}
+                    <div class="row pagination text-center">
+                        <span class="step-links">
+                            {% if feedbacks.has_previous %}
+                                <a href="?page=1{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">&laquo; first</a>
+                                <a href="?page={{ feedbacks.previous_page_number }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">previous</a>
+                            {% endif %}
+
+                            <span class="current">
+                                Page {{ feedbacks.number }} of {{ feedbacks.paginator.num_pages }}
+                            </span>
+
+                            {% if feedbacks.has_next %}
+                                <a href="?page={{ feedbacks.next_page_number }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">next</a>
+                                <a href="?page={{ feedbacks.paginator.num_pages }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1609,6 +1609,8 @@ def decisioned_manuscripts(request):
         'all_statuses': all_statuses,
         'selected_status': selected_status,
         'search_term': search_term,
+        'feedback_types': FeedbackType.objects.all(),
+        'all_questions': Question.objects.all(),
     })
 
 

@@ -76,5 +76,6 @@ urlpatterns = [
     path('update_question_for_feedback_type/', update_question_for_feedback_type, name='update_question_for_feedback_type'),
     path('create_feedback/', create_feedback, name='create_feedback'),
     path('feedback/<int:feedback_id>/respond/', feedback_response_form, name='feedback_response_form'),
+    path('feedback_list/', feedback_list, name='feedback_list'),
     path('thank-you/', thank_you, name='thank_you'),
 ]
