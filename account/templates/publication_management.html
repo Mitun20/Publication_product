@@ -2,7 +2,24 @@
 {% load static %}
 
 {% block content %}
- 
+ <style>
+    #publicationButtons {
+        gap: 10px;
+    }
+    .journal-btn {
+        min-width: 180px;
+        font-weight: 500;
+        background-color: #044d5e;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        transition: background 0.2s, color 0.2s;
+    }
+    .journal-btn:hover, .journal-btn:focus {
+        background-color: #044d5e;
+        color: #e2e6ea;
+    }
+</style>
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
         <div class="row">
@@ -50,6 +67,7 @@
                 {% for journal in journals %}
                     <button type="button" class="btn btn-save m-2 journal-btn" data-journal-id="{{ journal.id }}">{{ journal.title }}</button>
                 {% endfor %}
+                
             </div>
             </div>
         </div>

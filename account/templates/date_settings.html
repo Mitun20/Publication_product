@@ -47,7 +47,7 @@
                 <h2>Date Settings</h2>
         
                 {% for journal in journals %}
-                <button class="journal-btn" onclick="toggleForm({{ journal.id }})">{{ journal.title }}</button>
+                <button class="journal-btn" style="margin-bottom: 10px; padding: 10px 20px; background-color: #044d5e; color: #fff; border: none; border-radius: 4px; cursor: pointer;" onclick="toggleForm({{ journal.id }})">{{ journal.title }}</button>
                 <div class="journal-form" id="form-{{ journal.id }}" style="display: none;">
                     <form method="POST" action="{% url 'date_settings' %}">
                         {% csrf_token %}
