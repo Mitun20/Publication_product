@@ -252,7 +252,8 @@ def submission_step_one(request, submission_id):
         form = SubmissionStepOneForm(request.POST, instance=submission)
         if form.is_valid():
             submission = form.save(commit=False)
-            submission.author = request.user
+            author = Author.objects.get(user=request.user)
+            submission.author = author
 
             if not submission.manuscript_id:
                 try:
@@ -1021,7 +1022,7 @@ def Manuscripts_acceptance(request):
         article_status__article_status__in=['Accepted', 'Payment Done', 'Awaiting for Correction after Acceptance']
     ) 
      # Set up pagination
-    paginator = Paginator(submissions, 20)  # Show 10 submissions per page
+    paginator = Paginator(submissions, 20)  
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
     Context={

@@ -18,12 +18,12 @@
                                 {% if has_draft %}
                                 <li><a href="{% url 'draft' %}" class="active">Manuscripts in draft</a></li>
                                 {% endif %}
-                                <!-- {% if has_submitted %}
+                                {% if has_submitted %}
                                 <li><a href="{% url 'submitted' %}">Manuscripts submitted</a></li>
-                                {% endif %} -->
-                                <!-- {% if has_revision %}
+                                {% endif %}
+                                {% if has_revision %}
                                 <li><a href="{% url 'revision' %}">Manuscript waiting for revision</a></li>
-                                {% endif %} -->
+                                {% endif %}
                                 {% if has_accepted %}
                                 <li><a href="{% url 'accepted' %}">Manuscript Accepted</a></li>
                                 {% endif %}

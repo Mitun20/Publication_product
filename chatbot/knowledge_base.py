@@ -1,13 +1,13 @@
 PROJECT_KNOWLEDGE = {
     
    # === GENERAL/GREETINGS ===
-   "hi": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "hello": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "hey": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "greetings": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "good morning": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "good afternoon": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
-   "howdy": "Hello! I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
+   "hi": "Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "hello":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "hey":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "greetings":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "good morning":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "good afternoon":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+   "howdy":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
    "help": "I assist with manuscript workflows. Examples: \n 'Author: How to submit?',\n 'Admin Office: Check plagiarism?',\n 'Associate Editor: Assign reviewer?',\n 'Reviewer: Submit Reviews?' or\n 'EIC: Make Decision?'.",
    "support": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
    "guide me": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
@@ -72,7 +72,15 @@ PROJECT_KNOWLEDGE = {
     "have an account":"please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
     "logined": "logined as who? please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
     "loged in": "logined as who? please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
-    "author": "1) Login/Register \n 2) Click 'Begin New Submission' \n 3) Enter title/abstract \n 4) Upload files \n 5) Add keywords \n 6) Author details \n 7) Cover letter \n 8) Review & submit.",
+    "author": """Authors can submit their papers here by following these steps:
+                \n 1) Login/Register: Ensure you have an author account. If not, register first.
+                \n 2) Begin New Submission: Click on the 'Begin New Submission' option.
+                \n 3) Enter Title & Abstract: Provide the title and abstract of your paper.
+                \n 4) Upload Files: Upload all necessary files, such as your manuscript and figures.
+                \n 5) Add Keywords: Include relevant keywords for your paper.
+                \n 6) Author Details: Enter details for all authors.
+                \n 7) Cover Letter: Provide a cover letter.
+                \n 8) Review & Submit: Review all entered information and then submit your paper.""",
     "have author account": "If you don’t have an author account, please register first. If you already have an account, please login.",
     "have an author account": "If you don’t have an author account, please register first. If you already have an account, please login.",
     

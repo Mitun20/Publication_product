@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
+from account.models import FeedbackType, Question
 from oss.models import Article_Status, Journal, Accepted_Submission, Submission
 from .models import *
 from django.urls import reverse
@@ -365,6 +366,8 @@ def published_article(request, journal_id):
         'selected_volume': selected_volume,
         'selected_issue': selected_issue,
         'journal': journal,
+        'feedback_types': FeedbackType.objects.all(),
+        'all_questions': Question.objects.all(),
     }
     return render(request, 'published_article.html', context)
 
