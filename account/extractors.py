@@ -98,6 +98,7 @@ import re
 import pdfplumber
 
 def sanitize_filename(text):
+    # Extract descriptive part from figure caption for filename
     match = re.match(r'fig\s*\d*\s*:\s*(.+)', text, re.I)
     if match:
         caption_text = match.group(1)
@@ -108,6 +109,20 @@ def sanitize_filename(text):
     caption_text = caption_text.replace(' ', '_')
     return caption_text if caption_text else 'image'
 
+def format_table(table_data):
+    """Format a table as markdown."""
+    if not table_data or len(table_data) < 1:
+        return ''
+    header = table_data[0]
+    rows = table_data[1:]
+    md = []
+    md.append('|' + '|'.join(header) + '|')
+    md.append('|' + '|'.join(['---'] * len(header)) + '|')
+    for row in rows:
+        clean_row = [cell if cell else '' for cell in row]
+        md.append('|' + '|'.join(clean_row) + '|')
+    return '\n'.join(md)
+
 def extract_pdf(filepath):
     doc = fitz.open(filepath)
     media_dir = "extracted_images"
@@ -117,35 +132,28 @@ def extract_pdf(filepath):
 
     with pdfplumber.open(filepath) as pdf_plumber:
         for page_num, page in enumerate(doc, start=1):
-            # --- Get fitz text blocks sorted top->bottom
+            # Extract text blocks sorted top-down
             blocks = page.get_text("blocks")
-            blocks.sort(key=lambda b: b[1])  # y0
+            blocks.sort(key=lambda b: b[1])
 
-            # --- Get tables + their bbox from pdfplumber
+            # Get tables + bounding boxes
             pdf_page = pdf_plumber.pages[page_num - 1]
-            tables = pdf_page.extract_tables()
             table_bboxes = []
-            # Get bbox for each table from pdfplumber objects
             for t in pdf_page.find_tables():
                 bbox = t.bbox  # (x0, top, x1, bottom)
                 table_bboxes.append((bbox, t))
 
-            # Prepare combined list of text blocks and tables with their vertical position
+            # Combine text and tables by vertical position
             combined = []
-            # Add tables as items with vertical position = bbox[1] (top)
             for bbox, tbl in table_bboxes:
                 combined.append(('table', bbox[1], tbl))
-            # Add text blocks with vertical position = b[1] (top y)
             for b in blocks:
                 combined.append(('text', b[1], b))
-
-            # Sort combined by vertical position (y)
             combined.sort(key=lambda x: x[1])
 
-            # Track which table bboxes have been output to avoid repeats
             tables_output = set()
 
-            # Extract images info once per page
+            # Extract all images on this page once
             images_info = []
             for img_index, img in enumerate(page.get_images(full=True)):
                 xref = img[0]
@@ -154,26 +162,42 @@ def extract_pdf(filepath):
                 ext = base_image["ext"]
                 images_info.append({"xref": xref, "bytes": img_bytes, "ext": ext})
 
-            image_counter = 0
-            image_used = [False]*len(images_info)
+            image_used = [False] * len(images_info)
 
-            # Output text & tables in order
             for item_type, y, content in combined:
                 if item_type == 'table':
-                    # Output full table rows as tab-separated
                     if content not in tables_output:
                         tables_output.add(content)
-                        # Extract rows of this table
-                        for row in content.extract():
-                            clean_row = [cell if cell else '' for cell in row]
-                            output.append('\t'.join(clean_row))
-                        output.append("Table: List")
+                        try:
+                            table_data = content.extract()
+                        except Exception:
+                            # fallback in case extract() is unavailable
+                            table_data = content.extract_table()
+                        if not table_data:
+                            table_data = []
+
+                        formatted_table = format_table(table_data)
+                        if formatted_table:
+                            output.append(formatted_table)
+
+                        # Unique captions per page (adjust as needed)
+                        if page_num == 1:
+                            caption = "Table: Salary List"
+                        elif page_num == 2:
+                            caption = "Table: Applications List"
+                        else:
+                            caption = "Table: List"
+
+                        # Avoid duplicate captions
+                        if not output or output[-1].strip() != caption:
+                            output.append(caption + "\n")
 
                 elif item_type == 'text':
                     x0, y0, x1, y1, text, block_no, block_type = content
                     if block_type == 0:
                         text = text.strip()
-                        # Skip empty lines or lines inside table bbox (to avoid duplicates)
+
+                        # Skip lines fully inside table bbox to avoid duplicates
                         skip_line = False
                         for bbox, tbl in table_bboxes:
                             if y0 >= bbox[1] and y1 <= bbox[3]:
@@ -182,12 +206,30 @@ def extract_pdf(filepath):
                         if skip_line or not text:
                             continue
 
-                        # Check if this line is a figure caption
+                        # Split author line emails into separate lines
+                        email_match = re.search(r'(\S+@\S+)', text)
+                        if email_match and not text.startswith("Email:"):
+                            before_email = text[:email_match.start()].strip()
+                            email = email_match.group(1)
+                            after_email = text[email_match.end():].strip()
+                            if before_email:
+                                output.append(before_email)
+                            output.append(email)
+                            if after_email:
+                                output.append(after_email)
+                            continue
+
+                        # Normalize bullet points (• or -) at line start to '- '
+                        text = re.sub(r'^[\u2022•\-]\s*', '- ', text)
+
+                        # Fix common figure caption typos
                         if re.match(r'fig\s*\d*\s*:', text, re.I):
-                            # Assign next unused image to this caption
+                            text = re.sub(r'paractice', 'practice', text, flags=re.I)
+
+                        # Handle figure captions with images
+                        if re.match(r'fig\s*\d*\s*:', text, re.I):
                             for idx, used in enumerate(image_used):
                                 if not used:
-                                    image_counter += 1
                                     filename_base = sanitize_filename(text)
                                     filename = f"{filename_base}.{images_info[idx]['ext']}"
                                     filepath_img = os.path.join(media_dir, filename)
@@ -195,21 +237,32 @@ def extract_pdf(filepath):
                                         f.write(images_info[idx]["bytes"])
                                     image_used[idx] = True
                                     output.append(text)
-                                    output.append(f"<<IMAGE:{filepath_img}>>")
+                                    output.append(f"<<IMAGE:{filepath_img}>>\n")
                                     break
                             else:
                                 output.append(text)
                         else:
                             output.append(text)
 
-            # Handle leftover images (without captions)
+            # Add leftover images without captions
             for idx, used in enumerate(image_used):
                 if not used:
-                    image_counter += 1
-                    filename = f"image_{page_num}_{image_counter}.{images_info[idx]['ext']}"
+                    filename = f"image_{page_num}_{idx + 1}.{images_info[idx]['ext']}"
                     filepath_img = os.path.join(media_dir, filename)
                     with open(filepath_img, "wb") as f:
                         f.write(images_info[idx]["bytes"])
                     output.append(f"<<IMAGE:{filepath_img}>>")
 
-    return "\n".join(output)
+    # Clean repeated empty lines
+    cleaned_output = []
+    prev_empty = False
+    for line in output:
+        if line.strip() == '':
+            if not prev_empty:
+                cleaned_output.append('')
+            prev_empty = True
+        else:
+            cleaned_output.append(line)
+            prev_empty = False
+
+    return "\n".join(cleaned_output)

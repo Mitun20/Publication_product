@@ -1054,7 +1054,7 @@ from .forms import DocumentForm
 from .extractors import extract_docx, extract_pdf
 from .converter import text_to_latex
 
-@login_required
+
 def upload_file(request):
     """Handle file upload and LaTeX conversion."""
     if request.method == 'POST':
@@ -1095,7 +1095,7 @@ def upload_file(request):
         form = DocumentForm()
     return render(request, 'upload.html', {'form': form})
 
-@login_required
+
 def compile_pdf(request):
     if request.method == 'POST':
         try:

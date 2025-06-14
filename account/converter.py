@@ -1,259 +1,270 @@
 import re
-from typing import List, Optional
-from pathlib import Path
 
-class LatexConverter:
-    def __init__(self):
-        self.special_chars = {
-            '\\': r'\textbackslash{}',
-            '_': r'\_',
-            '&': r'\&',
-            '%': r'\%',
-            '$': r'\$',
-            '#': r'\#',
-            '{': r'\{',
-            '}': r'\}',
-            '~': r'\textasciitilde{}',
-            '^': r'\textasciicircum{}',
-            '–': '--',
-            '—': '---',
-            '“': r'``',
-            '”': r"''",
-            '‘': r'`',
-            '’': r"'",
-            '<': r'\textless{}',
-            '>': r'\textgreater{}',
+def escape_latex(text):
+    replace_map = {
+        '&': r'\&',
+        '%': r'\%',
+        '$': r'\$',
+        '#': r'\#',
+        '_': r'\_',
+        '{': r'\{',
+        '}': r'\}',
+        '~': r'\textasciitilde{}',
+        '^': r'\textasciicircum{}',
+        '\\': r'\textbackslash{}',
+    }
+    regex = re.compile('|'.join(re.escape(key) for key in replace_map.keys()))
+    return regex.sub(lambda match: replace_map[match.group()], text)
+
+def convert_text_to_ieee_latex(input_text):
+    lines = input_text.splitlines()
+    n = len(lines)
+    i = 0
+    latex = []
+
+    # Preamble
+    latex.append(r"\documentclass[conference]{IEEEtran}")
+    latex.append(r"\IEEEoverridecommandlockouts")
+    latex.append(r"\usepackage{cite,amsmath,amssymb,amsfonts,algorithmic,graphicx,textcomp,xcolor}")
+    latex.append(r"\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em"
+                 r"T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}")
+    latex.append("")
+
+    # Title (first line)
+    title = lines[i].strip()
+    latex.append(r"\title{" + escape_latex(title) + "}")
+    i += 1
+
+    # Parse authors block until first section or empty line after authors
+    author_lines = []
+    while i < n:
+        line = lines[i].strip()
+        if not line:
+            i += 1
+            continue
+        if re.match(r"^\d+\.", line) or line.lower() in ["introduction", "applications", "conclusion", "contact"]:
+            break
+        author_lines.append(line)
+        i += 1
+
+    # Break authors on email lines
+    author_blocks = []
+    block = []
+    for line in author_lines:
+        block.append(line)
+        if "@" in line:
+            author_blocks.append(block)
+            block = []
+    if block:
+        author_blocks.append(block)
+
+    def parse_author_block(block):
+        # The first line contains full name and role
+        roles = ["Associate Professor", "Assistant Professor", "Professor"]
+        line = block[0]
+
+        role_found = ""
+        name = line
+        for r in roles:
+            if r in line:
+                role_found = r
+                idx = line.find(r)
+                name = line[:idx].strip()
+                break
+
+        email = ""
+        dept_inst = []
+        for l in block[1:]:
+            if "@" in l:
+                email = l.strip()
+            else:
+                dept_inst.append(l.strip())
+
+        department = ""
+        institution = ""
+        if dept_inst:
+            department = dept_inst[0]
+            if len(dept_inst) > 1:
+                institution = " ".join(dept_inst[1:])
+
+        return {
+            "name": name,
+            "role": role_found,
+            "department": department,
+            "institution": institution,
+            "email": email,
         }
-        self.table_count = 0
-        self.figure_count = 1  # Initialize figure counter at 1
 
-    def escape_special_chars(self, text: str) -> str:
-        # Skip escaping for LaTeX commands and environments
-        escaped_lines = []
-        in_latex_env = False
-        
-        for line in text.split('\n'):
-            if line.strip().startswith(('\\begin{', '\\end{', '\\caption', '\\label', '\\includegraphics')):
-                escaped_lines.append(line)
-                in_latex_env = line.strip().startswith('\\begin{') and not line.strip().startswith('\\end{')
-                continue
-            
-            if in_latex_env or line.strip().startswith('\\'):
-                escaped_lines.append(line)
+    authors = [parse_author_block(b) for b in author_blocks]
+
+    latex.append(r"\author{")
+    for idx, a in enumerate(authors):
+        name_line = escape_latex(a["name"])
+        if a["role"]:
+            name_line += " " + escape_latex(a["role"])
+        latex.append(r"\IEEEauthorblockN{" + name_line + "}")
+        affil = []
+        if a["department"]:
+            affil.append(escape_latex(a["department"]))
+        if a["institution"]:
+            affil.append(escape_latex(a["institution"]))
+        affil_str = r"\\ ".join(affil)
+        latex.append(r"\IEEEauthorblockA{" + affil_str + r"\\" + f"Email: \\texttt{{{escape_latex(a['email'])}}}" + "}")
+        if idx != len(authors) - 1:
+            latex.append(r"\and")
+    latex.append(r"}")
+    latex.append("")
+
+    latex.append(r"\begin{document}")
+    latex.append(r"\maketitle")
+    latex.append("")
+
+    def is_table_line(line):
+        return line.strip().startswith("|") and line.strip().endswith("|")
+
+    def process_table(start_idx):
+        table_lines = []
+        idx = start_idx
+        while idx < n and is_table_line(lines[idx]):
+            table_lines.append(lines[idx].strip())
+            idx += 1
+        headers = [h.strip() for h in table_lines[0].strip("|").split("|")]
+        data_rows = []
+        for l in table_lines[2:]:
+            row = [c.strip() for c in l.strip("|").split("|")]
+            data_rows.append(row)
+
+        captions = []
+        cap_idx = idx
+        while cap_idx < n and lines[cap_idx].strip() != "":
+            cap_line = lines[cap_idx].strip()
+            if cap_line.lower().startswith("table:"):
+                captions.append(cap_line[6:].strip())
             else:
-                escaped_line = line
-                for char, escape in self.special_chars.items():
-                    escaped_line = escaped_line.replace(char, escape)
-                escaped_lines.append(escaped_line)
-        
-        return '\n'.join(escaped_lines)
-    
-    def format_sections(self, text: str) -> str:
-        # Convert numbered sections (1. Introduction) to LaTeX sections
-        text = re.sub(r'^(\d+)\.\s+([^\n]+)$', r'\\section{\2}', text, flags=re.MULTILINE)
-        return text
+                break
+            cap_idx += 1
+        return headers, data_rows, captions, cap_idx
 
-    def format_lists(self, text: str) -> str:
-        # Convert bullet points to itemize environment
-        text = re.sub(r'^•\s+(.+)$', r'\\item \1', text, flags=re.MULTILINE)
-        
-        # Wrap consecutive items in itemize environment
-        lines = text.split('\n')
-        output = []
-        in_itemize = False
-        
-        for line in lines:
-            if line.startswith(r'\item '):
-                if not in_itemize:
-                    output.append(r'\begin{itemize}')
-                    in_itemize = True
-                output.append(line)
+    def prettify_caption(caption):
+        caption = caption.strip()
+        if not caption:
+            return ""
+        return caption[0].upper() + caption[1:].replace("_", " ")
+
+    def unescape_graphics_path(path):
+        return path.replace("\\", "/")
+
+    while i < n:
+        line = lines[i].strip()
+        if not line:
+            i += 1
+            continue
+
+        # Numbered sections
+        m_sec = re.match(r"^(\d+)\.\s+(.*)", line)
+        if m_sec:
+            sec_title = m_sec.group(2)
+            latex.append(r"\section{" + escape_latex(sec_title) + "}")
+            i += 1
+            continue
+
+        # Section keywords without number
+        if line.lower() in ["introduction", "applications", "conclusion", "contact"]:
+            if line.lower() == "contact":
+                latex.append(r"\section*{Contact}")
+                i += 1
+                contact_lines = []
+                while i < n and lines[i].strip():
+                    contact_lines.append(lines[i].strip())
+                    i += 1
+                contact_text = " ".join(contact_lines)
+                m_email = re.search(r"Email:\s*(\S+)", contact_text)
+                if m_email:
+                    email = m_email.group(1)
+                    contact_text = contact_text.replace(m_email.group(0), "")
+                    latex.append(r"Contact: " + escape_latex(contact_text.strip()))
+                    latex.append(r"\\")
+                    latex.append(r"Email: \texttt{" + escape_latex(email) + "}")
+                else:
+                    latex.append(escape_latex(contact_text))
+                continue
             else:
-                if in_itemize:
-                    output.append(r'\end{itemize}')
-                    in_itemize = False
-                output.append(line)
-        
-        if in_itemize:
-            output.append(r'\end{itemize}')
-        
-        return '\n'.join(output)
+                latex.append(r"\section{" + escape_latex(line) + "}")
+                i += 1
+                continue
 
-    def format_tables(self, text: str) -> str:
-        # Find all tables in the text
-        table_matches = list(re.finditer(
-            r'S\.No\s+Name\s+Role\s+Salary\n((?:\d+\s+\w+\s+\w+\s+\d+\n?)+)',
-            text
-        ))
-        
-        # Process matches in reverse order to avoid position shifting
-        for match in reversed(table_matches):
-            table_content = match.group(0).strip()
-            if not table_content:
-                continue
-                
-            rows = [row for row in table_content.split('\n') if row.strip()]
-            if len(rows) < 2:  # Need at least header and one data row
-                continue
-                
-            header = rows[0]
-            data_rows = rows[1:]
-            
-            # Generate LaTeX table
-            latex_table = [
-                r'\begin{table}[h!]',
-                r'\centering',
-                r'\begin{tabular}{|l|l|l|l|}',
-                r'\hline',
-                r'\textbf{S.No} & \textbf{Name} & \textbf{Role} & \textbf{Salary} \\ \hline'
-            ]
-            
+        # Bullet lists
+        if re.match(r"^(\*|•|-)\s+", line):
+            latex.append(r"\begin{itemize}")
+            while i < n and re.match(r"^(\*|•|-)\s+", lines[i].strip()):
+                item = re.sub(r"^(\*|•|-)\s+", "", lines[i].strip())
+                latex.append(r"\item " + escape_latex(item))
+                i += 1
+            latex.append(r"\end{itemize}")
+            continue
+
+        # Tables
+        if is_table_line(line):
+            headers, data_rows, captions, new_i = process_table(i)
+            latex.append(r"\begin{table}[h]")
+            latex.append(r"\centering")
+            col_fmt = "|" + "c|" * len(headers)
+            latex.append(r"\begin{tabular}{" + col_fmt + "}")
+            latex.append(r"\hline")
+            latex.append(" & ".join(escape_latex(h) for h in headers) + r" \\")
+            latex.append(r"\hline")
             for row in data_rows:
-                cols = re.split(r'\s+', row.strip(), maxsplit=3)
-                if len(cols) >= 4:
-                    latex_table.append(f"{cols[0]} & {cols[1]} & {cols[2]} & {cols[3]} \\\\ \\hline")
-            
-            latex_table.extend([
-                r'\end{tabular}',
-                r'\caption{Employee Data}',
-                fr'\label{{tab:employee{self.table_count}}}',
-                r'\end{table}'
-            ])
-            
-            # Replace the original table with LaTeX table
-            text = text[:match.start()] + '\n'.join(latex_table) + text[match.end():]
-            self.table_count += 1
-        
-        return text
+                latex.append(" & ".join(escape_latex(cell) for cell in row) + r" \\")
+            latex.append(r"\hline")
+            latex.append(r"\end{tabular}")
+            if captions:
+                unique_captions = ", ".join(sorted(set(captions)))
+                latex.append(r"\caption{" + escape_latex(prettify_caption(unique_captions)) + "}")
+            latex.append(r"\end{table}")
+            i = new_i
+            # Skip any remaining "Table: ..." lines
+            while i < n and lines[i].strip().lower().startswith("table:"):
+                i += 1
+            continue
 
-    def format_images(self, text: str) -> str:
-        """Convert image placeholders to LaTeX figures with captions from preceding 'Fig:' lines."""
-        lines = text.splitlines()
-        output_lines = []
-        current_caption = None
+        # Figures placeholders
+        m_figtext = re.match(r"Fig\s*\d*\s*:\s*(.+)", line, re.I)
+        if m_figtext:
+            cap_text = m_figtext.group(1).strip()
+            latex.append("% Figure placeholder for: " + escape_latex(cap_text))
+            i += 1
+            continue
 
-        fig_caption_re = re.compile(r'fig\s*\d*\s*:\s*(.+)', re.I)
-        image_placeholder_re = re.compile(r'<<IMAGE:([^>]+)>>')
+        m_img = re.match(r"<<IMAGE:(.+)>>", line)
+        if m_img:
+            img_path = m_img.group(1).strip()
+            base_name = img_path.split("/")[-1]
+            cap_text = base_name.rsplit(".", 1)[0].replace("_", " ").title()
+            label_text = re.sub(r"[^a-zA-Z0-9]+", "", base_name)
+            latex.append(r"\begin{figure}[h]")
+            latex.append(r"\centering")
+            latex.append(r"\includegraphics[width=0.6\linewidth]{" + unescape_graphics_path(img_path) + "}")
+            latex.append(r"\caption{" + escape_latex(cap_text) + "}")
+            latex.append(r"\label{fig:" + label_text + "}")
+            latex.append(r"\end{figure}")
+            i += 1
+            continue
 
-        for line in lines:
-            # Detect figure caption like "Fig: Deadpool" or "Fig 2: Something"
-            caption_match = fig_caption_re.match(line.strip())
-            if caption_match:
-                current_caption = caption_match.group(1).strip()
-                # do not output original caption line, replace with LaTeX figure caption instead
-                continue
+        # Paragraphs
+        para_lines = []
+        while i < n and lines[i].strip() and not is_table_line(lines[i]) and not re.match(r"Fig\s*\d*\s*:", lines[i], re.I) and not re.match(r"<<IMAGE:.+>>", lines[i]):
+            para_lines.append(lines[i].strip())
+            i += 1
+        if para_lines:
+            paragraph = " ".join(para_lines)
+            latex.append(escape_latex(paragraph))
+            latex.append("")
+            continue
 
-            # Detect image placeholder
-            image_match = image_placeholder_re.search(line)
-            if image_match:
-                image_path = image_match.group(1).replace('\\', '/')
-                caption = current_caption or ''
-                label = f"fig:image_{self.figure_count}"
+        i += 1
 
-                figure_latex = '\n'.join([
-                    r'\begin{figure}[h!]',
-                    r'\centering',
-                    fr'\includegraphics[width=0.8\textwidth]{{{image_path}}}',
-                    fr'\caption{{{caption}}}',
-                    fr'\label{{{label}}}',
-                    r'\end{figure}'
-                ])
+    latex.append(r"\end{document}")
+    return "\n".join(latex)
 
-                output_lines.append(figure_latex)
-                self.figure_count += 1
-                current_caption = None  # Reset after using
-            else:
-                output_lines.append(line)
-
-        return '\n'.join(output_lines)
-
-    def format_email(self, text: str) -> str:
-        # Format contact section with email
-        text = re.sub(
-            r'(Contact:\s*)Email:\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})',
-            lambda m: f"{m.group(1)}Email: \\texttt{{{m.group(2)}}}",
-            text
-        )
-        return text
-
-    def clean_whitespace(self, text: str) -> str:
-        # Remove excessive empty lines
-        text = re.sub(r'\n{3,}', '\n\n', text)
-        # Ensure one empty line before sections
-        text = re.sub(r'(\S)\n(\\section)', r'\1\n\n\2', text)
-        return text.strip()
-
-    def convert(self, text: str) -> str:
-        # Put format_images before escape_special_chars to prevent placeholder escaping before conversion
-        processing_order = [
-            self.format_sections,
-            self.format_lists,
-            self.format_tables,
-            self.format_images,
-            self.escape_special_chars,
-            self.format_email,
-            self.clean_whitespace,
-        ]
-        
-        for processor in processing_order:
-            try:
-                text = processor(text)
-            except Exception as e:
-                print(f"Error in {processor.__name__}: {str(e)}")
-                continue
-        
-        return text
-
-    def generate_latex_document(self, text: str) -> str:
-        if not text.strip():
-            return self._error_document("Empty input text")
-            
-        try:
-            lines = text.split('\n')
-            title = lines[0].strip() if lines else "Untitled Document"
-            content = '\n'.join(lines[1:]) if len(lines) > 1 else ""
-            
-            latex_content = self.convert(content)
-            
-            latex_template = fr"""\documentclass[12pt]{{article}}
-\usepackage[utf8]{{inputenc}}
-\usepackage{{enumitem}}
-\usepackage{{parskip}}
-\usepackage{{booktabs}}
-\usepackage{{graphicx}}  % Added for image support
-
-\title{{{self.escape_special_chars(title)}}}
-\author{{Anonymous}}
-\date{{\today}}
-
-\begin{{document}}
-\maketitle
-
-{latex_content}
-
-\end{{document}}"""
-            
-            return latex_template
-        except Exception as e:
-            return self._error_document(str(e))
-
-    def _error_document(self, error_msg: str) -> str:
-        return fr"""\documentclass{{article}}
-\begin{{document}}
-\section{{Conversion Error}}
-An error occurred during LaTeX conversion:
-
-\texttt{{{self.escape_special_chars(error_msg)}}}
-\end{{document}}"""
-
-def text_to_latex(text: str) -> str:
-    """Convert plain text to LaTeX format with proper sections, lists, tables, and images.
-    
-    Args:
-        text: Input text to convert (can include Markdown or HTML image syntax)
-        Returns:
-        str: Complete LaTeX document as a string
-    """
-    converter = LatexConverter()
-    return converter.generate_latex_document(text)
-
+def text_to_latex(markdown_text: str) -> str:
+    return convert_text_to_ieee_latex(markdown_text)
