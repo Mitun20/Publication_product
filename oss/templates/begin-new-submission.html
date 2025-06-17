@@ -115,44 +115,33 @@
                                     
                                     <div class="col-lg-12">
                                             <table cellpadding="5" style="width:100%;">
-                                                <!-- <thead>
+                                                <thead>
                                                     <tr>
                                                         <th style="background-color:#f2f2f2; border-right:1px solid #d9dbdf;">Please choose a Journal for your paper.
 
                                                         </th>                                
                                                     </tr>
-                                                </thead> -->
+                                                </thead>
                                                 <tbody>
-                                            <!-- <tr> -->
-                                            <!-- <td style="border-top:1px solid #d9dbdf; border-left:1px solid #d9dbdf;border-bottom:1px solid #d9dbdf ! important;">
+                                            <tr>
+                                            <td style="border-top:1px solid #d9dbdf; border-left:1px solid #d9dbdf;border-bottom:1px solid #d9dbdf ! important;">
                                                         <div class="form-group">
                                                             <select class="form-control" id="journal" name="journal" required>
                                                                 <option value="">Select a Journal</option>
                                                                 {% for journal in journals %}
-                                                                {% if journal.title == "JCS" %}
                                                                 <option value="{{ journal.id }}" {% if form.instance.journal and form.instance.journal.id == journal.id %}selected{% endif %}>{{ journal.title }}</option>
-                                                                {% endif %}
                                                                 {% endfor %}
                                                               </select>
                                                         </div>
-                                                </td> -->
-                                                <!-- <td style="border-top:1px solid #d9dbdf; border-left:1px solid #d9dbdf; border-bottom:1px solid #d9dbdf !important;"> -->
-                                                    <div class="form-group">
-                                                        <!-- Hidden input for the Journal ID -->
-                                                        {% for journal in journals %}
-                                                            <!-- {% if journal.title == "JCS" %} -->
-                                                                <input type="hidden" name="journal" value="{{ journal.id }}">
-                                                            <!-- {% endif %} -->
-                                                        {% endfor %}
-                                                    </div>
-                                                <!-- </td> -->
-                                                <!-- </tr> -->
+                                                </td>
+                                                <!--  -->
+                                                </tr>
                                                 
                                                 </tbody>
                                             </table>
                                     </div> 
 
-                                    <!-- <hr style="border-width:8px;"> -->
+                                    <hr style="border-width:8px;">
                                     <!-- Title section start-->
                                 <div class="about-section">
                                     <div class="row">

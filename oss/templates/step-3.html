@@ -161,14 +161,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    console.log("Document ready");
 
     // Function to handle adding a keyword
     $('#addKeywordForm').on('submit', function(e) {
         e.preventDefault();
         var keyword = $('input[name="keyword"]').val();
         var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-        console.log("Adding keyword:", keyword);
         
         $.ajax({
             type: 'POST',
@@ -179,7 +177,6 @@ $(document).ready(function() {
                 'csrfmiddlewaretoken': csrfToken
             },
             success: function(response) {
-                console.log("Add response:", response);
                 if (response.success) {
                     $('tbody tr:contains("No keywords added yet.")').remove();
                     var newRow = `<tr style="border-bottom: 1px solid #ddd !important;">
@@ -200,7 +197,6 @@ $(document).ready(function() {
         e.preventDefault();
         var keywordId = $(this).data('id');
         var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-        console.log("Removing keyword ID:", keywordId);
         
         $.ajax({
             type: 'POST',
@@ -211,7 +207,6 @@ $(document).ready(function() {
                 'csrfmiddlewaretoken': csrfToken
             },
             success: function(response) {
-                console.log("Remove response:", response);
                 if (response.success) {
                     $(`button[data-id="${response.keyword_id}"]`).closest('tr').remove();
                     var rowCount = $('tbody tr').length;

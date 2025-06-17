@@ -319,6 +319,11 @@ button {
   }
 }
 </style>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
 <!-- Custom CSS for Sidebar -->
@@ -406,30 +411,49 @@ button {
                                         <td>{{ submission.title }}</td>
                                         <td>{{ submission.author.user.get_full_name }}</td>
                                         <td>
-                                            {% if submission.additional_file %}
-                                                <li><a href="{{ submission.additional_file.url }}" download>Additional File</a></li>
-                                            {% else %}
-                                            <li>--</li>
-                                            {% endif %}
-                                            <li><a href="#" class="send-correction-report" data-id="{{ submission.id }}" 
-                                            {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %} 
-                                            style="pointer-events: none; color: #ccc;"{% endif %}>
-                                            Send Correction Report
-                                            </a><br></li>
-                                            <li><a href="#" class="upload-corrected-file" data-id="{{ submission.id }}" 
-                                            {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
-                                            style="pointer-events: none; color: #ccc;"{% endif %}>Upload Corrected File</a></li>
-                                            <li><a href="{% url 'contact_form' %}?email={{ submission.author.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a></li>
-                                            <li><a href="#" onclick="openFeedbackModal('{{ submission.id }}'); return false;">Request Feedback</a></li>
-                                        </td>
-                                            
-                                            <td>
-                                                {% if submission.final_file %}
-                                                    <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
-                                                {% else %}
-                                                    --
-                                                {% endif %}
+                                            <div class="dropdown" style="display: inline-block;">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Actions
+                                                </button>
                                                 
+                                                <div class="dropdown-menu" aria-labelledby="actionDropdown{{ submission.id }}">
+                                                    {% if submission.additional_file %}
+                                                        <a class="dropdown-item" href="{{ submission.additional_file.url }}" download>Download Additional File</a>
+                                                    {% else %}
+                                                        <span class="dropdown-item disabled"style="pointer-events: none; color: #6c757d;">No Additional File</span>
+                                                    {% endif %}
+
+                                                    <a class="dropdown-item send-correction-report" href="#" data-id="{{ submission.id }}"
+                                                    {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
+                                                    style="pointer-events: none; color: #6c757d;"{% endif %}>
+                                                        Send Correction Report
+                                                    </a>
+
+                                                    <a class="dropdown-item upload-corrected-file" href="#" data-id="{{ submission.id }}"
+                                                    {% if submission.article_status.article_status != 'Payment Done' and submission.article_status.article_status != 'Awaiting for Correction after Acceptance' %}
+                                                    style="pointer-events: none; color: #6c757d;"{% endif %}>
+                                                        Upload Corrected File
+                                                    </a>
+
+                                                    <a class="dropdown-item contact-link" href="{% url 'contact_form' %}?email={{ submission.author.user.email }}"
+                                                    target="_blank"
+                                                    onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">
+                                                        Contact Author
+                                                    </a>
+
+                                                    <a class="dropdown-item" href="#" onclick="openFeedbackModal('{{ submission.id }}'); return false;">
+                                                        Request Feedback
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if submission.final_file %}
+                                                <a href="{{ submission.final_file.url }}" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View PDF</a>
+                                            {% else %}
+                                                no file
+                                            {% endif %}
+
                                                 {% if submission.article_status.article_status == 'Accepted' %}
                                                 <br>
                                                 {% endif %}
@@ -451,7 +475,7 @@ button {
                                                 <!-- <a href="{{ submission.copyright_file.url }}" download>Download Copyright Form</a> -->
                                                 <a href="{{ submission.copyright_file.url }}" target="_blank" onclick="window.open(this.href, '_blank', 'toolbar=0,scrollbars=1,resizable=1,width=800,height=600'); return false;">View Copyright</a>
                                             {% else %}
-                                                --
+                                                No copyright form
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -589,7 +613,7 @@ button {
         </select>
 
         <div id="instant-feedback-questions" style="margin-top:1em;">Show</div>
-        <button id="check-questions-btn" type="button" style="margin-top: 1em;">Check Questions</button>
+        <button id="check-questions-btn" type="button" style="margin-top: 1em;">Edit Questions</button>
         <button id="add-question-btn" type="button" style="margin-top: 1em;">Add New Question</button>
 
         <div id="add-new-question-instant" style="display:none; margin-top:1em;">
@@ -689,7 +713,6 @@ let currentSubmissionId = null;
 
 // Open modal function
 function openFeedbackModal(submissionId) {
-    console.log("Opening modal with submission ID:", submissionId);
     resetModal();
     currentSubmissionId = submissionId;
     document.getElementById('feedback-modal').style.display = 'flex';
@@ -951,7 +974,6 @@ document.getElementById('instant-feedback-form').addEventListener('submit', asyn
 // Submit instant feedback request
 document.getElementById('submit-instant-feedback').addEventListener('click', async function(e) {
     e.preventDefault();
-    console.log("Submitting new feedback template form",submissionId);
     // currentSubmissionId is already set when opening the modal, no need to set it here
     if (!currentSubmissionId) {
         alert('No submission selected');

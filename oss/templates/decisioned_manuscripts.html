@@ -448,7 +448,7 @@ button {
         </select>
 
         <div id="instant-feedback-questions" style="margin-top:1em;">Show</div>
-        <button id="check-questions-btn" type="button" style="margin-top: 1em;">Check Questions</button>
+        <button id="check-questions-btn" type="button" style="margin-top: 1em;">Edit Questions</button>
         <button id="add-question-btn" type="button" style="margin-top: 1em;">Add New Question</button>
 
         <div id="add-new-question-instant" style="display:none; margin-top:1em;">
@@ -548,7 +548,6 @@ let currentSubmissionId = null;
 
 // Open modal function
 function openFeedbackModal(submissionId) {
-    console.log("Opening modal with submission ID:", submissionId);
     resetModal();
     currentSubmissionId = submissionId;
     document.getElementById('feedback-modal').style.display = 'flex';
@@ -810,7 +809,6 @@ document.getElementById('instant-feedback-form').addEventListener('submit', asyn
 // Submit instant feedback request
 document.getElementById('submit-instant-feedback').addEventListener('click', async function(e) {
     e.preventDefault();
-    // console.log("Submitting new feedback template form",submissionId);
     // currentSubmissionId is already set when opening the modal, no need to set it here
     if (!currentSubmissionId) {
         alert('No submission selected');

@@ -97,7 +97,7 @@ class Submission(models.Model):
     plag_report = models.FileField(upload_to='submissions/', null=True, blank=True)
     copyright_file = models.FileField(upload_to='submissions/', null=True, blank=True)
     additional_file = models.FileField(upload_to='submissions/', null=True, blank=True)
-    
+    specialization = models.ForeignKey(Specialization, on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.title or "No Title"
 

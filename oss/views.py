@@ -361,7 +361,7 @@ def generate_manuscript_id(request=None, submission=None):
 
     if max_manuscript:
         # Extract the numeric part of the manuscript_id
-        match = re.match(rf"^K{journal.title}-{current_year}-{str(current_month).zfill(2)}-(\d+)$", max_manuscript)
+        match = re.match(rf"^{journal.title}-{current_year}-{str(current_month).zfill(2)}-(\d+)$", max_manuscript)
         if match:
             max_number = int(match.group(1))
             new_number = max_number + 1
@@ -507,6 +507,7 @@ def step5(request, submission_id):
         'form': form,
         'funder_form': funder_form,
         'submission': submission,
+        'specialization':Specialization.objects.all(),
     })
 
 #Step-6
@@ -537,6 +538,8 @@ def step6_review_submit(request, submission_id):
     #     empty_fields.append('Number of Tables')
     # if not submission.no_of_words:
     #     empty_fields.append('Number of Words')
+    if not submission.specialization:
+        empty_fields.append('Specialization')
     if not submission.coi_describe and submission.conflict_of_interest ==1  :
         empty_fields.append('Conflict of Interest Description')
     if not submission.category:
@@ -563,13 +566,14 @@ def step6_review_submit(request, submission_id):
             'is_funded': submission.is_funded,
             'figures': submission.no_of_figures,
             'tables': submission.no_of_tables,
+            'specialization': submission.specialization,
             'words': submission.no_of_words,
             'is_submitted_already': submission.is_submitted_already,
             'acknowledgement_1': submission.acknowledgement_1,
             'acknowledgement_2': submission.acknowledgement_2,
             'acknowledgement_3': submission.acknowledgement_3,
             'conflict_of_interest': submission.conflict_of_interest,
-            'coi_describe': submission.coi_describe,
+            'coi_describe': submission.coi_describe if submission.conflict_of_interest == 1 else 'No',
             
         })
 
@@ -584,6 +588,7 @@ def step6_review_submit(request, submission_id):
         'coauthors': coauthors,
         'funder': funder,
         'empty_fields': empty_fields,
+        'specialization': submission.specialization,
 
     }
     return render(request, 'step-6.html', context)
@@ -1333,7 +1338,6 @@ def upload_typeset_document(request):
                 with open(pdf_path, 'rb') as pdf_file:
                     email.attach('converted.pdf', pdf_file.read(), 'application/pdf')
 
-                print(f"Sending email to {author_email} with attachment {pdf_path}")
                 email.send(fail_silently=False)
                 print("Email sent successfully")
 
@@ -1894,11 +1898,14 @@ def associate_editor(request):
 @login_required
 @user_passes_test(is_ae)
 def get_reviewers(request):
-    reviewers = User.objects.filter(reviewer_specialization__specialization__id=request.GET.get('specialization_id'))
-    reviewers_data = [{'id': reviewer.id, 'name': reviewer.get_full_name()} for reviewer in reviewers]
+    submission_id = request.GET.get('submission_id')
+    submission = get_object_or_404(Submission, id=submission_id)
+    specialization_id = submission.specialization.id  # Assuming submission.specialization is a FK
+
+    reviewers = User.objects.filter(reviewer_specialization__specialization__id=specialization_id).distinct()
+    reviewers_data = [{'id': r.id, 'name': r.get_full_name()} for r in reviewers]
     return JsonResponse({'reviewers': reviewers_data})
 
-logger = logging.getLogger(__name__)
 
 
 def send_invitation(request):
@@ -1915,7 +1922,7 @@ def send_invitation(request):
             if not submission_id or not reviewer_ids:
                 return JsonResponse({'success': False, 'error': 'Missing data'}, status=400)
 
-            reviewers = User.objects.filter(author__id__in=reviewer_ids)
+            reviewers = User.objects.filter(id__in=reviewer_ids)
             for reviewer in reviewers:
                 # Check if invitation already exists
                 if Reviewer_Invitation.objects.filter(user=reviewer, submission=submission).exists():
@@ -2121,7 +2128,6 @@ def contact(request):
             message = form.cleaned_data['message']
             user =  User.objects.get(email=to_email)
             context = {'message': message}
-            print(f"Sending email to {to_email} with subject '{subject}' and message '{message}'")
             
             if Modes.objects.filter(name="Email",is_active=True):
                 send_email(
@@ -2143,11 +2149,9 @@ def contact(request):
                     template_name='email_templates/message_form.html',
                     context=context,
                 )
-            print(f"Sending email to {to_email} with subjecxfgjghjt ")
             return redirect(reverse('success_page'))
     else:
         form = ContactForm(to_email=to_email)  
-        print(f"Sending email to {to_email} with subject ")
     return render(request, 'contact_form.html', {'form': form})
 
 # -----------success for mail-------------------------------------------------------------------------------------------------------

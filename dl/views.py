@@ -178,7 +178,8 @@ def publish_article(request):
                 published_on_date=published_on,
                 title = accepted_submission.corrected_title,
                 file=accepted_submission.typeset_file,
-                doi='your-doi-here'
+                doi='your-doi-here',
+                area=accepted_submission.submission.specialization if accepted_submission.submission.specialization else None,
             )
 
             published_status = Article_Status.objects.get(article_status='Published')

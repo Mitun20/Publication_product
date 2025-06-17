@@ -55,21 +55,32 @@
             <div class="col-md-3">
                 <div class="about-information-sticky">
                     <ul>
-                        <!-- <li>
-                            <a class="nav-link" href="{% url 'associate_editor' %}">Manuscripts to Review</a>
-                        </li>
-                        <li>
-                            <a class="nav-link" href="{% url 'manuscripts_review_report' %}">Manuscripts with Review Report</a>
-                        </li>
-                        <li>
-                            <a class="nav-link" href="{% url 'manuscripts_under_review' %}">Manuscripts under Review</a>
-                        </li>
-                        <li>
-                            <a class="nav-link" href="{% url 'manuscripts_eic' %}">Manuscripts to EIC</a>
-                        </li> -->
+                        
                         <li>
                             <a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a>
                         </li>
+                        <
+                        <li >
+                            <a class="nav-link" href="{% url 'publication_management' %}">
+                                Publication Management
+                            </a>
+                        </li>
+                        <li >
+                            <div class="accordion-item">
+                                <div class="accordion-title" data-tab="iteml3">
+                                    <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                    
+                                </div>
+                                <div class="accordion-content" id="iteml3">
+                                    <ul>
+                                        <li><a class="nav-link"href="{% url 'date_settings' %}">Date Settings</a></li>
+                                        <li><a class="nav-link" href="{% url 'modes' %}">Modes</a></li>
+                                        <li><a class="nav-link" href="{% url 'feedback_list' %}">Feedbacks</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        
                     </ul>
                 </div>
             </div>

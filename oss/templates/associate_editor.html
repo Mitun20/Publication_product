@@ -60,14 +60,14 @@
                                         <td>                             
                                             {% for invitation in submission.reviewer_invitation_set.all %}
                                                 {% if invitation.invite_status == 'R' %}
-                                                {{ invitation.user.first_name }}
-                                                    <p><a href="#" class="cancel-invite" data-id="{{ invitation.id }}" data-submission-id="{{ submission.id }}">(Remove)</a></p>
+                                                <p>{{ invitation.user.first_name }} <a href="#" class="cancel-invite" data-id="{{ invitation.id }}" data-submission-id="{{ submission.id }}">(Remove)</a></p>
                                                 {% else %}
-                                                    {{ invitation.user.first_name }} {{ invitation.user.last_name }} ({{ invitation.get_invite_status_display }})
+                                                    <p>{{ invitation.user.first_name }} {{ invitation.user.last_name }} ({{ invitation.get_invite_status_display }})</p>
                                                 {% endif %}
-                                                <br>
+                                                
                                             {% endfor %}
                                             <p><a href="#" class="invite-link" data-id="{{ submission.id }}">Invite</a></p>
+                                            
                                         </td>
                                         <td>
                                             {% for invite in submission.reviewer_invitation_set.all %}
@@ -170,15 +170,9 @@
                 <form id="inviteForm">
                     {% csrf_token %}
                     <input type="hidden" id="submissionId" name="submission_id">
-                    <div class="form-group">
-                        <label for="specialization">Specialization</label>
-                        <select class="form-control" id="specialization" name="specialization">
-                            <option value="">Select Specialization</option>
-                            {% for specialization in specializations %}
-                                <option value="{{ specialization.id }}">{{ specialization.specialization }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    
+                    <!-- Removed specialization select -->
+
                     <div class="form-group" id="reviewersContainer" style="display:none;">
                         <label for="reviewers">Reviewers</label>
                         <div id="reviewersList"></div>
@@ -263,26 +257,33 @@
 });
 
 // Handle cancel invite link click
-$(document).ready(function() {
-    // Handle invite link click
-    $('.invite-link').on('click', function(e) {
-        e.preventDefault();
-        var submissionId = $(this).data('id');
-        $('#submissionId').val(submissionId);
-        $('#inviteModal').modal('show');
-    });
+    $(document).ready(function() {
+        // Handle invite link click
+        $('.invite-link').on('click', function(e) {
+            e.preventDefault();
+            var submissionId = $(this).data('id');
+            $('#submissionId').val(submissionId);
+            $('#inviteModal').modal('show');
+        });
 
-    // Handle specialization change
-    $('#specialization').on('change', function() {
-        var specializationId = $(this).val();
-        if (specializationId) {
+        // Handle specialization change
+        $(document).ready(function() {
+        $('.invite-link').on('click', function(e) {
+            e.preventDefault();
+            var submissionId = $(this).data('id');
+            $('#submissionId').val(submissionId);
+            $('#reviewersList').empty();
+            $('#reviewersContainer').hide();
+
+            // Fetch reviewers for submission's specialization
             $.ajax({
                 url: "{% url 'get_reviewers' %}",
-                data: { 'specialization_id': specializationId },
+                data: { 'submission_id': submissionId },
                 success: function(data) {
                     var reviewersContainer = $('#reviewersContainer');
                     var reviewersList = $('#reviewersList');
                     reviewersList.empty();
+
                     if (data.reviewers.length > 0) {
                         data.reviewers.forEach(function(reviewer) {
                             reviewersList.append(
@@ -296,12 +297,12 @@ $(document).ready(function() {
                     } else {
                         reviewersContainer.hide();
                     }
+                    $('#inviteModal').modal('show');
                 }
             });
-        } else {
-            $('#reviewersContainer').hide();
-        }
+        });
     });
+
 
     // Handle send invitation form submission
     $('#inviteForm').on('submit', function(e) {
@@ -323,7 +324,6 @@ $(document).ready(function() {
             submission_id: submissionId,
             reviewers: selectedReviewerIds
         };
-
         // Show loading message
         $('#loadingMessage').show();
 

@@ -44,8 +44,8 @@ class SubmissionForm(forms.ModelForm):
     class Meta:
         model = Submission
         fields = [
-            'cover_letter', 'is_funded', 'no_of_figures', 'no_of_tables', 
-            'no_of_words', 'is_submitted_already', 'acknowledgement_1', 
+            'cover_letter', 'is_funded', 'no_of_figures', 'no_of_tables', 'specialization',
+            'no_of_words', 'is_submitted_already', 'acknowledgement_1',
             'acknowledgement_2', 'acknowledgement_3', 'conflict_of_interest', 'coi_describe'
         ]
         widgets = {
@@ -120,6 +120,8 @@ class ReviewSubmitForm(forms.Form):
     tables = forms.IntegerField(min_value=0, required=True, widget=forms.NumberInput(attrs={'disabled': True}))
     words = forms.IntegerField(min_value=0, required=True, widget=forms.NumberInput(attrs={'disabled': True}))
     
+    specialization = forms.CharField(max_length=255, required=True, widget=forms.TextInput(attrs={'disabled': True}))
+
     is_submitted_already = forms.ChoiceField(
         choices=((1, 'Yes'), (0, 'No')),
         widget=forms.RadioSelect,
