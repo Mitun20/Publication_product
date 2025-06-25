@@ -1443,7 +1443,9 @@ def upload_typeset_document(request):
 
     return JsonResponse({'success': False, 'error': 'Invalid request'})
 
-
+def view_typeset_document(request, submission_id):
+    accepted_submission = get_object_or_404(Accepted_Submission, submission__id=submission_id)
+    return FileResponse(accepted_submission.typeset_file.open(), content_type='application/pdf')
 
 def mark_proof_read_done(request, submission_id):
     submission = get_object_or_404(Submission, id=submission_id)

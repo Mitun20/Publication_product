@@ -55,6 +55,7 @@ urlpatterns = [
     path('reject_submission/', reject_submission, name='reject_submission'),
     path('get_submission_details/', get_submission_details, name='get_submission_details'),
     path('upload_typeset_document/', upload_typeset_document, name='upload_typeset_document'),
+    path('typeset/<int:submission_id>/', view_typeset_document, name='view_typeset_document'),
     path('mark_proof_read_done/<int:submission_id>/', mark_proof_read_done, name='mark_proof_read_done'),
     path('history/', history, name='history'),
     # -------------------------Editor In hief-------------------------------------------------------------------------------------------------------------
