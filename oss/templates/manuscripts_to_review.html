@@ -38,7 +38,7 @@
                                     <!-- <th scope="col">Journal</th> -->
                                     <th scope="col" width="18%" >Title</th>
                                     <th scope="col">Author</th>
-                                    <th scope="col">Action</th>
+                                    <th scope="col" width="20%">Action</th>
                                     <th scope="col">File</th>
                                     <th scope="col">Submitted Date</th>
                                     <th scope="col">Revision Due Date</th>
@@ -56,7 +56,7 @@
                                     <td>{{ submission.author.user.get_full_name }}</td>
                                     <td> 
                                         
-                                            <a href="#" class="comments-link" data-submission-id="{{ submission.id }}" data-bs-toggle="modal" data-bs-target="#commentModal">Comment</a>
+                                            <a href="#" class="comments-link" data-submission-id="{{ submission.id }}" data-bs-toggle="modal" data-bs-target="#commentModal">Recommend Manuscript</a>
                                             <br>
                                             {% for ae_assignment in ae_assignments %}
                                             {% if ae_assignment.submission_id == submission.id %}

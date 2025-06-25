@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-4i$xm$(0rcd%_jf!-bt8@0l@=ru#jd3b_u3=hh3&47%u*!n0*+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','172.16.156.76']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','172.16.156.76','172.16.155.33']
 
 # settings.py
 
@@ -186,7 +186,7 @@ STATIC_ROOT= os.path.join(BASE_DIR,'static/')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
-SITE_URL = 'http://127.0.0.1:8000/'  
+SITE_URL = 'http://127.0.0.1:8001/'  
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

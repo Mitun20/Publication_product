@@ -146,7 +146,7 @@
                             <form method="POST">
                                 {% csrf_token %}
                                 <!-- <button type="submit" name="action" value="save" class="btn btn-primary">Save</button> -->
-                                <button type="submit" name="action" value="save_continue" class="btn btn-success">Save & Continue</button>
+                                <button type="submit" name="action" value="save_continue" class="btn btn-success" id="saveContinueBtn">Save & Continue</button>
                             </form>
                         </div>
                         
@@ -221,6 +221,33 @@ $(document).ready(function() {
             }
         });
     });
+    // Function to enable/disable Save & Continue button
+    function toggleSaveContinueBtn() {
+        // Count only actual keyword rows (exclude "No keywords added yet.")
+        var keywordRows = $('tbody tr').filter(function() {
+            return $(this).find('td').text().trim() !== "No keywords added yet.";
+        }).length;
+        // Enable only if 5 or more keywords
+        if (keywordRows >= 5) {
+            $('#saveContinueBtn').prop('disabled', false);
+        } else {
+            $('#saveContinueBtn').prop('disabled', true);
+        }
+    }
+
+    // Initial check on page load
+    toggleSaveContinueBtn();
+
+    // Update button state after adding a keyword
+    $('#addKeywordForm').on('submit', function(e) {
+        setTimeout(toggleSaveContinueBtn, 100); // Delay to wait for DOM update
+    });
+
+    // Update button state after removing a keyword
+    $('tbody').on('click', '.remove-keyword', function(e) {
+        setTimeout(toggleSaveContinueBtn, 100); // Delay to wait for DOM update
+    });
+
 });
 </script>
 

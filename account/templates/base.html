@@ -46,109 +46,163 @@
     </head>
     <style>
         /* Chatbot Widget Styles */
-.chatbot-widget {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
+    .chatbot-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
 
-.chatbot-toggle {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #044d5e;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
+    .chatbot-toggle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #044d5e;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
 
-.chatbot-toggle:hover {
-    background: #044d5e;
-    transform: scale(1.1);
-}
+    .chatbot-toggle:hover {
+        background: #044d5e;
+        transform: scale(1.1);
+    }
 
-.chatbot-container {
-    width: 350px;
-    height: 550px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-}
+    .chatbot-container {
+        width: 350px;
+        height: 550px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
 
-.chatbot-header {
-    background: #044d5e;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+    .chatbot-header {
+        background: #044d5e;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-.chatbot-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-}
+    .chatbot-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+    }
 
-.chatbot-messages {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #f9f9f9;
-}
+    .chatbot-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
 
-.chatbot-input {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: white;
-}
+    .chatbot-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ddd;
+        background: white;
+    }
 
-.chatbot-input input {
-    flex: 1;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
+    .chatbot-input input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
-.chatbot-input button {
-    margin-left: 10px;
-    padding: 10px 15px;
-    background: #044d5e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+    .chatbot-input button {
+        margin-left: 10px;
+        padding: 10px 15px;
+        background: #044d5e;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-/* Message styles */
-.chat-message {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border-radius: 18px;
-    max-width: 80%;
-}
+    /* Message styles */
+    .chat-message {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        border-radius: 18px;
+        max-width: 80%;
+    }
 
-.user-message {
-    background: #e3f2fd;
-    margin-left: auto;
-    border-bottom-right-radius: 0;
-}
+    .user-message {
+        background: #e3f2fd;
+        margin-left: auto;
+        border-bottom-right-radius: 0;
+    }
 
-.bot-message {
-    background: #f1f1f1;
-    margin-right: auto;
-    border-bottom-left-radius: 0;
-}
+    .bot-message {
+        background: #f1f1f1;
+        margin-right: auto;
+        border-bottom-left-radius: 0;
+    }
+ /* Add these styles to your CSS */
+ 
+    
+    .chatbot-history {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        padding: 5px;
+    }
+    
+    .chatbot-history-panel {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 15px;
+        z-index: 10;
+        overflow-y: auto;
+    }
+    
+    .chatbot-history-panel h4 {
+        margin-top: 0;
+        color: #044d5e;
+    }
+    
+    .history-list {
+        max-height: 80%;
+        overflow-y: auto;
+        margin: 10px 0;
+    }
+    
+
+    
+    .close-history {
+        background: #044d5e;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    /* Add to your <style> block */
+    .history-item {
+        background: #f9f9f9;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        padding: 10px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
     </style>
     <body>
          
@@ -290,11 +344,11 @@
     <div class="chatbot-container">
         <div class="chatbot-header">
             <h4 style="color: white;">Publication Assistant</h4>
-            {% if user.is_authenticated %}
-                <div class="chatbot-header-icons">
-                    <button class="chatbot-history" title="View History"><i class="fas fa-history"></i></button>
-                </div>
-            {% endif %}
+            
+            <div class="chatbot-header-icons">
+                <button class="chatbot-history" title="View History"><i class="fas fa-history"></i></button>
+            </div>
+            
             <div class="chatbot-header-icons">
                 <button class="chatbot-close">&times;</button>
             </div>
@@ -319,65 +373,6 @@
     </div>
 </div>
 
-<style>
-    /* Add these styles to your CSS */
-    .chatbot-header-icons {
-        display: flex;
-        gap: 10px;
-    }
-    
-    .chatbot-history {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        padding: 5px;
-    }
-    
-    .chatbot-history-panel {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: white;
-        padding: 15px;
-        z-index: 10;
-        overflow-y: auto;
-    }
-    
-    .chatbot-history-panel h4 {
-        margin-top: 0;
-        color: #044d5e;
-    }
-    
-    .history-list {
-        max-height: 80%;
-        overflow-y: auto;
-        margin: 10px 0;
-    }
-    
-
-    
-    .close-history {
-        background: #044d5e;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-    /* Add to your <style> block */
-.history-item {
-    background: #f9f9f9;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    padding: 10px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

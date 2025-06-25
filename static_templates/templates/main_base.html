@@ -330,11 +330,9 @@
     <div class="chatbot-container">
         <div class="chatbot-header">
             <h4 style="color: white;">Publication Assistant</h4>
-            {% if user.is_authenticated %}
-                <div class="chatbot-header-icons">
-                    <button class="chatbot-history" title="View History"><i class="fas fa-history"></i></button>
-                </div>
-            {% endif %}
+            <div class="chatbot-header-icons" {% if not user.is_authenticated %}style="display:none;"{% endif %}>
+                <button class="chatbot-history" title="View History"><i class="fas fa-history"></i></button>
+            </div>
             <div class="chatbot-header-icons">
                 <button class="chatbot-close">&times;</button>
             </div>
@@ -426,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatMessages = document.getElementById('chatbotMessages');
     const chatInput = document.getElementById('chatbotInput');
     const sendBtn = document.getElementById('chatbotSend');
-
+    
     // History panel variables
     const historyBtn = document.querySelector('.chatbot-history');
     const historyPanel = document.getElementById('chatbotHistory');

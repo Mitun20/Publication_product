@@ -42,7 +42,7 @@ class Editor(models.Model):
     is_active = models.BooleanField(default=False) 
     
     def __str__(self):
-        return self.affliation
+        return self.user.email
 
 class Modes(models.Model):
     name = models.CharField(max_length=100, unique=True)

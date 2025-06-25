@@ -116,16 +116,9 @@
                                                         cursor: pointer;
                                                         background-color: transparent;">View Comments</a>
                                                     {% else %}
-                                                        No comments
+                                                        
                                                     {% endif %}
-                                                </p>
-                                                <!-- SMS Link -->
-                                                <!-- <p>
-                                                    <a href="#" id="sms-link" class="sms-link" style="color: #4793eb; cursor: pointer;">
-                                                        Send SMS to Reviewer
-                                                    </a>
-                                                </p> -->
-                                                
+                                                </p>                                                
                                             </td>
                                             <td>{{ submission.article_status }}</td>
                                             <td>
@@ -199,59 +192,25 @@
     </div>
 </div>
 
-<!-- SMS Modal  -->
-<div id="smsModal" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h4>Send SMS to {{ reviewer.user.first_name }}</h4>
-        <form id="smsForm">
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" rows="4" placeholder="Type your message here..." required></textarea>
-            <button type="submit" id="sendButton">Send</button>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button id="closeModal" class="close-btn">Close</button>
-    </div>
-</div>
+
  <!-- JavaScript to Handle Comments Modal -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.1/js/bootstrap.min.js"></script>
+
 <script>
-    // Get elements
-    const smsLink = document.getElementById("sms-link");
-    const smsModal = document.getElementById("smsModal");
-    const closeModal = document.getElementById("closeModal");
-    const smsForm = document.getElementById("smsForm");
-    const sendButton = document.getElementById("sendButton");
-    const messageInput = document.getElementById("message");
-
-    // Show modal when the link is clicked
-    smsLink.addEventListener("click", function(event) {
-        event.preventDefault(); // Prevent the default action
-        smsModal.style.display = "block"; // Show modal
+    $(document).ready(function () {
+        // Add click event listener for comments cells
+        $('.clickable').on('click', function () {
+            // Get the comments from the data-comments attribute
+            var comments = $(this).data('comments');
+            // Set the comments in the modal body
+            $('#commentsBody').text(comments);
+            // Show the modal
+            $('#commentsModal').modal('show');
+        });
     });
-
-    // Close modal when close button is clicked
-    closeModal.addEventListener("click", function() {
-        smsModal.style.display = "none"; // Hide modal
-    });
-
-    // Handle form submission (this is where the actual SMS sending logic would go)
-    smsForm.addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent default form submission
-        const message = messageInput.value;
-        
-        if (message.trim()) {
-            // Here, you could send the SMS using a backend API or a service like Twilio
-            sendSMSToReviewer(message); 
-            smsModal.style.display = "none"; // Hide modal after sending message
-        } else {
-            alert("Please enter a message.");
-        }
-    });
-
 </script>
 
 {% endblock content %}

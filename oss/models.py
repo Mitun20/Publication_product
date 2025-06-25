@@ -103,8 +103,8 @@ class Submission(models.Model):
 
 
 class Correction_Comments(models.Model):
-    submission = models.ForeignKey (Submission, on_delete=models.CASCADE)
-    # additional_file = models.FileField(upload_to='submissions/', null=True, blank=True)
+    submission = models.ForeignKey (Submission, on_delete=models.CASCADE,  related_name='correction_comments')
+    additional_file = models.FileField(upload_to='submissions/', null=True, blank=True)
     correction_commments = models.TextField()
     date = models.DateField(auto_now_add=True)
     due_date = models.DateField()

@@ -1,19 +1,17 @@
 PROJECT_KNOWLEDGE = {
     
    # === GENERAL/GREETINGS ===
-   "hi": "Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "hello":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "hey":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "greetings":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "good morning":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "good afternoon":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "howdy":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
-   "help": "I assist with manuscript workflows. Examples: \n 'Author: How to submit?',\n 'Admin Office: Check plagiarism?',\n 'Associate Editor: Assign reviewer?',\n 'Reviewer: Submit Reviews?' or\n 'EIC: Make Decision?'.",
-   "support": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
-   "guide me": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
-   "what can you do?": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
+    "hi": "Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "hello":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "hey":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "greetings":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "howdy":"Hello! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "help": "I assist with manuscript workflows. Examples: \n 'Author: How to submit?',\n 'Admin Office: Check plagiarism?',\n 'Associate Editor: Assign reviewer?',\n 'Reviewer: Submit Reviews?' or\n 'EIC: Make Decision?'.",
+    "support": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
+    "guide me": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
+    "what can you do?": "I assist with manuscript workflows. Examples: 'Author: How to submit?', 'Admin Office: Check plagiarism?', 'Associate EIC: Assign reviewer?', 'Reviewer: Submit Reviews?' or 'EIC: Make Decision?'.",
     "ok":"You're welcome! Just let me know whenever you want to guide you through the process.",
-   "okay":"You're welcome! Just let me know whenever you want to guide you through the process.",
+    "okay":"You're welcome! Just let me know whenever you want to guide you through the process.",
     "thank you": "You're welcome! Just let me know whenever you want to guide you through the process.",
     "thanks": "You're welcome! Just let me know whenever you want to guide you through the process.",
     "thanks a lot": "You're welcome! Just let me know whenever you want to guide you through the process.",
@@ -23,6 +21,18 @@ PROJECT_KNOWLEDGE = {
     "thanks for your support": "You're welcome! Just let me know whenever you want to guide you through the process.",
     "thanks for your guidance": "You're welcome! Just let me know whenever you want to guide you through the process.",
     "thanks for your help!": "You're welcome! Just let me know whenever you want to guide you through the process.",
+    
+    "good morning":"good morning! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "good afternoon":"good afternoon! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "good evening":"good evening! I am your assistant. Should you have any doubts or questions, please feel free to ask. If you're unsure how to explain your question, kindly specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC).",
+    "good night":"good night! If you have any more questions in the future, feel free to ask.",
+    "good day":"good day! I am your assistant. If you have any more questions in the future, feel free to ask.",
+    "goodbye": "Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!",
+    "bye": "Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!",
+    "see you later": "Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!",
+    "see you soon": "Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!",
+    "see you next time": "Goodbye! If you have any more questions in the future, feel free to ask. Have a great day!",
+    
     # jcs faq
     "is_jcs_peer_reviewed": "Yes, JCS operates a single-blind review process. Suitable papers are sent to a minimum of two independent expert reviewers to assess the quality. The Editor’s decision is final.",
     "types_of_papers_published": "JCS publishes the following types of articles: Original research paper, Short Reports, Case Studies, Review Paper, Literature Reviews, Conceptual Framework, Analytical and Simulation Models, and Technical Notes.",
@@ -68,6 +78,7 @@ PROJECT_KNOWLEDGE = {
     "review time": "It depends on reviewer response. Generally, submitted papers may be reviewed within 15 days. It is advised not to submit the same article to multiple journals at the same time. You should wait for the review report.",
     
     # === AUTHOR-SPECIFIC ===
+    "not have account": "If you need to create an author account, please click 'Register' in the top right corner. For other accounts (Admin Office, Reviewer, Editor-in-Chief, Associate Editor), please contact the admin at admin@gmail.com.",
     "have account":"please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
     "have an account":"please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
     "logined": "logined as who? please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC)",
@@ -81,8 +92,8 @@ PROJECT_KNOWLEDGE = {
                 \n 6) Author Details: Enter details for all authors.
                 \n 7) Cover Letter: Provide a cover letter.
                 \n 8) Review & Submit: Review all entered information and then submit your paper.""",
-    "have author account": "If you don’t have an author account, please register first. If you already have an account, please login.",
-    "have an author account": "If you don’t have an author account, please register first. If you already have an account, please login.",
+                
+    "account": "If you don’t have an author account, please register first. If you already have an account, please login.",
     
 
         
@@ -250,43 +261,88 @@ def get_answer(question):
     
     # Then check keyword matches
     keyword_map = {
-         "registered": "registered",
-         "author account": "author account",
-         "submission process": "steps to submit a paper",
-        # Author keywords
-         "submit": "How do I submit my article",
-         "publish": "How do I submit my article",
-         "upload file": "where to upload manuscript",
-         "upload paper": "where to upload manuscript",
-         "upload article": "where to upload manuscript",
-         "file upload": "where to upload manuscript",
-         "co-authors": "how to add co-authors",
-         "edit submission": "can i edit after submission",
-         "author":"author",
-         "ok":"ok",
-         "okay":"ok",
+        "hi": "hi",
+        "hello": "hi",
+        "hey": "hi",
+        "greetings": "hi",
+        "hallo": "hi",
+        "howdy": "hi",
+        "help": "help",
+        "support": "help",
+        "guide me": "help",
+        "good morning": "hi",
+        "registered": "registered",
+        "okay": "ok",
+        "ok": "ok",
+        
+        
+    # Author keywords
+        "author account": "author account",
+        "submission process": "steps to submit a paper",
+        "submit": "How do I submit my article",
+        "publish": "How do I submit my article",
+        "upload file": "where to upload manuscript",
+        "upload paper": "where to upload manuscript",
+        "upload article": "where to upload manuscript",
+        "file upload": "where to upload manuscript",
+        "co-authors": "how to add co-authors",
+        "edit submission": "can i edit after submission",
+        "author":"author",
+        "ok":"ok",
+        "okay":"ok",
+        "thank you": "thanks",
+        "thanks": "thanks",
+        "thanks a lot": "thanks",
+        "thanks a ton": "thanks",
+        "thanks for your help": "thanks",
+        "thanks for your assistance": "thanks",
+        "thanks for your support": "thanks",
+        "thanks for your guidance": "thanks",
 
-         # Admin keywords
-         "plagiarism": "how to check plagiarism",
-         "reject": "how to reject a paper",
-         "decline": "how to reject a paper",
-         "assign ae": "how to assign ae",
-         "type setting": "Type setting and Proof reading",
-         # Associate Editor keywords
-         "invite reviewer": "how to invite reviewers",
-         "add referee": "add referees to manuscript",
-         "post review": "what to do after reviews",
-         "forward to eic": "what to do after reviews",
-         "recommend": "what to do after reviews",
-         "submit review": "where to upload review comments",
-         
-         # Reviewer keywords
-         "accept invitation": "accept review",
-         "decline invitation": "decline to review",
-         "reject invitation": "decline to review",
-         
-         # Editor keywords
-         "decision": "make decision"
+        "not have an author account": "not have account",
+        "not have account": "not have account",
+        "do not have an author account": "account",
+        "do not have account": "not have account",
+        "have an author account": "author",
+
+        "logined as author": "author",
+        "logined as admin office": "admin office",
+        "logined as associate editor": "associate editor",
+        "logined as reviewer": "reviewer",
+        "logined as eic": "editor-in-chief",
+        "loged in as author": "author",
+        "loged in as admin office": "admin office",
+        "loged in as associate editor": "associate editor",
+        "loged in as reviewer": "reviewer",
+        "loged in as eic": "editor-in-chief",
+        "log in as author": "author",
+        "log in as admin office": "admin office",
+        "log in as associate editor": "associate editor",
+        "log in as reviewer": "reviewer",
+        "log in as eic": "editor-in-chief",
+
+        # Admin keywords
+        "plagiarism": "how to check plagiarism",
+        "reject": "how to reject a paper",
+        "decline": "how to reject a paper",
+        "assign ae": "how to assign ae",
+        "type setting": "Type setting and Proof reading",
+        
+        # Associate Editor keywords
+        "invite reviewer": "how to invite reviewers",
+        "add referee": "add referees to manuscript",
+        "post review": "what to do after reviews",
+        "forward to eic": "what to do after reviews",
+        "recommend": "what to do after reviews",
+        "submit review": "where to upload review comments",
+        
+        # Reviewer keywords
+        "accept invitation": "accept review",
+        "decline invitation": "decline to review",
+        "reject invitation": "decline to review",
+        
+        # Editor keywords
+        "decision": "make decision"
     }
     
     for keyword, response_key in keyword_map.items():

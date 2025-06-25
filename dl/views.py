@@ -1,7 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
-from account.models import FeedbackType, Question
+from account.models import FeedbackType, Modes, Question
+from account.sms import send_sms
+from account.whatsapp import send_whatsapp
 from oss.models import Article_Status, Journal, Accepted_Submission, Submission
+from oss.services import send_email
 from .models import *
 from django.urls import reverse
 from .forms import *
@@ -185,7 +188,28 @@ def publish_article(request):
             published_status = Article_Status.objects.get(article_status='Published')
             accepted_submission.submission.article_status = published_status
             accepted_submission.submission.save()
-
+            user = accepted_submission.submission.author.user
+            article = published_article
+            if Modes.objects.filter(name="Email",is_active=True):
+                send_email(
+                    to_email=user.email,
+                    subject='Article Published',
+                    template_name='email_templates/article_published.html',
+                    user=user,
+                    context={'user': user, 'article': article}
+                )
+            if Modes.objects.filter(name="Whatsapp",is_active=True):
+                send_whatsapp(
+                    user=user,
+                    template_name='email_templates/article_published.html',
+                    context={'user': user, 'article': article}                            
+                )
+            if Modes.objects.filter(name="SMS",is_active=True):
+                send_sms(
+                    user=user,
+                    template_name='email_templates/article_published.html',
+                    context={'user': user, 'article': article}                            
+                )
             # Confirm success
             return JsonResponse({'success': True, 'message': 'Article published successfully!'})
         except Exception as e:

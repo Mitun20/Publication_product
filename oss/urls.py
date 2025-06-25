@@ -14,6 +14,8 @@ urlpatterns = [
     path('submitted/',Submittedview, name='submitted'),
     path('revision/',Revisionview, name='revision'),
     path('accepted/',Acceptedview, name='accepted'),
+    path('correction-comments/<int:submission_id>/', correction_comments_api, name='correction_comments_api'),
+    path('upload-additional-corrected-file/', upload_additional_corrected_file, name='upload_additional_corrected_file'),
     path('upload_copyright_form/<int:submission_id>/',upload_copyright_form, name='upload_copyright_form'),
     path('rejected/',Rejectedview, name='rejected'),
     #Submission flow
@@ -44,6 +46,7 @@ urlpatterns = [
     path('manuscripts_acceptance',Manuscripts_acceptance, name='manuscripts_acceptance'),
     path('manuscripts_review/',manuscripts_review, name='manuscripts_review'),
     path('send_correction_report/', send_correction_report, name='send_correction_report'),
+    path('get-correction-file/', get_correction_file, name='get_correction_file'),
     path('upload_corrected_file/',upload_corrected_file, name='upload_corrected_file'),
     path('manuscripts_revision_overdue/',Manuscripts_revision_overdue, name='manuscripts_revision_overdue'),
     path('manuscripts_revision/',Manuscripts_revision, name='manuscripts_revision'),

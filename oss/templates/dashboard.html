@@ -55,11 +55,15 @@
             <div class="col-md-3">
                 <div class="about-information-sticky">
                     <ul>
-                        
+                        {% if user.is_superuser %}
                         <li>
                             <a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a>
                         </li>
-                        <
+                        <li >
+                            <a class="nav-link" href="{% url 'user_management' %}">
+                                User Management
+                            </a>
+                        </li>
                         <li >
                             <a class="nav-link" href="{% url 'publication_management' %}">
                                 Publication Management
@@ -80,6 +84,54 @@
                                 </div>
                             </div>
                         </li>
+                        {% else %}
+                        <li>
+                            <a class="nav-link active" href="{% url 'dashboard' %}">
+                                Dashboard
+                            </a>
+                        <li>
+                            <a class="nav-link" href="{% url 'admin_office' %}">
+                                Manuscripts submitted
+                            </a>
+                        </li>
+                    
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_rejection' %}">
+                                Manuscripts with rejection
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_acceptance' %}">
+                                Manuscripts with Acceptance
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link " href="{% url 'manuscripts_review' %}">
+                                Manuscripts under review
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_revision' %}">
+                                Manuscripts waiting for revision
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'manuscripts_revision_overdue' %}">
+                                Manuscripts waiting for revision and overdue
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'setting_proof' %}">
+                                Type setting and Proof reading
+                            </a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url 'history' %}">
+                                History of Manuscripts 
+                            </a>
+                        </li>
+                        {% endif %}
+                        
                         
                     </ul>
                 </div>
@@ -116,7 +168,7 @@
                     </div>
 
                     <!-- Monthly Trends Chart -->
-                    <div class="card p-3">
+                    <div class="card p-3">More actions
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="card-title mb-0">Monthly Submission Trends</h5>
                             <div class="dropdown">
@@ -510,6 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Dashboard Chart Scripts -->
+<!-- Dashboard Chart Scripts -->More actions
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Monthly Trends Chart

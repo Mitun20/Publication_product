@@ -270,29 +270,50 @@ def update_user_groups(request):
     for group_id in groups:
         group = get_object_or_404(Group, id=group_id)
         user.groups.add(group)
-        if group.name == 'Reviewer':
-            Author.objects.create(
-            user=user,
-            title=Title.objects.all().first(),  # Assuming you want to set the first title
-            institution='update',
-            address='update',
-            city='update',
-            state='update',
-            country=Country.objects.get(country='India'),  # Assuming you want to set the first country
-            mobile_no='update',
-            is_reviewer=True,
-            )
+        author_id = Author.objects.get(user=user)
+        if author_id is None:
+            if group.name == 'Reviewer':
+                Author.objects.create(
+                user=user,
+                title=Title.objects.all().first(),  
+                institution='update',
+                address='update',
+                city='update',
+                state='update',
+                country=Country.objects.get(country='India'),  
+                mobile_no='update',
+                is_reviewer=True,
+                )
         assigned_groups.append(group.name)
-    
-    # Handle Reviewer specializations
-    if str(reviewer_group.id) in groups:
-        # Clear existing specializations for this user
-        Reviewer_Specialization.objects.filter(reviewer=user).delete()
-        # Add new specializations
-        for spec_id in specializations:
-            specialization = get_object_or_404(Specialization, id=spec_id)
-            Reviewer_Specialization.objects.create(reviewer=user, specialization=specialization)
-    
+        
+        if group.name == admin_group.name:
+            old_admins = User.objects.filter(groups=admin_group).exclude(id=user.id)
+            for old_admin in old_admins:
+                # Remove admin group from old admin user
+                if old_admin: 
+                    # Send email notifying old user their role was removed
+                    if Modes.objects.filter(name="Email",is_active=True):
+                        send_email(
+                            to_email=old_admin.email,
+                            subject='Admin Office Role Removed',
+                            template_name='email_templates/admin_role_removed.html',
+                            user=old_admin,
+                            context={'user': old_admin}
+                        )
+                    if Modes.objects.filter(name="Whatsapp",is_active=True):
+                        send_whatsapp(
+                            user=old_admin,
+                            template_name='email_templates/admin_role_removed.html',
+                            context={'user': old_admin}                            
+                        )
+                    if Modes.objects.filter(name="SMS",is_active=True):
+                        send_sms(
+                            user=old_admin,
+                            template_name='email_templates/admin_role_removed.html',
+                            context={'user': old_admin}                            
+                        )
+                    old_admin.groups.remove(admin_group)
+            
     # Send email with all assigned roles
     if assigned_groups:
         if Modes.objects.filter(name="Email",is_active=True):
@@ -1321,16 +1342,30 @@ def create_feedback(request):
         )
         
         site_url = f"{settings.SITE_URL}{reverse('feedback_response_form', args=[feedback.id])}"
-        send_email(
-                to_email=submission.author.user.email,
-                subject='Requested feedback from publication',
-                template_name='email_templates/feedback_content.html',
-                user=submission.author.user,
-                context={ 'site_url': site_url, 'user': submission.author.user,}
-                )
+        if Modes.objects.filter(name="Email",is_active=True):
+            send_email(
+                    to_email=submission.author.user.email,
+                    subject='Requested feedback from publication',
+                    template_name='email_templates/feedback_content.html',
+                    user=submission.author.user,
+                    context={ 'site_url': site_url, 'user': submission.author.user,}
+                    )
         
+        if Modes.objects.filter(name="Whatsapp",is_active=True):
+            send_whatsapp(
+                user=submission.author,
+                template_name='email_templates/phone_feedback_content.html',
+                context={ 'site_url': site_url, 'user': submission.author.user,},
+            )
+        if Modes.objects.filter(name="SMS",is_active=True):
+            send_sms(
+                user=submission.author,
+                template_name='email_templates/phone_feedback_content.html',
+                context={ 'site_url': site_url, 'user': submission.author.user,},
+            )
+
         return JsonResponse({'success': True})
-        
+
     except Submission.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Submission not found'}, status=404)
     except Exception as e:
@@ -1380,7 +1415,7 @@ from django.contrib.admin.views.decorators import user_passes_test
 def feedback_list(request):
     feedback_type_id = request.GET.get('feedback_type')  # get filter param
     
-    feedbacks = FeedbackResponse.objects.all().select_related('feedback__user', 'feedback__feedback_type')
+    feedbacks = FeedbackResponse.objects.all().select_related('feedback__user', 'feedback__feedback_type').order_by('-id')
     feedback_types = FeedbackType.objects.all()
     
     if feedback_type_id:

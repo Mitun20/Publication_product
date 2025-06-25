@@ -334,6 +334,11 @@ button {
                 <div class="about-information-sticky">
                     <ul>
                         <li>
+                            <a class="nav-link" href="{% url 'dashboard' %}">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
                             <a class="nav-link" href="{% url 'admin_office' %}">
                                 Manuscripts submitted
                             </a>
@@ -540,8 +545,10 @@ button {
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="correctionComments">Comments</label>
-                        <textarea class="form-control" id="correctionComments" name="correction_comments" rows="3" required></textarea>
-                        <input type="hidden" id="submissionId" name="submission_id">
+                        <div id="filePreviewContainer"></div> <br>
+
+                    <textarea class="form-control" id="correctionComments" name="correction_comments" rows="3" required></textarea>
+                    <input type="hidden" id="submissionId" name="submission_id">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1203,11 +1210,37 @@ document.getElementById('create-feedback-form').addEventListener('submit', async
 
 <script>
 $(document).ready(function() {
+        
+        // When the Send Correction Report button is clicked
         $('.send-correction-report').on('click', function(e) {
             e.preventDefault();
+
             var submissionId = $(this).data('id');
             $('#submissionId').val(submissionId);
+
+            // Clear previous file preview (in case user clicks multiple times)
+            $('#filePreviewContainer').html('');
+
+            // Show the modal
             $('#correctionReportModal').modal('show');
+
+            // Fetch additional_file URL for the submission
+            $.ajax({
+                url: '/get-correction-file/',  // Ensure this matches the view URL
+                type: 'GET',
+                data: { submission_id: submissionId },
+                success: function(response) {
+                    if (response.file_url) {
+                        const fileLink = `<a href="${response.file_url}" target="_blank" class="btn btn-outline-primary mt-3">View Uploaded File</a>`;
+                        $('#filePreviewContainer').html(fileLink);
+                    } else {
+                        $('#filePreviewContainer').html('<p class="text-muted mt-3">No file uploaded.</p>');
+                    }
+                },
+                error: function() {
+                    $('#filePreviewContainer').html('<p class="text-danger mt-3">Error loading the file.</p>');
+                }
+            });
         });
 
         $('#correctionReportForm').on('submit', function(e) {

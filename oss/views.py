@@ -182,6 +182,40 @@ def Acceptedview(request):
         'submissions': submissions,
         **submission_statuses,
     })
+    
+def correction_comments_api(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+    comments = submission.correction_comments.all()
+    
+    comments_list = [
+        {
+            "id": c.id,
+            "correction_commments": c.correction_commments,
+            "due_date": c.due_date.strftime('%d-%b-%Y') if c.due_date else '',
+        }
+        for c in comments
+    ]
+    
+    return JsonResponse({'comments': comments_list})
+
+def upload_additional_corrected_file(request):
+    if request.method == 'POST':
+        comment_id = request.POST.get('comment_id')
+        print(f"Comment ID: {comment_id}")  # Debugging line to check comment_id
+        comment = get_object_or_404(Correction_Comments, id=comment_id)
+
+        uploaded_file = request.FILES.get('additional_file')
+        if uploaded_file:
+            comment.additional_file = uploaded_file
+            comment.save()
+            # Return JSON success + file URL
+            return JsonResponse({
+                'success': True,
+                'file_url': comment.additional_file.url,
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'No file uploaded'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 # copyright
 @login_required
@@ -786,12 +820,12 @@ def submission_step_six(request, submission_id):
                         to_email=submission.author.user.email,
                         subject='Paper Status Update - ICERCS 2024',
                         template_name='email_templates/submitted_author.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
                 if Modes.objects.filter(name="Whatsapp",is_active=True):
                     send_whatsapp(
-                        user=submission.author.user,
+                        user=submission.author,
                         template_name='email_templates/submitted_author.html',
                         context={'submission': submission }
                     )
@@ -925,7 +959,7 @@ def assign_ae(request, submission_id):
                         to_email=editor.email,
                         subject='Manuscript Assigned',
                         template_name='email_templates/ae_assigned.html',
-                        user=editor,
+                        user=editor.user,
                         context={
                             'submission': submission,
                             'editor': editor,
@@ -983,18 +1017,18 @@ def reject_manuscript(request, manuscript_id):
                         to_email=submission.author.user.email,
                         subject='Manuscript Rejected',
                         template_name='email_templates/decision_rejected.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
             if Modes.objects.filter(name="Whatsapp",is_active=True):
                 send_whatsapp(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/decision_rejected.html',
                     context={'submission': submission }
                 )
             if Modes.objects.filter(name="SMS",is_active=True):
                 send_sms(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/decision_rejected.html',
                     context={'submission': submission }
                 )
@@ -1020,12 +1054,44 @@ def Manuscripts_rejection(request):
     return render(request, 'manuscripts_rejection.html', {'submissions': submissions})
 
 # ------Accepted Manuscripts----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+from django.db.models.functions import Coalesce
+from django.db.models import F
+from django.db.models import Case, When, Value, IntegerField
+
+
 @login_required
 @user_passes_test(is_admin_office)
 def Manuscripts_acceptance(request):
+    # submissions = Submission.objects.filter(article_status__article_status='Awaiting for Correction after Acceptance').order_by('submitted_on')
+    # submissions += Submission.objects.filter(article_status__article_status='Payment Done').order_by('payment_date')
+    # submissions += Submission.objects.filter(article_status__article_status='Accepted').order_by('submitted_on')
+    # submissions = Submission.objects.filter(
+    #     article_status__article_status__in=['Accepted', 'Payment Done', 'Awaiting for Correction after Acceptance']
+    # ).annotate(
+    #     sort_date=Coalesce('payment_date', 'submitted_on')
+    # ).order_by('sort_date')
+
+
     submissions = Submission.objects.filter(
-        article_status__article_status__in=['Accepted', 'Payment Done', 'Awaiting for Correction after Acceptance']
-    ) 
+        article_status__article_status__in=[
+            'Awaiting for Correction after Acceptance',
+            'Payment Done',
+            'Accepted'
+        ]
+    ).annotate(
+        custom_order=Case(
+            When(article_status__article_status='Awaiting for Correction after Acceptance', then=Value(1)),
+            When(article_status__article_status='Payment Done', then=Value(2)),
+            When(article_status__article_status='Accepted', then=Value(3)),
+            output_field=IntegerField()
+        ),
+        sort_date=Case(
+            When(article_status__article_status='Payment Done', then='payment_date'),
+            default='submitted_on'
+        )
+    ).order_by('custom_order', 'sort_date')
+
      # Set up pagination
     paginator = Paginator(submissions, 20)  
     page_number = request.GET.get('page')
@@ -1072,18 +1138,18 @@ def send_correction_report(request):
                         to_email=submission.author.user.email,
                         subject='Corrections in Manuscript ',
                         template_name='email_templates/corrections_to_author.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
             if Modes.objects.filter(name="Whatsapp",is_active=True):
                 send_whatsapp(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/corrections_to_author.html',
                     context={'submission': submission }
                 )
             if Modes.objects.filter(name="SMS",is_active=True):
                 send_sms(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/corrections_to_author.html',
                     context={'submission': submission }
                 )
@@ -1099,7 +1165,16 @@ def send_correction_report(request):
         except Exception as e:
             logger.error(f"An error occurred: {e}")
             return JsonResponse({'error': str(e)}, status=500)
-        
+
+def get_correction_file(request):
+    submission_id = request.GET.get('submission_id')
+    comment = Correction_Comments.objects.filter(submission_id=submission_id).last()
+
+    if comment and comment.additional_file:
+        return JsonResponse({'file_url': comment.additional_file.url})
+    else:
+        return JsonResponse({'file_url': None})
+    
 def get_submission_details(request):
     if request.method == 'GET':
         submission_id = request.GET.get('submission_id')
@@ -1497,18 +1572,18 @@ def save_decision(request):
                         to_email=submission.author.user.email,
                         subject='Manuscript Decision',
                         template_name='email_templates/decision_revision.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
             if Modes.objects.filter(name="Whatsapp",is_active=True):
                 send_whatsapp(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/decision_revision.html',
                     context={'submission': submission }
                 )
             if Modes.objects.filter(name="SMS",is_active=True):
                 send_sms(
-                    user=submission.author.user,
+                    user=submission.author,
                     template_name='email_templates/decision_revision.html',
                     context={'submission': submission }
                 )
@@ -1523,18 +1598,18 @@ def save_decision(request):
                         to_email=submission.author.user.email,
                         subject='Manuscript Decision',
                         template_name='email_templates/decision_accepted.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
                 if Modes.objects.filter(name="Whatsapp",is_active=True):
                     send_whatsapp(
-                        user=submission.author.user,
+                        user=submission.author,
                         template_name='email_templates/decision_accepted.html',
                         context={'submission': submission }
                     )
                 if Modes.objects.filter(name="SMS",is_active=True):
                     send_sms(
-                        user=submission.author.user,
+                        user=submission.author,
                         template_name='email_templates/decision_accepted.html',
                         context={'submission': submission }
                     )
@@ -1544,18 +1619,18 @@ def save_decision(request):
                         to_email=submission.author.user.email,
                         subject='Manuscript Decision',
                         template_name='email_templates/decision_rejected.html',
-                        user=submission.author,
+                        user=submission.author.user,
                         context={'submission': submission }
                     )
                 if Modes.objects.filter(name="Whatsapp",is_active=True):
                     send_whatsapp(
-                        user=submission.author.user,
+                        user=submission.author,
                         template_name='email_templates/decision_rejected.html',
                         context={'submission': submission }
                     )
                 if Modes.objects.filter(name="SMS",is_active=True):
                     send_sms(
-                        user=submission.author.user,
+                        user=submission.author,
                         template_name='email_templates/decision_rejected.html',
                         context={'submission': submission }
                     )
@@ -1734,13 +1809,13 @@ def reject_invitation(request):
             )
         if Modes.objects.filter(name="Whatsapp",is_active=True):
             send_whatsapp(
-                user=editor.email,
+                user=editor,
                 template_name='email_templates/reviewer_rejected.html',
                 context={'submission': submission, 'reviewer': author, 'editor': editor}
             )
         if Modes.objects.filter(name="SMS",is_active=True):
             send_sms(
-                user=editor.email,
+                user=editor,
                 template_name='email_templates/reviewer_rejected.html',
                 context={'submission': submission, 'reviewer': author, 'editor': editor}
             )
@@ -1748,19 +1823,37 @@ def reject_invitation(request):
     
 @login_required
 @user_passes_test(is_reviewer)
-def reviewer_invitations(request):
+def reviewer_invitations(request): 
+    author = Author.objects.get(user=request.user)
+    reviewer_spl = Reviewer_Specialization.objects.filter(reviewer=request.user)
+
+    # Save specializations if submitted
+    if request.method == 'POST' and 'specializations' in request.POST:
+        selected_ids = request.POST.getlist('specializations')
+        for spec_id in selected_ids:
+            specialization = Specialization.objects.get(id=spec_id)
+            Reviewer_Specialization.objects.create(reviewer=request.user, specialization=specialization)
+        return redirect('reviewer_invitations')  # Reload page after submission
+
+    # Invitations
     invitations = Reviewer_Invitation.objects.filter(user=request.user).exclude(invite_status='RJ').order_by('-id')
-    # Pagination
-    paginator = Paginator(invitations, 5) 
+    paginator = Paginator(invitations, 5)
     page = request.GET.get('page')
-    
+
     try:
         invitations = paginator.page(page)
     except PageNotAnInteger:
         invitations = paginator.page(1)
     except EmptyPage:
         invitations = paginator.page(paginator.num_pages)
-    return render(request, 'reviewer.html',  {'invitations': invitations})
+
+    all_specializations = Specialization.objects.all()
+
+    return render(request, 'reviewer.html', {
+        'invitations': invitations,
+        'reviewer_spl': reviewer_spl,
+        'all_specializations': all_specializations
+    })
 
 # -----------------Manuscripts To Review------------------------------------------------------------------------------------------------------------------------------------------------------
 @login_required
@@ -2290,14 +2383,63 @@ def dashboard_view(request):
         })
 
     # Get the earliest and latest submission years for the filter
+    # Get the earliest and latest submission years for the filter
+    # if Submission.objects.exists() and Submission.objects.exclude(submitted_on__isnull=True).exists():
+    #     earliest_submission = Submission.objects.exclude(submitted_on__isnull=True).earliest('submitted_on')
+    #     earliest_year = earliest_submission.submitted_on.year
+    # else:
+    #     earliest_year = datetime.now().year
+    # current_year = datetime.now().year
+    # years_range = range(earliest_year, current_year + 1)
+    
+    # # Get selected year from request (default to current year)
+    # selected_year = int(request.GET.get('year', current_year))
+    
+    # # Monthly submissions data (all submissions)
+    # monthly_submissions = (
+    #     Submission.objects
+    #     .filter(submitted_on__year=selected_year)
+    #     .annotate(month=ExtractMonth('submitted_on'))
+    #     .values('month')
+    #     .annotate(count=Count('id'))
+    #     .order_by('month')
+    # )
+    
+    # # Monthly accepted papers data
+    # monthly_accepted = (
+    #     Submission.objects
+    #     .filter(
+    #         Q(article_status__article_status='Accepted') & 
+    #         Q(submitted_on__year=selected_year))
+    #     .annotate(month=ExtractMonth('submitted_on'))
+    #     .values('month')
+    #     .annotate(count=Count('id'))
+    #     .order_by('month')
+    # )
+    
+    # # Prepare data for chart - initialize all months with 0
+    # month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+    #               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    # # Initialize data arrays with zeros
+    # submissions_data = [0] * 12
+    # accepted_data = [0] * 12
+    
+    # # Fill in actual data
+    # for item in monthly_submissions:
+    #     submissions_data[item['month'] - 1] = item['count']
+    
+    # for item in monthly_accepted:
+    #     accepted_data[item['month'] - 1] = item['count']
+        
     earliest_year = Submission.objects.earliest('submitted_on').submitted_on.year
     current_year = datetime.now().year
     years_range = range(earliest_year, current_year + 1)
-    
+
     # Get selected year from request (default to current year)
     selected_year = int(request.GET.get('year', current_year))
-    
-    # Monthly submissions data (all submissions)
+
+  # Monthly submissions data (all submissions)
     monthly_submissions = (
         Submission.objects
         .filter(submitted_on__year=selected_year)
@@ -2306,34 +2448,32 @@ def dashboard_view(request):
         .annotate(count=Count('id'))
         .order_by('month')
     )
-    
+
     # Monthly accepted papers data
     monthly_accepted = (
-        Submission.objects
-        .filter(
-            Q(article_status__article_status='Accepted') & 
-            Q(submitted_on__year=selected_year))
+        Submission.objects.filter(
+        Q(article_status__article_status='Accepted') & 
+        Q(submitted_on__year=selected_year))
         .annotate(month=ExtractMonth('submitted_on'))
         .values('month')
         .annotate(count=Count('id'))
         .order_by('month')
     )
-    
+
     # Prepare data for chart - initialize all months with 0
     month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     # Initialize data arrays with zeros
     submissions_data = [0] * 12
     accepted_data = [0] * 12
-    
+
     # Fill in actual data
     for item in monthly_submissions:
         submissions_data[item['month'] - 1] = item['count']
-    
+
     for item in monthly_accepted:
         accepted_data[item['month'] - 1] = item['count']
-        
     # Get reviewer specialization data
     reviewer_specializations = (
         Reviewer_Specialization.objects

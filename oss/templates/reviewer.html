@@ -26,7 +26,139 @@
     cursor: pointer;
 }
 
+/* Style for Select2 with checkboxes */
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 38px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff;
+    border: 1px solid #006fe6;
+    color: white;
+    padding: 0 5px;
+    margin-top: 5px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: white;
+    margin-right: 5px;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Modal container - full screen overlay */
+#specializationModal {
+  position: fixed; /* Stay in place */
+  z-index: 1000; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content box */
+.specialization-modal-content {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  position: relative;
+  font-family: Arial, sans-serif;
+}
+
+/* Close button (X) */
+#closeModal {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#closeModal:hover {
+  color: #333;
+}
+
+/* Headings */
+.specialization-modal-content h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+/* Form styling */
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #444;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1.5px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Small helper text */
+.text-muted {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+  display: block;
+}
+
+/* Submit button */
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
 </style>
+
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
         <div class="row">
@@ -108,6 +240,26 @@
     </div>
 </section>
 
+<div id="specializationModal" class="modal" style="display: none;">
+    <div class="modal-content specialization-modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h4>Please select your specialization(s)</h4>
+        <form method="POST" id="specializationForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="specializations">Specializations:</label>
+                <select name="specializations" id="specializations" class="form-control" multiple="multiple" required>
+                    {% for spec in all_specializations %}
+                    <option value="{{ spec.id }}">{{ spec.specialization }}</option>
+                    {% endfor %}
+                </select>
+                <small class="text-muted">Hold Ctrl (or Cmd on Mac) to select multiple options</small>
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Submit</button>
+        </form>
+    </div>
+</div>
+
 <!-- Popup Modal -->
 <div id="abstractModal" class="modal">
     <div class="modal-content">
@@ -119,6 +271,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
 
 $(document).ready(function() {
@@ -196,4 +353,58 @@ $(document).ready(function() {
         });
     });
 </script>
+
+<script>
+$(document).ready(function () {
+    {% if not reviewer_spl %}
+    var modal = $('#specializationModal');
+    var closeBtn = $('#closeModal');
+
+    // Show modal on load
+    modal.show();
+
+    // Initialize Select2
+    $('#specializations').select2({
+        dropdownParent: modal,
+        placeholder: "Select your specializations",
+        width: '100%',
+        closeOnSelect: false
+    });
+
+    // Prevent closing modal without selecting at least one specialization
+    closeBtn.on('click', function (e) {
+        if (!$('#specializations').val() || $('#specializations').val().length === 0) {
+            alert("You must select at least one specialization to continue.");
+            e.preventDefault();
+            return false;
+        }
+        modal.hide();
+    });
+
+    // Prevent closing modal by clicking outside if no selection
+    $(window).on('click', function (event) {
+        if ($(event.target).is(modal)) {
+            if (!$('#specializations').val() || $('#specializations').val().length === 0) {
+                alert("You must select at least one specialization to continue.");
+                event.preventDefault();
+                return false;
+            }
+            modal.hide();
+        }
+    });
+
+    // Form submission with validation
+    $('#specializationModal form').on('submit', function(e) {
+        if (!$('#specializations').val() || $('#specializations').val().length === 0) {
+            alert("Please select at least one specialization.");
+            e.preventDefault();
+            return false;
+        }
+        // Allow form to submit
+    });
+    {% endif %}
+});
+</script>
+
+
 {% endblock %}

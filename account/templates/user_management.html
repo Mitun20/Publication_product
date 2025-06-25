@@ -136,8 +136,9 @@
     </div>
 </section>
 
+
 <!-- Roles Modal -->
-<div class="modal fade" id="rolesModal" tabindex="-1" role="dialog" aria-labelledby="rolesModalLabel" aria-hidden="true" style="height: 1000px;">
+<div class="modal fade" id="rolesModal" tabindex="-1" role="dialog" aria-labelledby="rolesModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -149,48 +150,16 @@
                     {% csrf_token %}
                     <input type="hidden" name="username" id="rolesUsername">
                     <div id="rolesCheckboxes"></div>
-                    <!-- Specialization Dropdown (hidden by default) -->
-                    <div id="specializationSection" style="display: none; margin-top: 15px;">
-                        <label for="specializations" class="form-label">Specialization 
-                            <button type="button" class="btn btn-sm btn-primary" id="addSpecializationButton">
-                                <i class="fas fa-plus"></i> <!-- Font Awesome plus icon -->
-                            </button>
-                        </label>
-                        <select class="form-control" id="specializations" name="specializations" multiple>
-                        </select>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-save" id="saveRolesButton">Save changes</button>
             </div>
+            <h3><div id="loadingMessage" style="display:none;">Processing...</div></h3>
         </div>
-    </div>
+    </div> 
 </div>
-<!-- Add Specialization Modal -->
-<div class="modal fade" id="addSpecializationModal" tabindex="-1" role="dialog" aria-labelledby="addSpecializationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addSpecializationModalLabel">Add Specialization</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addSpecializationForm">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="newSpecialization" class="form-label">Specialization Name</label>
-                        <input type="text" class="form-control" id="newSpecialization" name="newSpecialization" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveSpecializationButton">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Reset Password Modal -->
 <div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
@@ -332,163 +301,75 @@ $(document).ready(function() {
                 });
                 
 
- // Populate roles 
-$(document).ready(function() {
-    // Fetch Roles and Populate Modal
-    $('.roles-link').on('click', function(e) {
-        e.preventDefault();
-        var username = $(this).data('username');
-        $('#rolesUsername').val(username);
-
-        $.ajax({
-            url: '{% url "fetch_groups" %}',
-            method: 'GET',
-            data: { 'username': username },
-            success: function(data) {
-                // Populate group checkboxes
-                var checkboxes = '';
-                data.groups.forEach(function(group) {
-                    if (group.name.toLowerCase() !== 'author') {
-                        checkboxes += '<div class="form-check">';
-                        checkboxes += '<input class="form-check-input" type="checkbox" value="' + group.id + '" id="group' + group.id + '" name="groups"';
-                        if (data.user_groups.includes(group.id)) {
-                            checkboxes += ' checked';
-                        }
-                        checkboxes += '>';
-                        checkboxes += '<label class="form-check-label" for="group' + group.id + '">' + group.name + '</label>';
-                        checkboxes += '</div>';
-                    }
-                });
-                $('#rolesCheckboxes').html(checkboxes);
-
-                // Populate specializations dropdown
-                var specializationOptions = '';
-                if (data.specializations && data.specializations.length > 0) {
-                    data.specializations.forEach(function(spec) {
-                        specializationOptions += '<option value="' + spec.id + '">' + spec.specialization + '</option>';
-                    });
-                } else {
-                    specializationOptions = '<option value="">No specializations available</option>';
-                }
-                $('#specializations').html(specializationOptions);
-
-                // Check if Reviewer is already assigned
-                if (data.user_groups.includes(data.reviewer_group_id)) {
-                    document.getElementById('specializations').style.display = 'block';
-                    $('#specializationSection').show();
+//  populate roles
+                $('.roles-link').on('click', function(e) {
+                    e.preventDefault();
+                    var username = $(this).data('username');
+                    $('#rolesUsername').val(username);
                     $.ajax({
-                        url: '{% url "fetch_reviewer_specializations" %}',
+                        url: '{% url "fetch_groups" %}',
                         method: 'GET',
                         data: { 'username': username },
-                        success: function(response) {
-                            $('#specializations').val(response.specialization_ids);
+                        success: function(data) {
+                            var checkboxes = '';
+                            data.groups.forEach(function(group) {
+                                if (group.name.toLowerCase() !== 'author') { // Exclude "author" group
+                                    checkboxes += '<div class="form-check">';
+                                    checkboxes += '<input class="form-check-input" type="checkbox" value="' + group.id + '" id="group' + group.id + '" name="groups"';
+                                    if (data.user_groups.includes(group.id)) {
+                                        checkboxes += ' checked';
+                                    }
+                                    checkboxes += '>';
+                                    checkboxes += '<label class="form-check-label" for="group' + group.id + '">' + group.name + '</label>';
+                                    checkboxes += '</div>';
+                                }
+                            });
+                            $('#rolesCheckboxes').html(checkboxes);
+                            $('#rolesModal').modal('show');
                         },
                         error: function(xhr, status, error) {
-                            console.error("Error fetching reviewer specializations:", error);
+                            console.error("An error occurred: " + error);
                         }
                     });
-                } else {
-                    $('#specializationSection').hide();
-                }
-
-                // Show/hide specializations based on Reviewer checkbox
-                $('input[name="groups"]').on('change', function() {
-                    var reviewerGroupId = data.reviewer_group_id;
-                    if ($('#group' + reviewerGroupId).is(':checked')) {
-                        $('#specializationSection').show();
-                    } else {
-                        $('#specializationSection').hide();
-                        $('#specializations').val([]);
-                    }
                 });
 
-                $('#rolesModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error("Error in fetch_groups AJAX call:", error);
-            }
-        });
-    });
+// save Roles
+                $('#saveRolesButton').on('click', function() {
+                    var username = $('#rolesUsername').val();
+                    var groups = [];
+                    $('input[name="groups"]:checked').each(function() {
+                        groups.push($(this).val());
+                    });
+                            // Show loading message
+                            $('#loadingMessage').show();
+                    $.ajax({
+                        url: '{% url "update_user_groups" %}',
+                        method: 'POST',
+                        data: {
+                            'username': username,
+                            'groups': groups,
+                            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        success: function(data) {
+                            // Hide loading message
+                            $('#loadingMessage').hide();
+                            location.reload();
+                            $('#rolesModal').modal('hide');
+                            location.reload();
+                            // Optionally refresh the page or show a success message
+                        },
+                        error: function(xhr, status, error) {
+                            // Hide loading message
+                            $('#loadingMessage').hide();
+                            console.error("An error occurred: " + error);
+                        }
+                    });
+                });
 
-    // Save Roles and Specializations
-    $('#saveRolesButton').on('click', function() {
-        var username = $('#rolesUsername').val();
-        var groups = [];
-        $('input[name="groups"]:checked').each(function() {
-            groups.push($(this).val());
-        });
-        var specializations = $('#specializations').val() || [];
-        console.log("Saving data - Username:", username, "Groups:", groups, "Specializations:", specializations);
-
-        $('#loadingMessage').show();
-        $.ajax({
-            url: '{% url "update_user_groups" %}',
-            method: 'POST',
-            data: {
-                'username': username,
-                'groups': groups,
-                'specializations': specializations,
-                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
-            },
-            success: function(data) {
-                $('#loadingMessage').hide();
-                $('#rolesModal').modal('hide');
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                console.error("Error saving roles/specializations:", error);
-                $('#loadingMessage').hide();
-            }
-        });
-    });
-});
-
-// Open Add Specialization Modal
-$(document).ready(function() {
-    
-    $('#addSpecializationButton').on('click', function() {
-        $('#addSpecializationModal').modal('show');
-    });
-
-    // Save New Specialization
-    $('#saveSpecializationButton').on('click', function() {
-        var newSpecialization = $('#newSpecialization').val().trim();
-
-        if (!newSpecialization) {
-            alert('Please enter a specialization name.');
-            return;
-        }
-
-        $.ajax({
-            url: '{% url "add_specialization" %}',  // URL for adding a new specialization
-            method: 'POST',
-            data: {
-                'newSpecialization': newSpecialization,
-                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Close the modal
-                    location.reload();
-                    $('#addSpecializationModal').modal('hide');
-                    // Clear the input field
-                    $('#newSpecialization').val('');
-                    // Refresh the specializations dropdown
-                    refreshSpecializations();
-                } else {
-                    alert('Error: ' + response.error);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-    });
-
-    
-});
-
+                // Ensure the modal is properly initialized
+                $('#rolesModal').on('hidden.bs.modal', function () {
+                    $('#rolesCheckboxes').html('');
+                });
 // reset password
                 $('.reset-password-link').on('click', function(e) {
                     e.preventDefault();
@@ -689,165 +570,74 @@ $('#searchForm')[0].reset();
 
     // roles process
 
-// Populate roles 
-$(document).ready(function() {
-    // Fetch Roles and Populate Modal
     $('.roles-link').on('click', function(e) {
-        e.preventDefault();
-        var username = $(this).data('username');
-        $('#rolesUsername').val(username);
-
-        $.ajax({
-            url: '{% url "fetch_groups" %}',
-            method: 'GET',
-            data: { 'username': username },
-            success: function(data) {
-                // Populate group checkboxes
-                var checkboxes = '';
-                data.groups.forEach(function(group) {
-                    if (group.name.toLowerCase() !== 'author') {
-                        checkboxes += '<div class="form-check">';
-                        checkboxes += '<input class="form-check-input" type="checkbox" value="' + group.id + '" id="group' + group.id + '" name="groups"';
-                        if (data.user_groups.includes(group.id)) {
-                            checkboxes += ' checked';
-                        }
-                        checkboxes += '>';
-                        checkboxes += '<label class="form-check-label" for="group' + group.id + '">' + group.name + '</label>';
-                        checkboxes += '</div>';
-                    }
-                });
-                $('#rolesCheckboxes').html(checkboxes);
-
-                // Populate specializations dropdown
-                var specializationOptions = '';
-                if (data.specializations && data.specializations.length > 0) {
-                    data.specializations.forEach(function(spec) {
-                        specializationOptions += '<option value="' + spec.id + '">' + spec.specialization + '</option>';
-                    });
-                } else {
-                    specializationOptions = '<option value="">No specializations available</option>';
-                }
-                $('#specializations').html(specializationOptions);
-
-                // Check if Reviewer is already assigned
-                if (data.user_groups.includes(data.reviewer_group_id)) {
-                    document.getElementById('specializations').style.display = 'block';
-                    $('#specializationSection').show();
+                    e.preventDefault();
+                    var username = $(this).data('username');
+                    $('#rolesUsername').val(username);
                     $.ajax({
-                        url: '{% url "fetch_reviewer_specializations" %}',
+                        url: '{% url "fetch_groups" %}',
                         method: 'GET',
                         data: { 'username': username },
-                        success: function(response) {
-                            $('#specializations').val(response.specialization_ids);
+                        success: function(data) {
+                            var checkboxes = '';
+                            data.groups.forEach(function(group) {
+                                if (group.name.toLowerCase() !== 'author') { // Exclude "author" group
+                                    checkboxes += '<div class="form-check">';
+                                    checkboxes += '<input class="form-check-input" type="checkbox" value="' + group.id + '" id="group' + group.id + '" name="groups"';
+                                    if (data.user_groups.includes(group.id)) {
+                                        checkboxes += ' checked';
+                                    }
+                                    checkboxes += '>';
+                                    checkboxes += '<label class="form-check-label" for="group' + group.id + '">' + group.name + '</label>';
+                                    checkboxes += '</div>';
+                                }
+                            });
+                            $('#rolesCheckboxes').html(checkboxes);
+                            $('#rolesModal').modal('show');
                         },
                         error: function(xhr, status, error) {
-                            console.error("Error fetching reviewer specializations:", error);
+                            console.error("An error occurred: " + error);
                         }
                     });
-                } else {
-                    $('#specializationSection').hide();
-                }
-
-                // Show/hide specializations based on Reviewer checkbox
-                $('input[name="groups"]').on('change', function() {
-                    var reviewerGroupId = data.reviewer_group_id;
-                    if ($('#group' + reviewerGroupId).is(':checked')) {
-                        $('#specializationSection').show();
-                    } else {
-                        $('#specializationSection').hide();
-                        $('#specializations').val([]);
-                    }
                 });
 
-                $('#rolesModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error("Error in fetch_groups AJAX call:", error);
-            }
-        });
-    });
+// save Roles
+                $('#saveRolesButton').on('click', function() {
+                    var username = $('#rolesUsername').val();
+                    var groups = [];
+                    $('input[name="groups"]:checked').each(function() {
+                        groups.push($(this).val());
+                    });
+                    // Show loading message
+                    $('#loadingMessage').show();
+                    $.ajax({
+                        url: '{% url "update_user_groups" %}',
+                        method: 'POST',
+                        data: {
+                            'username': username,
+                            'groups': groups,
+                            'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                        },
+                        success: function(data) {
+                            // Hide loading message
+                            $('#loadingMessage').hide();
+                            location.reload();
+                            $('#rolesModal').modal('hide');
+                            location.reload();
+                            // Optionally refresh the page or show a success message
+                        },
+                        error: function(xhr, status, error) {
+                            // Hide loading message
+                            $('#loadingMessage').hide();
+                            console.error("An error occurred: " + error);
+                        }
+                    });
+                });
 
-    // Save Roles and Specializations
-    $('#saveRolesButton').on('click', function() {
-        var username = $('#rolesUsername').val();
-        var groups = [];
-        $('input[name="groups"]:checked').each(function() {
-            groups.push($(this).val());
-        });
-        var specializations = $('#specializations').val() || [];
-        console.log("Saving data - Username:", username, "Groups:", groups, "Specializations:", specializations);
-
-        $('#loadingMessage').show();
-        $.ajax({
-            url: '{% url "update_user_groups" %}',
-            method: 'POST',
-            data: {
-                'username': username,
-                'groups': groups,
-                'specializations': specializations,
-                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
-            },
-            success: function(data) {
-                $('#loadingMessage').hide();
-                $('#rolesModal').modal('hide');
-                location.reload();
-            },
-            error: function(xhr, status, error) {
-                console.error("Error saving roles/specializations:", error);
-                $('#loadingMessage').hide();
-            }
-        });
-    });
-});
-
-// Open Add Specialization Modal
-$(document).ready(function() {
-    
-    $('#addSpecializationButton').on('click', function() {
-        $('#addSpecializationModal').modal('show');
-    });
-
-    // Save New Specialization
-    $('#saveSpecializationButton').on('click', function() {
-        var newSpecialization = $('#newSpecialization').val().trim();
-
-        if (!newSpecialization) {
-            alert('Please enter a specialization name.');
-            return;
-        }
-
-        $.ajax({
-            url: '{% url "add_specialization" %}',  // URL for adding a new specialization
-            method: 'POST',
-            data: {
-                'newSpecialization': newSpecialization,
-                'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
-            },
-            success: function(response) {
-                if (response.success) {
-                    // Close the modal
-                    location.reload();
-
-                    $('#addSpecializationModal').modal('hide');
-                    // Clear the input field
-                    $('#newSpecialization').val('');
-                    // Refresh the specializations dropdown
-                    refreshSpecializations();
-                } else {
-                    alert('Error: ' + response.error);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-                alert('An error occurred. Please try again.');
-            }
-        });
-    });
-
-    // Function to refresh the specializations dropdown
-    
-});
-
+                // Ensure the modal is properly initialized
+                $('#rolesModal').on('hidden.bs.modal', function () {
+                    $('#rolesCheckboxes').html('');
+                });
 // reset password
                 $('.reset-password-link').on('click', function(e) {
                     e.preventDefault();
