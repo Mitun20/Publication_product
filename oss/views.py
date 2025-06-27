@@ -1051,7 +1051,11 @@ def Manuscripts_rejection(request):
     paginator = Paginator(submissions, 20)  # Show 10 submissions per page
     page_number = request.GET.get('page')
     submissions = paginator.get_page(page_number)
-    return render(request, 'manuscripts_rejection.html', {'submissions': submissions})
+    return render(request, 'manuscripts_rejection.html', {
+        'submissions': submissions, 
+        'feedback_types': FeedbackType.objects.all(),
+        'all_questions': Question.objects.all()
+        })
 
 # ------Accepted Manuscripts----------------------------------------------------------------------------------------------------------------------------------------------------------------
 

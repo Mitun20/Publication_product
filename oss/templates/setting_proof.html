@@ -92,7 +92,8 @@ a.uploadlink:hover
                                     <td>
                                         <p><a href="{% url 'contact_form' %}?email={{ submission.author.user.email }}" class="contact-link" target="_blank" onclick="window.open(this.href, '_blank', 'width=600,height=600'); return false;">Contact Author</a><br>
                                         <a href="#" class="upload_type_set_document-link uploadlink" >Upload Type Set Document</a><br>
-                                        <a href="{% url 'view_typeset_document' submission.id %}" target="_blank">View Typeset document</a></p>
+                                        <a href="{% url 'view_typeset_document' submission.id %}" target="_blank">View Typeset</a>&nbsp;|&nbsp;<a href="#" onclick="alert('Upload a new typeset file to automatically replace the existing one.'); return false;">Remove Typeset</a>
+                                        </p>
                                         <br>
                                         <form method="post" action="{% url 'mark_proof_read_done' submission.id %}">
                                             {% csrf_token %}

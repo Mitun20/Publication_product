@@ -82,19 +82,19 @@
                                 <label class="custom-label">Mobile Number</label><br>
                                 {{ author_form.mobile_no }}
                             </div></div>
-                          </div>
-                          <div class="row justify-content-center">
+                        </div>
+                        <div class="row justify-content-center">
                             <div class="form-group">
                                 <label class="custom-label">Institution / Affiliation</label><br>
                                 {{ author_form.institution }}
                             </div>
-                          </div>
-                           <div class="row justify-content-center">
-                          <div class="form-group">
+                        </div>
+                        <div class="row justify-content-center">
+                        <div class="form-group">
                             <label class="custom-label">Address</label><br>
                             {{ author_form.address }}
                         </div>
-                          <div class="row justify-content-center">
+                        <div class="row justify-content-center">
                             <div class="col-lg-6 col-md-6"> <div class="form-group">
                                 <label class="custom-label">City</label><br>
                                 {{ author_form.city }}
@@ -103,9 +103,9 @@
                                 <label class="custom-label">Zipcode</label><br>
                                 {{ author_form.zipcode }}
                             </div></div>
-                          </div>
+                        </div>
 
-                          <div class="row justify-content-center">
+                        <div class="row justify-content-center">
                             <div class="col-lg-6 col-md-6"> <div class="form-group">
                                 <label class="custom-label">State</label><br>
                                 {{ author_form.state }}
@@ -114,36 +114,349 @@
                                 <label class="custom-label">Country</label><br>
                                 {{ author_form.country }}
                             </div></div>
-                          </div>
+                        </div>
 
                         <div class="row justify-content-center">
                             <div class="col-lg-6 col-md-6">
 
-                            
-                                <div class="form-group">
-                                    <label class="custom-label">Scopus ID</label><br>
-                                    {{ author_form.scopus_id }}
-                                </div>
+                                {% for group in author.user.groups.all %}
+                                    {% if group.name == "Author" %}
+                                        <div class="form-group">
+                                            <label class="custom-label">Scopus ID</label><br>
+                                            {{ author_form.scopus_id }}
+                                        </div>
+                                        
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                             
                             <div class="col-lg-6 col-md-6">
-    
-                                <div class="form-group">
-                                    <label class="custom-label">Orcid ID</label><br>
-                                    {{ author_form.orcid_id }}
-                                </div>
+                                {% for group in author.user.groups.all %}
+                                    {% if group.name == "Author" %}
+                                    <div class="form-group">
+                                        <label class="custom-label">Orcid ID</label><br>
+                                        {{ author_form.orcid_id }}
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
                             </div>
                         </div>
-       
-                            <div class="col-md-12">
-                                <button type="submit" class="account-btn mb-50">Save</button>
-                            </div>
-                        
+                        {% for group in author.user.groups.all %}
+                            {% if group.name == "Reviewer" %}
+                                <div class="row justify-content-center">
+                                    <div class="form-group col-12">
+                                        <label class="custom-label">
+                                            Specialization
+                                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addSpecModal" style="margin-left: 10px;">+</button>
+                                        </label><br>
+                                        {% if specializations %}
+                                            <ul id="specialization-list">
+                                                {% for spec in specializations %}
+                                                <li id="spec-{{ spec.id }}">
+                                                    {{ spec.specialization.specialization }}
+
+                                                        <button class="remove-spec-btn" data-spec-id="{{ spec.id }}" type="button" style="color:red; border:none; background:none; cursor:pointer;">
+                                                            Remove
+                                                        </button>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <p>No specializations added.</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+
+                        <div class="col-md-12">
+                            <button type="submit" class="account-btn mb-50">Save</button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- add specialization Modal -->
+<div class="modal fade" id="addSpecModal" tabindex="-1" aria-labelledby="addSpecModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="addSpecForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addSpecModalLabel">Specializations
+            <button type="button" id="addNewSpecBtn" class="btn btn-sm btn-outline-primary ms-2" title="Add new specialization">+</button>
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="available-specs">
+          Loading...
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add New Specialization Modal -->
+<div class="modal fade" id="addNewSpecModal" tabindex="-1" aria-labelledby="addNewSpecModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="addNewSpecForm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addNewSpecModalLabel">Add New Specialization</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="newSpecInput" class="form-control" placeholder="Enter specialization name" required>
+          <div id="newSpecError" class="text-danger mt-2" style="display:none;"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add Specialization</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // add specialization
+$(document).ready(function(){
+    // Load available specializations when modal opens
+    $('#addSpecModal').on('show.bs.modal', function () {
+        $.ajax({
+            url: '{% url "available_specializations" %}',
+            type: 'GET',
+            success: function(data){
+                let html = '';
+                if(data.length > 0){
+                    data.forEach(function(spec){
+                        html += `
+                            <div>
+                                <input type="checkbox" name="specializations" value="${spec.id}" id="spec-${spec.id}">
+                                <label for="spec-${spec.id}">${spec.specialization}</label>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html = "<p>No new specializations available.</p>";
+                }
+                $('#available-specs').html(html);
+            },
+            error: function(){
+                $('#available-specs').html("<p>Failed to load specializations.</p>");
+            }
+        });
+    });
+
+    // Submit selected specializations
+   $('#addSpecForm').submit(function(e){
+        e.preventDefault();
+
+        let selected = [];
+        $('input[name="specializations"]:checked').each(function(){
+            selected.push($(this).val());
+        });
+
+        console.log("Selected IDs:", selected);
+
+        if (selected.length === 0) {
+            alert("Please select at least one specialization.");
+            return;
+        }
+
+        $.ajax({
+            url: '{% url "add_specializations" %}',
+            method: 'POST',
+            data: {
+                specializations: selected,
+            },
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            traditional: true,
+            success: function(response){
+                console.log("Response:", response);
+                response.added_specializations.forEach(function(spec){
+                    $('#specialization-list').append(`
+                        <li id="spec-${spec.id}">
+                            ${spec.name}
+                            <button class="remove-spec-btn" data-spec-id="${spec.id}" type="button" style="color:red; border:none; background:none; cursor:pointer;">
+                                Remove
+                            </button>
+                        </li>
+                    `);
+                });
+
+                // Bootstrap 5 modal hide
+                var addSpecModalEl = document.getElementById('addSpecModal');
+                var modal = bootstrap.Modal.getInstance(addSpecModalEl);
+                if (modal) modal.hide();
+                location.reload();
+            },
+            error: function(xhr){
+                console.log("Error:", xhr.responseText);
+                alert("Failed to add specializations.");
+            }
+        });
+    });
+
+
+
+    // Reuse CSRF helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+
+<script>
+    // add new specialization
+   $(document).ready(function(){
+
+    // Bootstrap 5 modal instances
+    const addSpecModal = new bootstrap.Modal(document.getElementById('addSpecModal'));
+    const addNewSpecModal = new bootstrap.Modal(document.getElementById('addNewSpecModal'));
+
+    // Open "Add New Specialization" modal on + button click
+    $('#addNewSpecBtn').click(function(e) {
+        e.preventDefault();
+        addNewSpecModal.show();
+    });
+
+    // Handle "Add New Specialization" form submission
+    $('#addNewSpecForm').submit(function(e) {
+        e.preventDefault();
+
+        const specializationName = $('#newSpecInput').val().trim();
+        const errorDiv = $('#newSpecError');
+        errorDiv.hide().text('');
+
+        if (!specializationName) {
+            errorDiv.text("Please enter a specialization name.").show();
+            return;
+        }
+
+        $.ajax({
+            url: '{% url "create_specialization" %}',  // Your Django view for creation
+            method: 'POST',
+            data: {
+                specialization: specializationName
+            },
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function(response) {
+                // Close the "Add New Specialization" modal
+                addNewSpecModal.hide();
+
+                // Clear input field
+                $('#newSpecInput').val('');
+
+                // Append the new specialization as a checkbox inside #available-specs
+                $('#available-specs').append(`
+                    <div>
+                        <input type="checkbox" name="specializations" value="${response.id}" id="spec-${response.id}" checked>
+                        <label for="spec-${response.id}">${response.name}</label>
+                    </div>
+                `);
+            },
+            error: function(xhr) {
+                let errMsg = "Failed to add specialization.";
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errMsg = xhr.responseJSON.error;
+                }
+                errorDiv.text(errMsg).show();
+            }
+        });
+    });
+
+    // Reuse CSRF helper function
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
+
+</script>
+
+<script>
+    // remove specialization
+$(document).ready(function(){
+    $('.remove-spec-btn').click(function(){
+        const specId = $(this).data('spec-id');
+        const csrfToken = '{{ csrf_token }}';  // We'll get the CSRF token in next step
+        // Count current specializations
+        const totalSpecs = $('#specialization-list li').length;
+
+        // Prevent removing the last specialization
+        if (totalSpecs <= 1) {
+            alert("At least one specialization must remain.");
+            return; // Stop further execution
+        }
+
+        if(confirm("Are you sure you want to remove this specialization?")) {
+            $.ajax({
+                url: "{% url 'remove_specialization' 0 %}".replace('0', specId),
+                type: 'POST',
+                headers: {'X-CSRFToken': getCookie('csrftoken')},
+                success: function(response){
+                    // Remove the specialization <li> from DOM
+                    $('#spec-' + specId).fadeOut(300, function(){ $(this).remove(); });
+                    // location.reload();
+                },
+                
+                error: function(xhr, status, error){
+                    alert("Failed to remove specialization. Please try again.");
+                }
+            });
+        }
+    });
+
+    // Function to get CSRF token cookie (from Django docs)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
 
 {% endblock content %}

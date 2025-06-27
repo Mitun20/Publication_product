@@ -418,8 +418,8 @@ button {
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Remove</button>
                         </form>
-                        <a href="#" onclick="openFeedbackModal('{{ submission.id }}'); return false;">Request Feedback</a>
-
+                        <a href="#" onclick="openFeedbackModal('{{ article.accepted_submission.submission.id }}'); return false;">Request Feedback</a>
+                        {{article.accepted_submission.submission.id}}
                     </td>
                 </tr>
             {% empty %}
@@ -453,7 +453,7 @@ button {
     <button id="close-feedback-modal" class="close-btn" type="button">&times;</button>
     <h3>Request Feedback</h3>
     <div class="button-group">
-      <button id="btn-instant-feedback" type="button">Add Instant Feedback</button>
+      <button id="btn-instant-feedback" type="button">Send Instant Feedback</button>
       <button id="btn-create-new-feedback" type="button">Create New Feedback</button>
     </div>
 
@@ -463,7 +463,7 @@ button {
         {% csrf_token %}
         <label for="instant-feedback-type">Select Feedback Type:</label>
         <select id="instant-feedback-type" name="feedback_type" required>
-          <option value="">-- Select --</option>
+          <option value="default">-- Select --</option>
           {% for type in feedback_types %}
             <option value="{{ type.id }}">{{ type.type }}</option>
           {% endfor %}
@@ -539,7 +539,7 @@ button {
           </div>
           
           <div class="form-actions">
-            <button type="submit" id="submit-new-feedback-type" class="btn-primary">Submit Feedback Template</button>
+            <button type="submit" id="submit-new-feedback-type" class="btn-primary">Submit Feedback Request</button>
           </div>
         </div>
       </form>
@@ -573,6 +573,8 @@ function openFeedbackModal(submissionId) {
     console.log("Opening modal with submission ID:", submissionId);
     resetModal();
     currentSubmissionId = submissionId;
+    console.log("Opening modal with currentSubmissionId ID:", currentSubmissionId);
+    
     document.getElementById('feedback-modal').style.display = 'flex';
     
 }
@@ -832,7 +834,7 @@ document.getElementById('instant-feedback-form').addEventListener('submit', asyn
 // Submit instant feedback request
 document.getElementById('submit-instant-feedback').addEventListener('click', async function(e) {
     e.preventDefault();
-    console.log("Submitting new feedback template form",submissionId);
+    console.log("Submitting new feedback template form",currentSubmissionId);
     // currentSubmissionId is already set when opening the modal, no need to set it here
     if (!currentSubmissionId) {
         alert('No submission selected');

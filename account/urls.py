@@ -41,9 +41,15 @@ urlpatterns = [
     path('change_password/', CustomPasswordChangeView.as_view(), name='change_password'),
     path('password_change_done/', PasswordChangeDoneView.as_view(template_name='password_change_done.html'), name='password_change_done'),
     path('profile/', profile, name='profile'),
+    path('remove_specialization/<int:spec_id>/', remove_specialization, name='remove_specialization'),
+    path('available-specializations/', available_specializations, name='available_specializations'),
+    path('add-specializations/', add_specializations, name='add_specializations'),
+    path('specializations/create/', create_specialization, name='create_specialization'),
     path('editor_profile/', editor_profile, name='editor_profile'),
+    
     #logout
     path('logout/',custom_logout, name='logout'),
+    
     #login redirect
     path('draft/', Draftview, name='draft'),
     #dl
@@ -77,5 +83,6 @@ urlpatterns = [
     path('create_feedback/', create_feedback, name='create_feedback'),
     path('feedback/<int:feedback_id>/respond/', feedback_response_form, name='feedback_response_form'),
     path('feedback_list/', feedback_list, name='feedback_list'),
+    path('analytical-feedback/', analytical_feedback_view, name='analytical_feedback'),
     path('thank-you/', thank_you, name='thank_you'),
 ]

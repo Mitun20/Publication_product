@@ -281,6 +281,7 @@ def get_answer(question):
         "submission process": "steps to submit a paper",
         "submit": "How do I submit my article",
         "publish": "How do I submit my article",
+        "submission": "How do I submit my article",
         "upload file": "where to upload manuscript",
         "upload paper": "where to upload manuscript",
         "upload article": "where to upload manuscript",

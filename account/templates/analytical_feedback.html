@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+    <style>
+        .feedback-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            position: relative;
+            height: 30px;
+        }
+
+        .feedback-fill {
+            height: 100%;
+            background-color: #eef112; /* green fill for active feedback */
+            border-radius: 8px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .percentage-text {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            font-weight: bold;
+            color: #fff;
+        }
+    </style>
+
+
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    {% if user.is_superuser %}
+                        <ul >
+                            <li >
+                                <a class="nav-link" href="{% url 'dashboard' %}">
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link" href="{% url 'user_management' %}">
+                                    User Management
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link" href="{% url 'publication_management' %}">
+                                    Publication Management
+                                </a>
+                            </li>
+                            <li >
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
+                                            <li><a class="nav-link" href="{% url 'modes' %}">Modes</a></li>
+                                            <li><a class="nav-link active" href="{% url 'feedback_list' %}">Feedbacks</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    {% else %}
+                        <ul>
+                            <li>
+                                <a class="nav-link" href="{% url 'editor_in_chief' %}">
+                                    Manuscripts waiting for decision
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="{% url 'decisioned_manuscripts' %}">
+                                    Manuscripts decisioned
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" href="{% url 'feedback_list' %}">
+                                    Feedbacks
+                                </a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <h1>Analytical Feedback Overview</h1>
+
+                    {% for item in feedback_data %}
+                        <div class="label">{{ item.type }} ({{ item.active }}/{{ item.total }} Active)</div>
+                        <div class="feedback-bar">
+                            <div class="feedback-fill" style="width: {{ item.percentage }}%">
+                                <div class="percentage-text">{{ item.percentage|floatformat:1 }}%</div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No feedback data available.</p>
+                    {% endfor %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+

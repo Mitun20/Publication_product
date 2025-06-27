@@ -860,14 +860,79 @@ def profile(request):
     else:
         user_form = UserForm(instance=user)
         author_form = AuthorForm(instance=author)
+    specializations = None
+    if user.groups.filter(name="Reviewer").exists():
+        specializations = Reviewer_Specialization.objects.filter(reviewer=user)
 
     context = {
         'user_form': user_form,
         'author_form': author_form,
         'author': author,
+        'specializations': specializations,
     }
     return render(request, 'profile.html', context)
 
+
+@login_required
+def remove_specialization(request, spec_id):
+    if request.method == 'POST':
+        try:
+            spec = Reviewer_Specialization.objects.get(id=spec_id, reviewer=request.user)
+            spec.delete()
+            return JsonResponse({'status': 'success'})
+        except Reviewer_Specialization.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Not found'}, status=404)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+
+@login_required
+def available_specializations(request):
+    user = request.user
+    assigned = Reviewer_Specialization.objects.filter(reviewer=user).values_list('specialization_id', flat=True)
+    unassigned = Specialization.objects.exclude(id__in=assigned)
+
+    data = [{'id': spec.id, 'specialization': spec.specialization} for spec in unassigned]
+    return JsonResponse(data, safe=False)
+
+@login_required
+def add_specializations(request):
+    if request.method == 'POST':
+        spec_ids = request.POST.getlist('specializations')  # match key here
+        print("Received specialization IDs:", spec_ids)
+
+        added_specs = []
+        for spec_id in spec_ids:
+            try:
+                spec = Specialization.objects.get(id=spec_id)
+                Reviewer_Specialization.objects.get_or_create(reviewer=request.user, specialization=spec)
+                added_specs.append({'id': spec.id, 'name': spec.specialization})
+            except Specialization.DoesNotExist:
+                continue
+
+        return JsonResponse({'status': 'success', 'added_specializations': added_specs})
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+@require_POST
+@login_required
+def create_specialization(request):
+    name = request.POST.get("specialization", "").strip()
+
+    if not name:
+        return JsonResponse({"error": "Name is required."}, status=400)
+
+    # Create or get the specialization
+    spec, created = Specialization.objects.get_or_create(specialization__iexact=name, defaults={"specialization": name})
+
+    # Link to current user if not already linked
+    Reviewer_Specialization.objects.get_or_create(reviewer=request.user, specialization=spec)
+
+    return JsonResponse({
+        "id": spec.id,
+        "name": spec.specialization,
+        "created": created
+    })
+    
 def editor_profile(request):
     editor = get_object_or_404(Editor, user=request.user)
 
@@ -1431,3 +1496,22 @@ def feedback_list(request):
         'selected_feedback_type': int(feedback_type_id) if feedback_type_id else None,
     }
     return render(request, 'feedback_list.html', context)
+
+# views.py
+def analytical_feedback_view(request):
+    feedback_data = []
+
+    feedback_types = FeedbackType.objects.all()
+    for ft in feedback_types:
+        total = Feedback.objects.filter(feedback_type=ft).count()
+        active = Feedback.objects.filter(feedback_type=ft, is_active=True).count()
+        percentage = (active / total * 100) if total > 0 else 0
+
+        feedback_data.append({
+            'type': ft.type,
+            'total': total,
+            'active': active,
+            'percentage': percentage,
+        })
+
+    return render(request, 'analytical_feedback.html', {'feedback_data': feedback_data})
