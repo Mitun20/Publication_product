@@ -1,6 +1,323 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<style>
+/* === Global Reset === */
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Modal Overlay === */
+#feedback-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+/* === Modal Content === */
+.modal-content {
+  position: relative;
+  background: #fff;
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  padding: 25px 30px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* === Close Button === */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #000;
+}
+
+/* === Headings === */
+h3, h4, h5 {
+  margin-bottom: 12px;
+  color: #333;
+}
+
+/* === Button Group === */
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin: 15px 0 25px;
+}
+
+.button-group button {
+  flex: 1;
+  padding: 10px 16px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+}
+
+/* === Form Elements === */
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+select, textarea, input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+select:focus, textarea:focus, input[type="text"]:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* === Add New Question Buttons === */
+#add-question-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#add-question-btn:hover {
+  background-color: #218838;
+}
+#check-questions-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#check-questions-btn:hover {
+  background-color: #218838;
+}
+#btn-create-question-to-created-type {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#btn-create-question-to-created-type:hover {
+  background-color: #218838;
+}
+#btn-add-question-to-created-type {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#btn-add-question-to-created-type:hover {
+  background-color: #218838;
+}
+#submit-new-feedback-type {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#submit-new-feedback-type:hover {
+  background-color: #0056b3;
+}
+#submit-instant-feedback {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+#submit-instant-feedback:hover {
+  background-color: #0056b3;
+}
+/* === Questions List === */
+#instant-feedback-questions > div {
+  background: #f9f9f9;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+}
+
+.question-text {
+  color: #333;
+  font-size: 14.5px;
+}
+
+/* === Action Buttons in Question Block === */
+.edit-question-btn,
+.remove-question-btn {
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.edit-question-btn {
+  color: #007bff;
+}
+
+.edit-question-btn:hover {
+  color: #0056b3;
+}
+
+.remove-question-btn {
+  color: #dc3545;
+}
+
+.remove-question-btn:hover {
+  color: #b52b31;
+}
+
+/* === Feedback Type Input Section === */
+#create-feedback-type-btn {
+  background-color: #17a2b8;
+  color: white;
+  padding: 6px 12px;
+  font-size: 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#create-feedback-type-btn:hover {
+  background-color: #138496;
+}
+
+/* === Form Buttons === */
+button {
+  font-size: 14px;
+}
+
+.feedback-section button {
+  margin-top: 10px;
+}
+
+#save-new-question-instant,
+#save-new-feedback-type,
+#save-new-question-create {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+#cancel-new-question-instant,
+#cancel-new-feedback-type,
+#cancel-new-question-create {
+  background-color: #6c757d;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#save-new-question-instant:hover,
+#save-new-feedback-type:hover,
+#save-new-question-create:hover {
+  background-color: #0056b3;
+}
+
+#cancel-new-question-instant:hover,
+#cancel-new-feedback-type:hover,
+#cancel-new-question-create:hover {
+  background-color: #5a6268;
+}
+
+/* === Error Message === */
+#feedback-type-error,
+#edit-question-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: red;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 15px 20px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group button {
+    width: 100%;
+  }
+}
+</style>
+
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
         <div class="row">

@@ -1498,6 +1498,10 @@ def feedback_list(request):
     return render(request, 'feedback_list.html', context)
 
 # views.py
+from collections import Counter
+from django.db.models import Count
+from .models import FeedbackType, Feedback, FeedbackQuestion, FeedbackResponse
+
 def analytical_feedback_view(request):
     feedback_data = []
 
@@ -1507,11 +1511,44 @@ def analytical_feedback_view(request):
         active = Feedback.objects.filter(feedback_type=ft, is_active=True).count()
         percentage = (active / total * 100) if total > 0 else 0
 
+        # Get questions for this type
+        fq_objects = FeedbackQuestion.objects.filter(feedback_type=ft).select_related('question')
+        question_data = []
+
+        for fq in fq_objects:
+            # All responses to this question, under this feedback type
+            responses = FeedbackResponse.objects.filter(
+                question=fq.question,
+                feedback__feedback_type=ft
+            ).values_list('response', flat=True)
+
+            if responses:
+                most_common = Counter(responses).most_common(1)[0][0]
+            else:
+                most_common = "No responses"
+
+            # Map to stars
+            response_to_star = {
+                "Strongly Disagree": 1,
+                "Disagree": 2,
+                "Okay": 3,
+                "Agree": 4,
+                "Strongly Agree": 5
+            }
+            stars = response_to_star.get(most_common, 0)
+
+            question_data.append({
+                'question_text': fq.question.question,
+                'most_common_response': most_common,
+                'stars': stars
+            })
+
         feedback_data.append({
             'type': ft.type,
             'total': total,
             'active': active,
             'percentage': percentage,
+            'questions': question_data,
         })
 
     return render(request, 'analytical_feedback.html', {'feedback_data': feedback_data})

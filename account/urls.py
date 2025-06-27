@@ -83,6 +83,6 @@ urlpatterns = [
     path('create_feedback/', create_feedback, name='create_feedback'),
     path('feedback/<int:feedback_id>/respond/', feedback_response_form, name='feedback_response_form'),
     path('feedback_list/', feedback_list, name='feedback_list'),
-    path('analytical-feedback/', analytical_feedback_view, name='analytical_feedback'),
+    path('analytical_feedback/', analytical_feedback_view, name='analytical_feedback'),
     path('thank-you/', thank_you, name='thank_you'),
 ]

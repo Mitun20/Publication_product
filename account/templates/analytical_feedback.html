@@ -31,8 +31,30 @@
             font-weight: bold;
             color: #fff;
         }
-    </style>
 
+        .feedback-fill {
+            height: 100%;
+            background-color: #e6d70b;
+            border-radius: 8px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .question-section {
+            display: none;
+            margin: 10px 0 20px 20px;
+            padding-left: 10px;
+            border-left: 2px solid #ccc;
+        }
+
+        .stars {
+            color: gold;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
 
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
@@ -66,7 +88,7 @@
                                         <ul>
                                             <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
                                             <li><a class="nav-link" href="{% url 'modes' %}">Modes</a></li>
-                                            <li><a class="nav-link active" href="{% url 'feedback_list' %}">Feedbacks</a></li>
+                                            <li><a class="nav-link active" href="{% url 'analytical_feedback' %}">Feedbacks</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -86,7 +108,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="nav-link active" href="{% url 'feedback_list' %}">
+                                <a class="nav-link active" href="{% url 'analytical_feedback' %}">
                                     Feedbacks
                                 </a>
                             </li>
@@ -96,14 +118,33 @@
             </div>
             <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
                 <div class="content">
-                    <h1>Analytical Feedback Overview</h1>
+                    <h1>Feedbacks Overview</h1>
 
                     {% for item in feedback_data %}
                         <div class="label">{{ item.type }} ({{ item.active }}/{{ item.total }} Active)</div>
-                        <div class="feedback-bar">
+                        <div class="feedback-bar" onclick="toggleQuestions({{ forloop.counter0 }})">
                             <div class="feedback-fill" style="width: {{ item.percentage }}%">
                                 <div class="percentage-text">{{ item.percentage|floatformat:1 }}%</div>
                             </div>
+                        </div>
+
+                        <div class="question-section" id="questions-{{ forloop.counter0 }}">
+                            {% for q in item.questions %}
+                                <div>
+                                    <strong>{{ q.question_text }}</strong><br>
+                                    Most common response: {{ q.most_common_response }}<br>
+                                    <span class="stars">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= q.stars %}
+                                                ★
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <br>
+                            {% endfor %}
                         </div>
                     {% empty %}
                         <p>No feedback data available.</p>
@@ -114,6 +155,15 @@
         </div>
     </div>
 </section>
-
+    <script>
+        function toggleQuestions(index) {
+            const section = document.getElementById('questions-' + index);
+            if (section.style.display === 'block') {
+                section.style.display = 'none';
+            } else {
+                section.style.display = 'block';
+            }
+        }
+    </script>
 {% endblock %}
 
