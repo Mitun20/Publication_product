@@ -49,6 +49,23 @@ def custom_logout(request):
 logger = logging.getLogger(__name__)
 
 def login_view(request):
+    if request.user.is_authenticated:
+        user = request.user
+        if user.is_superuser:
+            return redirect('dashboard')  # Redirect to user_management.html
+        elif user.groups.filter(name='Admin Office').exists():
+            return redirect('dashboard')  # Redirect to admin_office.html
+        elif user.groups.filter(name='AE').exists():
+            return redirect('associate_editor')  # Redirect to AE dashboard or specific view
+        elif user.groups.filter(name='EIC').exists():
+            return redirect('editor_in_chief')  # Redirect to EIC dashboard or specific view
+        elif user.groups.filter(name='Author').exists():
+            return redirect('startnew')  # Redirect to Author dashboard or specific view
+        elif user.groups.filter(name='Reviewer').exists():
+            return redirect('reviewer_invitations')  # Redirect to Reviewer dashboard or specific view
+        else:
+            return redirect('change_password')  # Redirect for other users
+
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -58,9 +75,9 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 if user.is_superuser:
-                    return redirect('user_management')  # Redirect to user_management.html
+                    return redirect('dashboard')  # Redirect to user_management.html
                 elif user.groups.filter(name='Admin Office').exists():
-                    return redirect('admin_office')  # Redirect to admin_office.html
+                    return redirect('dashboard')  # Redirect to admin_office.html
                 elif user.groups.filter(name='AE').exists():
                     return redirect('associate_editor')  # Redirect to AE dashboard or specific view
                 elif user.groups.filter(name='EIC').exists():
@@ -549,7 +566,23 @@ from django.db.models import Q
 
 
 def index(request):
-
+    if request.user.is_authenticated:
+        user = request.user
+        if user.is_superuser:
+            return redirect('dashboard')  # Redirect to user_management.html
+        elif user.groups.filter(name='Admin Office').exists():
+            return redirect('dashboard')  # Redirect to admin_office.html
+        elif user.groups.filter(name='AE').exists():
+            return redirect('associate_editor')  # Redirect to AE dashboard or specific view
+        elif user.groups.filter(name='EIC').exists():
+            return redirect('editor_in_chief')  # Redirect to EIC dashboard or specific view
+        elif user.groups.filter(name='Author').exists():
+            return redirect('startnew')  # Redirect to Author dashboard or specific view
+        elif user.groups.filter(name='Reviewer').exists():
+            return redirect('reviewer_invitations')  # Redirect to Reviewer dashboard or specific view
+        else:
+            return redirect('change_password')
+        
     journals = Journal.objects.all()
     # journal_name = "JCS"  # The name of the journal to filter by
     journal = Journal.objects.get(title="JCS")  # Assuming 'name' is a unique field in Journal model
@@ -1250,7 +1283,7 @@ import json
 def feedback_types(request):
     types = FeedbackType.objects.all().values('id', 'type')
     return JsonResponse(list(types), safe=False)
-@login_required
+
 def feedback_questions(request, feedback_type_id):
     print(f"Fetching questions for feedback type ID: {feedback_type_id}")
     mapped = FeedbackQuestion.objects.filter(feedback_type_id=feedback_type_id).select_related('question')
@@ -1437,7 +1470,8 @@ def create_feedback(request):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 # feedback response form view
-@login_required  # Optional: If you want to require login
+ # Optional: If you want to require login
+
 def feedback_response_form(request, feedback_id):
     try:
         feedback = Feedback.objects.get(id=feedback_id)
@@ -1447,23 +1481,31 @@ def feedback_response_form(request, feedback_id):
     if feedback.is_active:
         return render(request, 'thank_you.html', {'user': feedback.user})
 
+    questions = FeedbackQuestion.objects.filter(feedback_type=feedback.feedback_type)
+    feedback_options = FeedbackOptions.objects.all().order_by('-value')
+
     if request.method == "POST":
-        questions = FeedbackQuestion.objects.filter(feedback_type=feedback.feedback_type)
         for fq in questions:
-            response_text = request.POST.get(f'question_{fq.question.id}', '').strip()
-            if response_text:
-                FeedbackResponse.objects.create(
-                    feedback=feedback,
-                    question=fq.question,
-                    response=response_text
-                )
-        # Mark feedback as completed
+            selected_option_id = request.POST.get(f'question_{fq.question.id}', '').strip()
+            if selected_option_id:
+                try:
+                    selected_option = FeedbackOptions.objects.get(id=selected_option_id)
+                    FeedbackResponse.objects.create(
+                        feedback=feedback,
+                        question=fq.question,
+                        options=selected_option
+                    )
+                except FeedbackOptions.DoesNotExist:
+                    pass  # Optionally log or handle invalid input
         feedback.is_active = True
         feedback.save()
         return render(request, 'thank_you.html', {'user': feedback.user})
 
-    questions = FeedbackQuestion.objects.filter(feedback_type=feedback.feedback_type)
-    return render(request, 'feedback_response_form.html', {'feedback': feedback, 'questions': questions})
+    return render(request, 'feedback_response_form.html', {
+        'feedback': feedback,
+        'questions': questions,
+        'options': feedback_options
+    })
 
 
 def thank_you(request):
@@ -1497,58 +1539,101 @@ def feedback_list(request):
     }
     return render(request, 'feedback_list.html', context)
 
-# views.py
 from collections import Counter
-from django.db.models import Count
-from .models import FeedbackType, Feedback, FeedbackQuestion, FeedbackResponse
-
+from django.shortcuts import render
+from .models import FeedbackType, Feedback, FeedbackQuestion, FeedbackResponse, FeedbackOptions
+from django.db.models import Avg
+from .models import FeedbackType, FeedbackQuestion, FeedbackResponse
+from django.db.models import Avg, Max
+from .models import FeedbackType, FeedbackQuestion, FeedbackResponse, FeedbackOptions
+@login_required
 def analytical_feedback_view(request):
     feedback_data = []
+    max_star = FeedbackOptions.objects.aggregate(max_val=Max('value'))['max_val'] or 5  # default to 5
 
     feedback_types = FeedbackType.objects.all()
-    for ft in feedback_types:
-        total = Feedback.objects.filter(feedback_type=ft).count()
-        active = Feedback.objects.filter(feedback_type=ft, is_active=True).count()
-        percentage = (active / total * 100) if total > 0 else 0
 
-        # Get questions for this type
-        fq_objects = FeedbackQuestion.objects.filter(feedback_type=ft).select_related('question')
+    for f_type in feedback_types:
+        total = Feedback.objects.filter(feedback_type=f_type).count()
+        active = Feedback.objects.filter(feedback_type=f_type, is_active=True).count()
+        percentage = (active / total) * 100 if total > 0 else 0
+
+        questions = FeedbackQuestion.objects.filter(feedback_type=f_type)
+
         question_data = []
-
-        for fq in fq_objects:
-            # All responses to this question, under this feedback type
+        for fq in questions:
             responses = FeedbackResponse.objects.filter(
-                question=fq.question,
-                feedback__feedback_type=ft
-            ).values_list('response', flat=True)
-
-            if responses:
-                most_common = Counter(responses).most_common(1)[0][0]
-            else:
-                most_common = "No responses"
-
-            # Map to stars
-            response_to_star = {
-                "Strongly Disagree": 1,
-                "Disagree": 2,
-                "Okay": 3,
-                "Agree": 4,
-                "Strongly Agree": 5
-            }
-            stars = response_to_star.get(most_common, 0)
-
+                feedback__feedback_type=f_type,
+                question=fq.question
+            )
+            avg_score = responses.aggregate(avg=Avg('options__value'))['avg'] or 0
             question_data.append({
-                'question_text': fq.question.question,
-                'most_common_response': most_common,
-                'stars': stars
+                'question': fq.question.question,
+                'avg_score': round(avg_score, 1),
+                'id': fq.question.id, 
             })
 
         feedback_data.append({
-            'type': ft.type,
+            'type': f_type.type,
             'total': total,
             'active': active,
             'percentage': percentage,
-            'questions': question_data,
+            'questions': question_data
         })
 
-    return render(request, 'analytical_feedback.html', {'feedback_data': feedback_data})
+    context = {
+        'feedback_data': feedback_data,
+        'max_star': max_star
+    }
+    return render(request, 'analytical_feedback.html', context)
+
+from django.shortcuts import render, get_object_or_404
+from .models import Question, FeedbackResponse, Feedback, FeedbackOptions
+@login_required
+def question_detail_view(request, question_id):
+    question = get_object_or_404(Question, pk=question_id)
+
+    # Get all Feedback assigned that includes this question (via FeedbackType)
+    feedbacks_with_question = Feedback.objects.filter(
+        feedback_type__feedbackquestion__question=question
+    ).distinct()
+
+    responded_feedback_ids = FeedbackResponse.objects.filter(
+        question=question
+    ).values_list('feedback_id', flat=True)
+
+    non_responded_feedbacks = feedbacks_with_question.exclude(id__in=responded_feedback_ids)
+
+    # Group responses by option
+    options = FeedbackOptions.objects.all()
+    responses_grouped = {}
+    for option in options:
+        users = FeedbackResponse.objects.filter(
+            question=question,
+            options=option
+        ).select_related('feedback__user')
+        if users.exists():
+            responses_grouped[option.options] = [
+                {
+                    'username': r.feedback.user.username,
+                    'first_name': r.feedback.user.first_name,
+                    'last_name': r.feedback.user.last_name,
+                    'submitted_on': r.submitted_on
+                }
+                for r in users
+            ]
+
+    context = {
+        'question': question,
+        'responses_grouped': responses_grouped,
+        'non_responders': [
+            {
+                'username': f.user.username,
+                'first_name': f.user.first_name,
+                'last_name': f.user.last_name,
+                'assigned_on': f.assigned_on
+            }
+            for f in non_responded_feedbacks
+        ],
+    }
+    return render(request, 'question_detail.html', context)

@@ -56,6 +56,14 @@ class Question(models.Model):
 
     def __str__(self):
         return self.question[:50]  # Return first 50 characters for brevity
+    
+class FeedbackOptions(models.Model):
+    options = models.CharField(max_length=225)
+    value = models.IntegerField()
+    
+    def __str__(self):
+        return f"{self.options} ({self.value})"
+    
 class FeedbackType(models.Model):
     type = models.CharField(max_length=100)
 
@@ -82,7 +90,7 @@ class Feedback(models.Model):
 class FeedbackResponse(models.Model):
     feedback = models.ForeignKey(Feedback, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    response = models.TextField()
+    options = models.ForeignKey(FeedbackOptions, on_delete=models.CASCADE)
     submitted_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

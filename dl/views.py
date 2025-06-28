@@ -370,6 +370,7 @@ def published_article(request, journal_id):
                 'issue': article.issue.issue,
                 'title': article.title,
                 'authors': article.author,
+                
             }
         else:
             article_data = {

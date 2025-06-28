@@ -1,59 +1,54 @@
 {% extends 'base.html' %}
+{% load custom_tags %}
 {% block content %}
 {% load static %}
 
-    <style>
-        .feedback-bar {
-            width: 100%;
-            background-color: #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            position: relative;
-            height: 30px;
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Font Awesome 6 -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Font Awesome 6.4 CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+        .feedback-bar-container {
+            margin: 20px 0;
         }
 
-        .feedback-fill {
-            height: 100%;
-            background-color: #eef112; /* green fill for active feedback */
-            border-radius: 8px;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .label {
+        .feedback-type-label {
             font-weight: bold;
             margin-bottom: 5px;
+            cursor: pointer;
         }
 
-        .percentage-text {
-            position: absolute;
-            right: 10px;
-            top: 5px;
-            font-weight: bold;
-            color: #fff;
+        .feedback-bar {
+            width: 100%;
+            background-color: #ddd;
+            height: 30px;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        .feedback-fill {
+        .feedback-bar-fill {
             height: 100%;
-            background-color: #e6d70b;
-            border-radius: 8px;
-            transition: width 0.5s ease-in-out;
+            background-color: #eedf09;
+            text-align: center;
+            color: white;
+            line-height: 30px;
         }
 
-        .question-section {
+        .question-block {
+            margin-top: 10px;
             display: none;
-            margin: 10px 0 20px 20px;
-            padding-left: 10px;
-            border-left: 2px solid #ccc;
+            padding-left: 20px;
         }
 
         .stars {
             color: gold;
+            font-size: 15px;
         }
 
-        .label {
-            font-weight: bold;
-            margin-top: 15px;
-        }
+
     </style>
 
 <section class="job-list-section pt-60 pb-60">
@@ -79,6 +74,11 @@
                                 </a>
                             </li>
                             <li >
+                            <a class="nav-link active" href="{% url 'analytical_feedback' %}">
+                                Analytical Feedbacks
+                            </a>
+                        </li>
+                            <li >
                                 <div class="accordion-item">
                                     <div class="accordion-title" data-tab="iteml3">
                                         <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
@@ -87,8 +87,7 @@
                                     <div class="accordion-content" id="iteml3">
                                         <ul>
                                             <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
-                                            <li><a class="nav-link" href="{% url 'modes' %}">Modes</a></li>
-                                            <li><a class="nav-link active" href="{% url 'analytical_feedback' %}">Feedbacks</a></li>
+                                            <li><a class="nav-link" href="{% url 'modes' %}">Communication Modes</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -120,49 +119,58 @@
                 <div class="content">
                     <h1>Feedbacks Overview</h1>
 
-                    {% for item in feedback_data %}
-                        <div class="label">{{ item.type }} ({{ item.active }}/{{ item.total }} Active)</div>
-                        <div class="feedback-bar" onclick="toggleQuestions({{ forloop.counter0 }})">
-                            <div class="feedback-fill" style="width: {{ item.percentage }}%">
-                                <div class="percentage-text">{{ item.percentage|floatformat:1 }}%</div>
+                    {% for data in feedback_data %}
+                        <div class="feedback-bar-container">
+                            <div class="feedback-type-label" onclick="toggleQuestions('{{ forloop.counter0 }}')">
+                                {{ data.type }} ({{ data.active }}/{{ data.total }} Active)
+                            </div>
+                            <div class="feedback-bar">
+                                <div class="feedback-bar-fill" style="width: {{ data.percentage }}%;">
+                                    {{ data.percentage|floatformat:1 }}%
+                                </div>
+                            </div>
+
+                            <div id="questions-{{ forloop.counter0 }}" class="question-block">
+                                {% for question in data.questions %}
+                                    <p>
+                                        <strong>
+                                            <a href="{% url 'question_detail' question_id=question.id %}">{{ question.question }}</a>
+                                        </strong>
+                                    </p>
+                                    <div class="stars">
+                                        {% for i in max_star|range_max_star %}
+                                            {% with star_value=i|add:1 %}
+                                                {% if question.avg_score >= star_value %}
+                                                    <i class="fa-solid fa-star"></i> {# full star #}
+                                                {% elif question.avg_score >= star_value|add:"-0.5" %}
+                                                    <i class="fa-solid fa-star-half-stroke"></i> {# half star #}
+                                                {% else %}
+                                                    <i class="fa-regular fa-star"></i> {# empty star #}
+                                                {% endif %}
+                                            {% endwith %}
+                                        {% endfor %}
+                                        <span style="font-size: 16px;">({{ question.avg_score }} / {{ max_star }})</span>
+                                    </div>
+
+
+
+                                {% empty %}
+                                    <p>No responses yet.</p>
+                                {% endfor %}
                             </div>
                         </div>
-
-                        <div class="question-section" id="questions-{{ forloop.counter0 }}">
-                            {% for q in item.questions %}
-                                <div>
-                                    <strong>{{ q.question_text }}</strong><br>
-                                    Most common response: {{ q.most_common_response }}<br>
-                                    <span class="stars">
-                                        {% for i in "12345"|make_list %}
-                                            {% if forloop.counter <= q.stars %}
-                                                ★
-                                            {% else %}
-                                                ☆
-                                            {% endif %}
-                                        {% endfor %}
-                                    </span>
-                                </div>
-                                <br>
-                            {% endfor %}
-                        </div>
-                    {% empty %}
-                        <p>No feedback data available.</p>
                     {% endfor %}
+
                     
                 </div>
             </div>
         </div>
     </div>
 </section>
-    <script>
+ <script>
         function toggleQuestions(index) {
             const section = document.getElementById('questions-' + index);
-            if (section.style.display === 'block') {
-                section.style.display = 'none';
-            } else {
-                section.style.display = 'block';
-            }
+            section.style.display = section.style.display === 'block' ? 'none' : 'block';
         }
     </script>
 {% endblock %}

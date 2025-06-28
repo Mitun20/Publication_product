@@ -114,6 +114,11 @@ div {
         font-size: 0.9em;
         color: #555;
     }
+    .feedback-block.incomplete {
+    border: 1px solid red;
+    padding: 10px;
+}
+
 </style>
 <h1>Feedback for {{ feedback.feedback_type }}</h1>
 
@@ -124,55 +129,56 @@ div {
             <p><strong>{{ fq.question.question }}</strong></p>
 
             <div class="star-rating">
-                {% for i in "54321" %}
-                    <input type="radio"
-                           id="star{{ i }}_{{ fq.question.id }}"
-                           name="rating_{{ fq.question.id }}"
-                           value="{{ i }}"
-                           onclick="updateLabel({{ fq.question.id }}, this.value)">
-                    <label for="star{{ i }}_{{ fq.question.id }}">&#9733;</label>
+                {% for opt in options %}
+                  <input type="radio"
+                      id="star{{ opt.value }}_{{ fq.question.id }}"
+                      name="question_{{ fq.question.id }}"
+                      value="{{ opt.id }}"
+                      data-label="{{ opt.options }}"
+                      onclick="updateLabel({{ fq.question.id }}, this)">
+                  <label for="star{{ opt.value }}_{{ fq.question.id }}">&#9733;</label>
                 {% endfor %}
+
+
             </div>
 
-            <!-- This hidden input stores the final label to be submitted -->
-            <input type="hidden" name="question_{{ fq.question.id }}" id="hidden_input_{{ fq.question.id }}" />
-
-            <!-- Label that shows selected option -->
             <div class="feedback-label" id="label_{{ fq.question.id }}"></div>
         </div>
         <hr>
     {% endfor %}
+
     <button type="submit">Submit Feedback</button>
 </form>
 
-
 <script>
-    function updateLabel(questionId, starValue) {
-        let labelText = "";
-        let intValue = parseInt(starValue);
-
-        switch (intValue) {
-            case 1:
-                labelText = "Strongly Disagree";
-                break;
-            case 2:
-                labelText = "Disagree";
-                break;
-            case 3:
-                labelText = "Okay";
-                break;
-            case 4:
-                labelText = "Agree";
-                break;
-            case 5:
-                labelText = "Strongly Agree";
-                break;
-        }
-
-        // Update visible label
+    function updateLabel(questionId, element) {
+        const labelText = element.getAttribute('data-label');
         document.getElementById("label_" + questionId).textContent = labelText;
-
-        // Update hidden input for submission
-        document.getElementById("hidden_input_" + questionId).value = labelText;
     }
+</script>
+<script>
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    const feedbackBlocks = document.querySelectorAll('.feedback-block');
+    let allAnswered = true;
+
+    feedbackBlocks.forEach(block => {
+        const questionId = block.querySelector('input[type="radio"]').name.split('_')[1];
+        const selected = block.querySelector('input[type="radio"]:checked');
+        const label = document.getElementById(`label_${questionId}`);
+
+        if (!selected) {
+            allAnswered = false;
+            label.innerHTML = '<span style="color: red;">Please select a rating.</span>';
+            block.classList.add('incomplete');
+        } else {
+            label.innerHTML = '';
+            block.classList.remove('incomplete');
+        }
+    });
+
+    if (!allAnswered) {
+        e.preventDefault();
+        alert('Please answer all feedback questions before submitting.');
+    }
+});
 </script>

@@ -116,7 +116,7 @@ def format_table(table_data):
     header = table_data[0]
     rows = table_data[1:]
     md = []
-    md.append('|' + '|'.join(header) + '|')
+    md.append('|' + '|'.join([str(cell) if cell is not None else '' for cell in header]) + '|')
     md.append('|' + '|'.join(['---'] * len(header)) + '|')
     for row in rows:
         clean_row = [cell if cell else '' for cell in row]

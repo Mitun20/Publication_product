@@ -178,7 +178,7 @@ PROJECT_KNOWLEDGE = {
    "steps to select associate editor": "Under 'Manuscripts Submitted', click 'Assign AE' and select an editor from the list.",
 
    # === ASSOCIATE EDITOR (AE) ===
-   "Associate Editor": "in associate editor which section you want to work? \n 1) Manuscripts to Review \n 2) Manuscripts with Review Reports \n 3) Manuscripts Under Review \n 4) Manuscripts to EIC.",
+   "associate editor": "in associate editor which section you want to work? \n 1) Manuscripts to Review \n 2) Manuscripts with Review Reports \n 3) Manuscripts Under Review \n 4) Manuscripts to EIC.",
    "manuscripts to review":"""
     •	You can invite reviewers using the "Invite" button.
     •	You can reject a manuscript using the "Reject" button.
@@ -249,6 +249,15 @@ PROJECT_KNOWLEDGE = {
    "final decision process": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
    "finalize manuscript": "Under 'Manuscripts Waiting for Decision', review AE/reviewer comments, then click 'Make Decision'.",
    
+   "how to request the feedback":"""
+    If you are "Admin Office", go to the 'Manuscripts Acceptance Page', click 'Actions', and choose 'Request Feedback' to proceed  \n 
+    (or)  \n 
+    Go to the 'Manuscripts Rejection Page'; in the 'Actions' column, you will find the 'Request Feedback' option — click that to proceed  \n 
+
+    if you are "Editor In Chief", go to the 'Decisioned Manuscripts' page; in the 'Actions' column, you will find the 'Request Feedback' option — click that to proceed  
+    """,
+    "feedback":""" I didn't understand, do you mean ‘Request Feedback’ or ‘Post Feedback’?" """,
+    "post feedback":"If you are an Author, you have the option to post feedback. Once you do, you will receive a notification at your registered email address. Please wait.",
    # === DEFAULT RESPONSE ===
    "default": "I am your assistant. Please specify your role (Author/Admin Office/Associate Editor/Reviewer/EIC) and question.",
 }
@@ -262,6 +271,7 @@ def get_answer(question):
     # Then check keyword matches
     keyword_map = {
         "hi": "hi",
+        "hai": "hi",
         "hello": "hi",
         "hey": "hi",
         "greetings": "hi",
@@ -328,6 +338,8 @@ def get_answer(question):
         "decline": "how to reject a paper",
         "assign ae": "how to assign ae",
         "type setting": "Type setting and Proof reading",
+        "admin office process":"admin office",
+        "ao":"admin office",
         
         # Associate Editor keywords
         "invite reviewer": "how to invite reviewers",
@@ -336,14 +348,24 @@ def get_answer(question):
         "forward to eic": "what to do after reviews",
         "recommend": "what to do after reviews",
         "submit review": "where to upload review comments",
+        "associate editor Process" :"associate editor",
+        "ae":"associate editor",
         
         # Reviewer keywords
-        "accept invitation": "accept review",
+        "accept invitation": "how to accept review request",
         "decline invitation": "decline to review",
         "reject invitation": "decline to review",
+        "reviewer processes":"reviewer",
+        "reviewer":"reviewer",
         
         # Editor keywords
-        "decision": "make decision"
+        "make decision": "manuscripts with decision",
+        "editorial decisions":"eic",
+        
+        "request feedback":"how to request the feedback",
+        "post feedback":"post feedback",
+        "feedback":"feedback",
+        
     }
     
     for keyword, response_key in keyword_map.items():
@@ -352,7 +374,9 @@ def get_answer(question):
     
     # Fallback with suggestions
     return ("I can help with:\n"
-            "- Submission questions (upload, status)\n"
-            "- Review processes (Review, accept\Reject)\n"
-            "- Editorial decisions\n\n"
+            "- Author Process \n"
+            "- Admin Office Process\n"
+            "- Reviewer Processes \n"
+            "- Editor in Chief Process \n "
+            "- Associate Editor Process\n\n"
            )

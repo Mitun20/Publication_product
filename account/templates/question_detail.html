@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<style>
+    .tabs {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    .tab-btn {
+        padding: 10px 15px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 5px 5px 0 0;
+        background-color: white; /* Changed to white */
+        margin-right: 5px;
+        color: #000; /* Make text visible on white background */
+    }
+    .tab-btn.active {
+        background-color: rgb(233, 199, 11); /* Keep active tab white */
+        color: #0c0c0c;           /* Highlight active tab text */
+        border-bottom: 1px solid white; /* Seamless tab transition */
+        font-weight: bold;
+    }
+    .tab-content {
+        border: 1px solid #eee;
+        padding: 20px;
+        border-radius: 0 5px 5px 5px;
+        background-color: #fff;
+    }
+    .section {
+        margin-bottom: 20px;
+    }
+    .section h3 {
+        color: #0a0a0a;
+        margin-bottom: 15px;
+    }
+    .section ul {
+        list-style-type: disc;
+        margin-left: 20px;
+    }
+    .section li {
+        margin-bottom: 5px;
+    }
+
+.user-info {
+    font-family:  'Times New Roman', Times, serif;
+    font-size: 0.95rem;
+    background-color: #f9f9f9;
+    border-left: 3px solid #2c3e50;
+    padding: 6px 12px;
+    margin: 10px 0;
+    border-radius: 4px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.user-info strong {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-right: 4px;
+}
+
+.user-info small {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+
+</style>
+
+
+<section class="job-list-section pt-60 pb-60">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="about-information-sticky">
+                    {% if user.is_superuser %}
+                        <ul >
+                            <li >
+                                <a class="nav-link" href="{% url 'dashboard' %}">
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link" href="{% url 'user_management' %}">
+                                    User Management
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link" href="{% url 'publication_management' %}">
+                                    Publication Management
+                                </a>
+                            </li>
+                            <li >
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
+                                        
+                                    </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
+                                            <li><a class="nav-link" href="{% url 'modes' %}">Communication Modes</a></li>
+                                            <li><a class="nav-link active" href="{% url 'analytical_feedback' %}">Feedbacks</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                        </ul>
+                    {% else %}
+                        <ul>
+                            <li>
+                                <a class="nav-link" href="{% url 'editor_in_chief' %}">
+                                    Manuscripts waiting for decision
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link" href="{% url 'decisioned_manuscripts' %}">
+                                    Manuscripts decisioned
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" href="{% url 'analytical_feedback' %}">
+                                    Feedbacks
+                                </a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
+                <div class="content">
+                    <a href="{% url 'analytical_feedback' %}" class="btn btn-secondary mb-3">← Back to Feedback Overview</a>
+
+                    <p><strong>Question: {{ question.question }}</strong></p>
+
+                    <!-- Tabs -->
+                        <button class="tab-btn active" onclick="showTab('responded')">Responded</button>
+                        <button class="tab-btn" onclick="showTab('non-responded')">Non-Responded</button>
+
+                    <!-- Responded Section -->
+                    <div id="responded" class="tab-content" style="display: block;">
+                        <div class="section">
+                            <h3>Responded Users</h3>
+                            {% if responses_grouped %}
+                                {% for option, users in responses_grouped.items %}
+                                    <p><strong>{{ option }}</strong>:</p>
+                                    <ul>
+                                        {% for user in users %}
+                                            <div class="user-info">
+                                                <strong>{{ user.first_name }} {{ user.last_name }}</strong> <small>(Submitted on: {{ user.submitted_on|date:"F j, Y, g:i a" }})</small>
+                                            </div>
+
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% else %}
+                                <p>No responses yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Non-Responded Section -->
+                    <div id="non-responded" class="tab-content" style="display: none;">
+                        {% if responses_grouped %}
+                            <div class="section">
+                                <h3>Non-Responded Users</h3>
+                                {% if non_responders %}
+                                    <ul>
+                                        {% for user in non_responders %}
+                                            <div class="user-info">
+                                                <strong>{{ user.first_name }} {{ user.last_name }}</strong> <small>(Assigned on: {{ user.assigned_on|date:"F j, Y, g:i a" }})</small>
+                                            </div>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p>All users responded to this question.</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ <script>
+  function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+          tab.style.display = 'none';
+      });
+
+      // Remove active class from all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+          btn.classList.remove('active');
+      });
+
+      // Show selected tab and activate button
+      document.getElementById(tabId).style.display = 'block';
+      event.target.classList.add('active');
+  }
+</script>
+
+{% endblock %}
+
