@@ -1636,4 +1636,4 @@ def question_detail_view(request, question_id):
             for f in non_responded_feedbacks
         ],
     }
-    return render(request, 'question_detail.html', context)
+    return render(request, 'feedback_question_detail.html', context)
