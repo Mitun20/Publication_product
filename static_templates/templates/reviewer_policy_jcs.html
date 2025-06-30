@@ -32,146 +32,141 @@
                
                         <div class="about-information accordions">
                             <ul>
-                                <li>
-                                    <a href="{% url 'about' %}" class="active">
-                                        About Karpagam Journal of Computer Science
-                                    </a>
-                                </li>
-                            
-                                <li>
-                                    <div class="accordion-item" >
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">{{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                         
-                                        <div class="accordion-title" data-tab="iteml1">
-                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml1">
-                                            <ul >
-                                                {% for journal in journals %}
-                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml2">
-                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                            
-                                        </div>
-                                        <div class="accordion-content" id="iteml2">
-                                            <ul >
-                                                {% for journal in journals %}
-                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">{{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml3">
-                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml3">
-                                            <ul>
-                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml4">
-                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml4">
-                                            <ul>
-                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                <!-- <li>
-                                    <a href="#">
-                                        Abstracting and indexing
-                                    </a>
-                                </li> -->
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml5">
-                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml5">
-                                            <ul>
-                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
-                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
-                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml6">
-                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml6"> 
-                                            <ul>
-                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div> 
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                    {% if user.is_authenticated %}
-                                        {% for group in user.groups.all %}
-                                            {% if group.name == 'Author' %}
-                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
-                                            
-                                            {% else %}
-                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
-                                    {% endif %}
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml7">
-                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml7"> 
-                                            <ul>
-                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
-                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
-                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div> 
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml8">
-                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml8"> 
-                                            <ul>
-                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
-                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
-                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
-                            </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">JECE</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">JECE</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - JME</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - JECE</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
                             
                         </div>
                    

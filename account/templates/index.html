@@ -195,7 +195,7 @@
                                 
                                 <div class="col-lg-9 col-sm-12">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" name="query" id="search-query" value="{{ search_query }}" placeholder="KJCS Article or Keyword">
+                                        <input type="text" class="form-control" name="query" id="search-query" value="{{ search_query }}" placeholder="Article or Keyword">
                                     </div>
                                 </div>
                                 <div class="col-lg-3 col-sm-12">
@@ -281,9 +281,9 @@
                 <div class="row align-items-center justify-content-center">
                     <div class="col-md-6">
                         <div class="section-title-1">
-                            <h2>About Karpagam Journal of Computer Science</h2>
-                            <p>Karpagam Journal of Computer Science is one of the fast emerging academic publisher dedicated to nurturing knowledge and learning.</p>
-                            <p>KJCS is well respected publication in the technology community and which is a trusted source for research in academia. All of these publications are also available electronically through digital library.</p>
+                            <h2>Journal of Computer Science</h2>
+                            <p>Journal of Computer Science is one of the fast emerging academic publisher dedicated to nurturing knowledge and learning.</p>
+                            <p>JCS is well respected publication in the technology community and which is a trusted source for research in academia. All of these publications are also available electronically through digital library.</p>
                         </div>
                     </div>
 
@@ -331,11 +331,6 @@
                     
                     <div class="about-information accordions">
                         <ul>
-                            <li>
-                                <a href="{% url 'about' %}" class="active">
-                                    About Karpagam Journal of Computer Science
-                                </a>
-                            </li>
                         
                             <li>
                                 <div class="accordion-item" >
@@ -346,7 +341,7 @@
                                     <div class="accordion-content" id="iteml1">
                                         <ul >
                                             {% for journal in journals %}
-                                            <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            <li><a href="{% url "current_issue" journal.id %}">{{journal.title}}</a></li>
                                             {% endfor %}
                                         </ul>
                                     </div>
@@ -361,7 +356,7 @@
                                     <div class="accordion-content" id="iteml2">
                                         <ul >
                                             {% for journal in journals %}
-                                            <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
+                                            <li><a href="{% url 'archives' journal.id %}">{{journal.title}}</a></li>
                                             {% endfor %}
                                         </ul>
                                     </div>
@@ -374,9 +369,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml3">
                                         <ul>
-                                            <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
-                                            <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
-                                            <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">JECE</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -388,9 +383,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml4">
                                         <ul>
-                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
-                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
-                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">JECE</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -407,9 +402,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml5">
                                         <ul>
-                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
-                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
-                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">JECE</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -421,9 +416,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml6"> 
                                         <ul>
-                                            <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
-                                            <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
-                                            <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
+                                            <li><a href="{% url 'review_board_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">JECE</a></li>
                                         </ul>
                                     </div> 
                                 </div>
@@ -447,9 +442,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml7"> 
                                         <ul>
-                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
-                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
-                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">JECE</a></li>
                                         </ul>
                                     </div> 
                                 </div>
@@ -461,9 +456,9 @@
                                     </div>
                                     <div class="accordion-content" id="iteml8"> 
                                         <ul>
-                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
-                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
-                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - JME</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - JECE</a></li>
                                         </ul>
                                     </div>
                                 </div>

@@ -5,7 +5,7 @@
         <section class="page-title title-bg1-abtijam">
             <div class="d-table">
                 <div class="d-table-cell">
-                    <h2>About - Karpagam IJAM</h2>
+                    <h2>About - JME</h2>
                     <!-- <ul>
                         <li>
                             <a href="index.html">Home</a>
@@ -30,146 +30,141 @@
                
                         <div class="about-information accordions">
                             <ul>
-                                <li>
-                                    <a href="{% url 'about' %}" class="active">
-                                        About Karpagam Journal of Computer Science
-                                    </a>
-                                </li>
-                            
-                                <li>
-                                    <div class="accordion-item" >
+                        
+                            <li>
+                                <div class="accordion-item" >
+                                    
+                                    <div class="accordion-title" data-tab="iteml1">
+                                        <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml1">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url "current_issue" journal.id %}">{{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml2">
+                                        <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                         
-                                        <div class="accordion-title" data-tab="iteml1">
-                                            <h2> Current Issues <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml1">
-                                            <ul >
-                                                {% for journal in journals %}
-                                                <li><a href="{% url "current_issue" journal.id %}">Karpagam {{journal.title}}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml2">
-                                            <h2> Archives <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                            
-                                        </div>
-                                        <div class="accordion-content" id="iteml2">
-                                            <ul >
-                                                {% for journal in journals %}
-                                                <li><a href="{% url 'archives' journal.id %}">Karpagam {{journal.title}}</a></li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml2">
+                                        <ul >
+                                            {% for journal in journals %}
+                                            <li><a href="{% url 'archives' journal.id %}">{{journal.title}}</a></li>
+                                            {% endfor %}
+                                        </ul>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml3">
-                                            <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml3">
-                                            <ul>
-                                                <li><a href="{% url 'reviewer_policy_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'reviewer_policy_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'reviewer_policy_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml3">
+                                        <h2> Reviewer Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml4">
-                                            <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml4">
-                                            <ul>
-                                                <li><a href="{% url 'plagiarism_policy_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'plagiarism_policy_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'plagiarism_policy_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml3">
+                                        <ul>
+                                            <li><a href="{% url 'reviewer_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'reviewer_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'reviewer_policy_jcm' %}">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                <!-- <li>
-                                    <a href="#">
-                                        Abstracting and indexing
-                                    </a>
-                                </li> -->
-                                <li>
-                                    <div class="accordion-item">
-                                        <div class="accordion-title" data-tab="iteml5">
-                                            <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml5">
-                                            <ul>
-                                                <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">Karpagam JCS</a></li>
-                                                <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">Karpagam IJAM</a></li>
-                                                <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml4">
+                                        <h2>Plagiarism Policy <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml6">
-                                            <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml6"> 
-                                            <ul>
-                                                <li><a href="{% url 'review_board_jcs' %}">Karpagam JCS</a></li>
-                                                <li><a href="{% url 'review_board_ijam' %}">Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'review_board_jcm' %}">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div> 
+                                    <div class="accordion-content" id="iteml4">
+                                        <ul>
+                                            <li><a href="{% url 'plagiarism_policy_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'plagiarism_policy_jcm' %}">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                    {% if user.is_authenticated %}
-                                        {% for group in user.groups.all %}
-                                            {% if group.name == 'Author' %}
-                                                <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
-                                            
-                                            {% else %}
-                                                <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
-                                    {% endif %}
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml7">
-                                            <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml7"> 
-                                            <ul>
-                                                <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">Karpagam JCS</a></li>
-                                                <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">Karpagam IJAM</a></li>
-                                                <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">Karpagam JCM</a></li>
-                                            </ul>
-                                        </div> 
+                                </div>
+                            </li>
+                            <!-- <li>
+                                <a href="#">
+                                    Abstracting and indexing
+                                </a>
+                            </li> -->
+                            <li>
+                                <div class="accordion-item">
+                                    <div class="accordion-title" data-tab="iteml5">
+                                        <h2> Paper Template <i class='bx bx-chevrons-right down-arrow'></i></h2>
                                     </div>
-                                </li>
-                                <li>
-                                    <div class="accordion-item" >
-                                        <div class="accordion-title" data-tab="iteml8">
-                                            <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
-                                        </div>
-                                        <div class="accordion-content" id="iteml8"> 
-                                            <ul>
-                                                <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - Karpagam JCS</a></li>
-                                                <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - Karpagam IJAM</a></li>
-                                                <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - Karpagam JCM</a></li>
-                                            </ul>
-                                        </div>
+                                    <div class="accordion-content" id="iteml5">
+                                        <ul>
+                                            <li><a href="{% static '/downloads/paper-template-jcs.pdf'%}" target="_blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-ijam.pdf'%}" target="_blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/paper-template-jcm.pdf'%}" target="_blank">JECE</a></li>
+                                        </ul>
                                     </div>
-                                </li>
-                                <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
-                                <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
-                            </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml6">
+                                        <h2> Review Board <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml6"> 
+                                        <ul>
+                                            <li><a href="{% url 'review_board_jcs' %}">JCS</a></li>
+                                            <li><a href="{% url 'review_board_ijam' %}">JME</a></li>
+                                            <li><a href="{% url 'review_board_jcm' %}">JECE</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                                {% if user.is_authenticated %}
+                                    {% for group in user.groups.all %}
+                                        {% if group.name == 'Author' %}
+                                            <li><a href="{% url 'startnew' %}">Online Paper Submission</a></li>
+                                        
+                                        {% else %}
+                                            <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    <li><a href="{% url 'logout' %}">Online Paper Submission</a></li>
+                                {% endif %}
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml7">
+                                        <h2> Copyright<i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml7"> 
+                                        <ul>
+                                            <li><a href="{% static '/downloads/copyright-jcs.pdf'%}" target="blank">JCS</a></li>
+                                            <li><a href="{% static '/downloads/copyright-ijam.pdf'%}" target="blank">JME</a></li>
+                                            <li><a href="{% static '/downloads/copyright-jcm.pdf'%}" target="blank">JECE</a></li>
+                                        </ul>
+                                    </div> 
+                                </div>
+                            </li>
+                            <li>
+                                <div class="accordion-item" >
+                                    <div class="accordion-title" data-tab="iteml8">
+                                        <h2>FAQ <i class='bx bx-chevrons-right down-arrow'></i></h2>
+                                    </div>
+                                    <div class="accordion-content" id="iteml8"> 
+                                        <ul>
+                                            <li><a href="{% url 'faq_karpagam_jcs' %}">FAQ - JCS</a></li>
+                                            <li><a href="{% url 'faq_karpagam_ijam' %}">FAQ - JME</a></li>
+                                            <li><a href="{% url 'faq_karpagam_jcm' %}">FAQ - JECE</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><a href="{% url 'terms_and_conditions' %}">Terms & Conditions</a></li>
+                            <li><a href="{% url 'publication_fees' %}">Online Payment</a></li>
+                        </ul>
                             
                         </div>
                    
@@ -178,13 +173,12 @@
                 <div class="col-md-8">
                     <div class="about-text">
                         <div class="section-title">
-                            <h2>About Karpagam IJAM (International Journal Of Applied Mathematics
-                                )</h2>
+                            <h2>About JME (Journal Mechanical Engineering)</h2>
                         </div>
                         <p><b>ISSN: 0975-7937 (Scholarly, peer-reviewed, biyearly)</b></p>
-                            <p>This Publication is the effort of Karpagam Charity Trust. The Karpagam Charity Trust publishes the International Journal of Applied Mathematics (IJAM) biannually. Any responsibility for the contents lies upon the Authors and not upon the Editorial Board / Publishers of the IJAM. For copying (or) reprint permission contact the copyright Department, IJAM Editorial Office, Karpagam Academy of Higher Education, Eachanari (Post) Coimbatore – 641 021, India.</p>
+                            <p>This Publication is the effort of Charity Trust. The Charity Trust publishes the International Journal of Applied Mathematics (JME) biannually. Any responsibility for the contents lies upon the Authors and not upon the Editorial Board / Publishers of the JME. For copying (or) reprint permission contact the copyright Department, JME Editorial Office, Academy of Higher Education, Eachanari (Post) Coimbatore – 641 021, India.</p>
                        
-                        <p style="text-align:right"><a href="{% url 'archives' 3 %}"><b>Archives-KIJAM</b></a></p>
+                        <p style="text-align:right"><a href="{% url 'archives' 3 %}"><b>Archives-JME</b></a></p>
                         <!-- <p><a href="#" class="readmore">Read More</a></p> -->
                         
                 </div>              

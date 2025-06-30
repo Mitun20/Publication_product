@@ -31,7 +31,7 @@
         <!-- Responsive CSS -->
         <link rel="stylesheet" href="{% static 'assets/css/responsive.css'%}">
         <!-- Title CSS -->
-        <title>Karpagam Journal of Computer Science</title>
+        <title>Manuscript Flow</title>
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png'%}"> 
 
@@ -68,7 +68,7 @@
     <section class="topbar">
         <!-- <marquee>Donec maximus, magna at imperdiet sodales, odio turpis vehicula magna, sed varius felis orci quis
             velit. </marquee> -->
-            Karpagam JCS ISSN: 2582 – 8525 (Print), 2583 – 3669 (Online)
+            Manuscript Flow ISSN: XXXX – XXXX (Print), XXXX – XXXX (Online)
     </section>
     <section class="bgwhitesec">
         <div class="container">
@@ -117,23 +117,23 @@
                                 <a href="{% url 'index' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
                             </li>
                             <li class="nav-item dropdown">
-                                {% url 'about' as about_url %}
+                                <!-- {% url 'about' as about_url %} -->
                                 {% url 'about_jcs' as about_jcs_url %}
                                 {% url 'about_ijam' as about_ijam_url %}
                                 {% url 'about_jcm' as about_jcm_url %}
-                                <a href="{{ about_url }}" class="nav-link {% if request.path == about_url %}active{% elif request.path == about_jcs_url %}active{% elif request.path == about_ijam_url %}active{% elif request.path == about_jcm_url %}active{% endif %}">About</a>
+                                <!-- <a href="{{ about_url }}" class="nav-link {% if request.path == about_url %}active{% elif request.path == about_jcs_url %}active{% elif request.path == about_ijam_url %}active{% elif request.path == about_jcm_url %}active{% endif %}">About</a> -->
                                 <ul class="dropdown-menu">
                                     <!-- {% url 'about_jcs' as about_jcs_url %} -->
                                     <li class="nav-item">
-                                        <a href="{{ about_jcs_url }}" class="nav-link {% if request.path == about_jcs_url %}active{% endif %}">About Karpagam JCS</a>
+                                        <a href="{{ about_jcs_url }}" class="nav-link {% if request.path == about_jcs_url %}active{% endif %}">About JCS</a>
                                     </li>
                                      <!-- {% url 'about_ijam' as about_ijam_url %} -->
                                     <li class="nav-item">
-                                        <a href="{{ about_ijam_url }}" class="nav-link {% if request.path == about_ijam_url %}active{% endif %}">About Karpagam IJAM</a>
+                                        <a href="{{ about_ijam_url }}" class="nav-link {% if request.path == about_ijam_url %}active{% endif %}">About JME</a>
                                     </li>
                                     <!-- {% url 'about_jcm' as about_jcm_url %} -->
                                     <li class="nav-item">
-                                        <a href="{{ about_jcm_url }}" class="nav-link {% if request.path == about_jcm_url %}active{% endif %}">About Karpagam JCM</a>
+                                        <a href="{{ about_jcm_url }}" class="nav-link {% if request.path == about_jcm_url %}active{% endif %}">About JECE</a>
                                     </li> 
                                 </ul> 
                             </li>
@@ -143,16 +143,16 @@
                                 {% url 'editorial_board_members_ijam' as editorial_board_members_ijam_url %}
                                 {% url 'editorial_board_members_jcm' as editorial_board_members_jcm_url %}
                                 
-                                <a href="{{ editorial_board_members_jcs_url }}" class="nav-link  {% if request.path|startswith:'/editorial_board_members' %}active{% endif %}">Editorial Board Members</a>
+                                <a href="#" class="nav-link  {% if request.path|startswith:'/editorial_board_members' %}active{% endif %}">Editorial Board Members</a>
                                  <ul class="dropdown-menu">
                                     <li class="nav-item">
-                                        <a href="{{ editorial_board_members_jcs_url }}" class="nav-link {% if request.path == editorial_board_members_jcs_url %}active{% endif %}">Editorial Board Members Karpagam JCS</a>
+                                        <a href="{{ editorial_board_members_jcs_url }}" class="nav-link {% if request.path == editorial_board_members_jcs_url %}active{% endif %}">Editorial Board Members JCS</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ editorial_board_members_ijam_url }}" class="nav-link {% if request.path == editorial_board_members_ijam_url %}active{% endif %}">Editorial Board Members Karpagam IJAM</a>
+                                        <a href="{{ editorial_board_members_ijam_url }}" class="nav-link {% if request.path == editorial_board_members_ijam_url %}active{% endif %}">Editorial Board Members JME</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ editorial_board_members_jcm_url }}" class="nav-link {% if request.path == editorial_board_members_jcm_url %}active{% endif %}">Editorial Board Members Karpagam JCM</a>
+                                        <a href="{{ editorial_board_members_jcm_url }}" class="nav-link {% if request.path == editorial_board_members_jcm_url %}active{% endif %}">Editorial Board Members JECE</a>
                                     </li>
                                 </ul>
                             </li>
@@ -160,16 +160,16 @@
                                 {% url 'authors_guidelines_jcs' as authors_guidelines_jcs_url %}
                                 {% url 'authors_guidelines_ijam' as authors_guidelines_ijam_url %}
                                 {% url 'authors_guidelines_jcm' as authors_guidelines_jcm_url %}
-                                <a href="{{ authors_guidelines_jcs_url }}" class="nav-link {% if request.path|startswith:'/authors_guidelines' %}active{% endif %}">Author Guidelines</a>
+                                <a href="#" class="nav-link {% if request.path|startswith:'/authors_guidelines' %}active{% endif %}">Author Guidelines</a>
                                 <ul class="dropdown-menu">
                                     <li class="nav-item">
-                                        <a href="{{ authors_guidelines_jcs_url }}" class="nav-link {% if request.path == authors_guidelines_jcs_url %}active{% endif %}">Author’s Guidelines Karpagam JCS</a>
+                                        <a href="{{ authors_guidelines_jcs_url }}" class="nav-link {% if request.path == authors_guidelines_jcs_url %}active{% endif %}">Author’s Guidelines JCS</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ authors_guidelines_ijam_url }}" class="nav-link {% if request.path == authors_guidelines_ijam_url %}active{% endif %}">Author’s Guidelines Karpagam IJAM</a>
+                                        <a href="{{ authors_guidelines_ijam_url }}" class="nav-link {% if request.path == authors_guidelines_ijam_url %}active{% endif %}">Author’s Guidelines JME</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ authors_guidelines_jcm_url }}" class="nav-link {% if request.path == authors_guidelines_jcm_url %}active{% endif %}">Author’s Guidelines Karpagam JCM</a>
+                                        <a href="{{ authors_guidelines_jcm_url }}" class="nav-link {% if request.path == authors_guidelines_jcm_url %}active{% endif %}">Author’s Guidelines JECE</a>
                                     </li> 
                                 </ul>
                             </li>
@@ -178,16 +178,16 @@
                                 {% url 'aim_scope_ijam' as aim_scope_ijam_url %}
                                 {% url 'aim_scope_jcm' as aim_scope_jcm_url %}
 
-                                <a href="{{ aim_scope_jcs_url }}" class="nav-link {% if request.path|startswith:'/aim_scope' %}active{% endif %}">Aim and Scope</a>
+                                <a href="#" class="nav-link {% if request.path|startswith:'/aim_scope' %}active{% endif %}">Aim and Scope</a>
                                 <ul class="dropdown-menu">
                                     <li class="nav-item">
-                                        <a href="{{ aim_scope_jcs_url }}" class="nav-link {% if request.path == aim_scope_jcs_url %}active{% endif %}">Karpagam JCS Aim and Scope</a>
+                                        <a href="{{ aim_scope_jcs_url }}" class="nav-link {% if request.path == aim_scope_jcs_url %}active{% endif %}"> JCS Aim and Scope</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ aim_scope_ijam_url }}" class="nav-link {% if request.path == aim_scope_ijam_url %}active{% endif %}">Karpagam IJAM Aim and Scope</a>
+                                        <a href="{{ aim_scope_ijam_url }}" class="nav-link {% if request.path == aim_scope_ijam_url %}active{% endif %}"> JME Aim and Scope</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="{{ aim_scope_jcm_url }}" class="nav-link {% if request.path == aim_scope_jcm_url %}active{% endif %}">Karpagam JCM Aim and Scope</a>
+                                        <a href="{{ aim_scope_jcm_url }}" class="nav-link {% if request.path == aim_scope_jcm_url %}active{% endif %}"> JECE Aim and Scope</a>
                                     </li> 
                                 </ul>
                             </li>
@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             </a>
                         </div>
 
-                        <p>Karpagam Journal of Computer Science is one of the fast-emerging academic publishers in KARPAGAM JOURNAL OF COMPUTER SCIENCE specializing in producing superior-quality academic journals across the disciplines of Computer Science.</p>
+                        <p>Manuscript flow refers to the complete lifecycle of a research paper, including submission, initial screening, peer review, revision, editorial decision, and final publication. This structured process ensures the integrity, quality, and timely communication of scholarly work.</p>
 
                         <div class="footer-social" style="display: none;">
                             <a href="https://www.facebook.com/login/" target="_blank"><i
@@ -697,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span>
                                     <i class='bx bxs-phone'></i>
                                     <a href="tel:4222980014"  style="padding-left: 0px;">
-                                        +91-422-2980014
+                                        +91-422-54654656
                                     </a>
                                 </span>
                                
@@ -707,7 +707,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <span>
                                     <i class='bx bxs-envelope'></i>
                                     <a href="mailto:jcs@kahedu.edu.in" style="padding-left: 0px;">
-                                        jcs@kahedu.edu.in
+                                        abc@manuscriptflow.com
                                     </a>
                                 </span>
                                
@@ -718,8 +718,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <i class='bx bx-location-plus'></i>
                                     Address:
                                 </span>
-                                Eachanari Post, <br>Coimbatore – 641 021,
-                                <br>Tamil Nadu, India.
+                                xyz Post, <br>City – XXX XXX,
+                                <br> State , Country .
                             </li>
                         </ul>
                     </div>
@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </footer>
     <div class="copyright-text text-center">
-        <p>Copyright © 2024 Karpagam Journal of Computer Science. Concept by <a href="https://irepute.in/" target="_blank">repute</a>
+        <p>Copyright © Year Manuscript Flow. Concept by <a href="https://irepute.in/" target="_blank">repute</a>
         </p>
     </div>
     <!-- Footer Section End -->
