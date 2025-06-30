@@ -1671,8 +1671,14 @@ def feedback_list(request):
     feedback_types = FeedbackType.objects.all()
     selected_type = request.GET.get('feedback_type')
     search_query = request.GET.get('search', '')
-
+    status_filter = request.GET.get('status')
+    print("status filter",status_filter)
     feedbacks = Feedback.objects.select_related('user', 'feedback_type')
+
+    if status_filter == 'received':
+        feedbacks = feedbacks.filter(is_active=True)
+    elif status_filter == 'pending':
+        feedbacks = feedbacks.filter(is_active=False)
 
     if selected_type:
         feedbacks = feedbacks.filter(feedback_type__id=selected_type)
@@ -1702,6 +1708,7 @@ def feedback_list(request):
         'data': page_obj,
         'feedback_types': feedback_types,
         'selected_type': selected_type,
+        'status_filter': status_filter,
         'search_query': search_query,
         'total_sent': total_sent,
         'total_received': total_received

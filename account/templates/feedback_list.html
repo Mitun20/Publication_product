@@ -82,88 +82,101 @@
             </div>
             <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
                 <div class="container">
-                    <h3 class="mb-4">Feedback Summary</h3>
+                <h3 class="mb-4">Feedback Summary</h3>
 
-                    <form method="get" class="row mb-4">
-                        <div class="col-md-4">
-                            <input type="text" name="search" class="form-control" placeholder="Search by name" value="{{ search_query }}">
-                        </div>
-                        <div class="col-md-4">
-                            <select name="feedback_type" class="form-control">
-                                <option value="">Feedback Types</option>
-                                {% for ft in feedback_types %}
-                                    <option value="{{ ft.id }}" {% if selected_type == ft.id|stringformat:"s" %}selected{% endif %}>
-                                        {{ ft.type }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-center">
-                            <button type="submit" class="btn btn-primary me-2">Filter</button>
-                            <button type="button" class="btn btn-secondary me-3" onclick="window.location.href=window.location.pathname;">Clear</button>
-                            <div class="summary-box p-2 bg-light border rounded text-center flex-shrink-0">
-                                <strong class="fs-5 text-dark">{{ total_received }} / {{ total_sent }}</strong>
-                            </div>
-                        </div>
+                <form method="get" class="row gy-2 gx-3 align-items-end mb-4">
+                    <!-- Search -->
+                    <div class="col-md-3">
+                        <input type="text" name="search" class="form-control" placeholder="Enter name" value="{{ search_query }}">
+                    </div>
 
-
-                    </form>
-
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>User Full Name</th>
-                                <th>Feedback Type</th>
-                                <th>Assigned On</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for fb in data %}
-                                <tr>
-                                    <td>{{ fb.user.get_full_name }}</td>
-                                    <td>{{ fb.feedback_type.type }}</td>
-                                    <td>{{ fb.assigned_on|date:"Y-m-d H:i" }}</td>
-                                    <td>
-                                        {% if fb.is_active %}
-                                            <span class="badge bg-success">Received</span>
-                                        {% else %}
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% empty %}
-                                <tr><td colspan="4">No results found.</td></tr>
+                    <!-- Feedback Type Filter -->
+                    <div class="col-md-3">
+                        <select name="feedback_type" class="form-select">
+                            <option value="">Feedback Types</option>
+                            {% for ft in feedback_types %}
+                                <option value="{{ ft.id }}" {% if selected_type == ft.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ ft.type }}
+                                </option>
                             {% endfor %}
-                        </tbody>
-                    </table>
+                        </select>
+                    </div>
 
-                    <!-- Pagination Controls -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            {% if data.has_previous %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=1{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ data.previous_page_number }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
-                                </li>
-                            {% endif %}
+                    <!-- Status Filter -->
+                    <div class="col-md-3">
+                        <select name="status" class="form-select">
+                            <option value="">Statuses</option>
+                            <option value="received" {% if status_filter == 'received' %}selected{% endif %}>Received</option>
+                            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                        </select>
+                    </div>
 
-                            <li class="page-item active">
-                                <span class="page-link">{{ data.number }}</span>
+                    <!-- Buttons + Summary -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Filter</button>
+                        <button type="button" class="btn btn-secondary me-3" onclick="window.location.href=window.location.pathname;">Clear</button>
+                        <div class="summary-box p-2 bg-light border rounded text-center flex-shrink-0">
+                            <small class="text-muted d-block">Received / Sent</small>
+                            <strong class="fs-6 text-dark">{{ total_received }} / {{ total_sent }}</strong>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Feedback Table -->
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>User Full Name</th>
+                            <th>Feedback Type</th>
+                            <th>Assigned On</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fb in data %}
+                            <tr>
+                                <td>{{ fb.user.get_full_name }}</td>
+                                <td>{{ fb.feedback_type.type }}</td>
+                                <td>{{ fb.assigned_on|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    {% if fb.is_active %}
+                                        <span class="badge bg-success">Received</span>
+                                    {% else %}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="4">No results found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Pagination -->
+                {% if data.has_other_pages %}
+                <nav>
+                    <ul class="pagination justify-content-center">
+
+                        {% if data.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ data.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"><<</a>
                             </li>
+                        {% endif %}
 
-                            {% if data.has_next %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ data.next_page_number }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ data.paginator.num_pages }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
+                        <li class="page-item active">
+                            <span class="page-link">{{ data.number }}</span>
+                        </li>
+
+                        {% if data.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ data.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}">>></a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+                {% endif %}
+
                 </div>
             </div>
         </div>
