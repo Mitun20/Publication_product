@@ -5,6 +5,10 @@
 
 
 <style>
+    .hidden {
+  display: none !important;
+}
+
 /* === Global Reset === */
 * {
   box-sizing: border-box;
@@ -446,7 +450,7 @@ button {
                                                         Contact Author
                                                     </a>
 
-                                                    <a class="dropdown-item" href="#" onclick="openFeedbackModal('{{ submission.id }}'); return false;">
+                                                    <a class="dropdown-item" href="#" onclick="openFeedbackModal('{{ submission.id }}', '{{ submission.author.user.id }}'); return false;">
                                                         Request Feedback
                                                     </a>
                                                 </div>
@@ -607,6 +611,23 @@ button {
       <button id="btn-create-new-feedback" type="button">Create New Feedback</button>
     </div>
 
+  <div id="feedback-summary-wrapper">
+    <h4>Feedback Summary</h4>
+    <table id="feedback-summary-table" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Feedback Type</th>
+          <th>Sent Count</th>
+          <th>Received Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
     <!-- Instant Feedback Section -->
     <div id="instant-feedback-section" class="feedback-section" style="display:none;">
       <form id="instant-feedback-form">
@@ -697,6 +718,7 @@ button {
   </div>
 </div>
 
+
 <script>
   // CSRF helper function from Django docs
 function getCookie(name) {
@@ -717,13 +739,53 @@ const csrftoken = getCookie('csrftoken');
 
 // Track the current submission ID
 let currentSubmissionId = null;
+let currentAuthorUserId = null;
 
 // Open modal function
-function openFeedbackModal(submissionId) {
+function openFeedbackModal(submissionId, authorUserId) {
     resetModal();
     currentSubmissionId = submissionId;
+    currentAuthorUserId = authorUserId;
     document.getElementById('feedback-modal').style.display = 'flex';
-    
+    loadFeedbackSummary(authorUserId);
+}
+
+// Load feedback summary function
+function loadFeedbackSummary(authorUserId) {
+    const tbody = document.querySelector('#feedback-summary-table tbody');
+    tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+    fetch(`/feedback-summary/${authorUserId}/`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network error');
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                tbody.innerHTML = `<tr><td colspan="3">${data.error}</td></tr>`;
+                return;
+            }
+            if (data.summary.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No feedback data available.</td></tr>';
+                return;
+            }
+
+            let rows = '';
+            data.summary.forEach(item => {
+                rows += `
+                    <tr>
+                        <td>${item.type}</td>
+                        <td>${item.sent_count}</td>
+                        <td>${item.received_count}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = rows;
+        })
+        .catch(err => {
+            tbody.innerHTML = `<tr><td colspan="3">Error loading data</td></tr>`;
+            console.error(err);
+        });
 }
 
 // Close modal
@@ -770,22 +832,31 @@ function resetModal() {
         button.disabled = false;
         button.style.backgroundColor = '';
     });
-
+    const tbody = document.querySelector('#feedback-summary-table tbody');
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="3">No data loaded.</td></tr>';
+    }
     // Hide edit modal if open
     document.getElementById('edit-question-modal').style.display = 'none';
     document.getElementById('edit-question-error').innerText = "";
+    document.getElementById('feedback-summary-wrapper').classList.remove('hidden');
+
 }
 
 // Show instant feedback form
 document.getElementById('btn-instant-feedback').addEventListener('click', () => {
     resetModal();
     document.getElementById('instant-feedback-section').style.display = 'block';
+    document.getElementById('feedback-summary-wrapper').classList.add('hidden');
+
 });
 
 // Show create new feedback form
 document.getElementById('btn-create-new-feedback').addEventListener('click', () => {
     resetModal();
     document.getElementById('create-new-feedback-section').style.display = 'block';
+    document.getElementById('feedback-summary-wrapper').classList.add('hidden');
+
 });
 
 // Load questions for selected feedback type

@@ -1637,3 +1637,39 @@ def question_detail_view(request, question_id):
         ],
     }
     return render(request, 'feedback_question_detail.html', context)
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from .models import Feedback, FeedbackType
+from django.contrib.auth.models import User
+
+@login_required
+def feedback_summary_api(request, user_id):
+    try:
+        author_user = User.objects.get(pk=user_id)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    feedback_types = FeedbackType.objects.all()
+
+    summary = []
+    for ftype in feedback_types:
+        sent_count = Feedback.objects.filter(
+            feedback_type=ftype,
+            user=author_user
+        ).count()
+        
+        received_count = Feedback.objects.filter(
+            feedback_type=ftype,
+            user=author_user,
+            is_active=True
+        ).count()
+
+        summary.append({
+            'type': ftype.type,
+            'sent_count': sent_count,
+            'received_count': received_count,
+        })
+
+    return JsonResponse({'summary': summary})

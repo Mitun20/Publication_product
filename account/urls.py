@@ -84,6 +84,7 @@ urlpatterns = [
     path('feedback/<int:feedback_id>/respond/', feedback_response_form, name='feedback_response_form'),
     path('feedback_list/', feedback_list, name='feedback_list'),
     path('analytical_feedback/', analytical_feedback_view, name='analytical_feedback'),
+    path('feedback-summary/<int:user_id>/', feedback_summary_api, name='feedback_summary'),
     path('question/<int:question_id>/detail/', question_detail_view, name='question_detail'),
     path('thank-you/', thank_you, name='thank_you'),
 ]
