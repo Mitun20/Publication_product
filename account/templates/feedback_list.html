@@ -2,6 +2,9 @@
 {% block content %}
 {% load static %}
 
+
+
+
 <section class="job-list-section pt-60 pb-60">
     <div class="container-fluid">
         <div class="row">
@@ -25,6 +28,17 @@
                                 </a>
                             </li>
                             <li >
+                                <a class="nav-link" href="{% url 'analytical_feedback' %}">
+                                    Analytical Feedbacks
+                                </a>
+                            </li>
+                            <li >
+                                <a class="nav-link active" href="{% url 'feedback_list' %}">
+                                    Feedbacks
+                                </a>
+                            </li>
+                            
+                            <li >
                                 <div class="accordion-item">
                                     <div class="accordion-title" data-tab="iteml3">
                                         <a class="nav-link" style="color: white;">Settings <i class='bx bx-chevrons-right down-arrow'></i></a>
@@ -34,7 +48,6 @@
                                         <ul>
                                             <li><a class="nav-link"  href="{% url 'date_settings' %}">Date Settings</a></li>
                                             <li><a class="nav-link" href="{% url 'modes' %}">Communication Modes</a></li>
-                                            <li><a class="nav-link active" href="{% url 'analytical_feedback' %}">Feedbacks</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -54,7 +67,12 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="nav-link active" href="{% url 'analytical_feedback' %}">
+                                <a class="nav-link" href="{% url 'analytical_feedback' %}">
+                                    Analytical Feedbacks
+                                </a>
+                            </li>
+                            <li>
+                                <a class="nav-link active" href="{% url 'feedback_list' %}">
                                     Feedbacks
                                 </a>
                             </li>
@@ -63,60 +81,89 @@
                 </div>
             </div>
             <div class="col-md-9 ms-sm-auto col-lg-9 px-md-4">
-                <div class="content">
-                    <h2>Feedbacks</h2>
+                <div class="container">
+                    <h3 class="mb-4">Feedback Summary</h3>
 
-                    <form method="get" class="filter-form" style="margin-bottom: 32px; display: flex; align-items: center; gap: 18px; background: #f4f6fa; padding: 22px 32px; border-radius: 10px; border: 1.5px solid #d1d7e0; box-shadow: 0 4px 16px rgba(60,72,88,0.07);">
-                        <label for="feedback_type" style="margin-bottom: 0; font-weight: 700; color: #22304a; font-size: 1.08rem; letter-spacing: 0.01em; min-width: 180px;">
-                            Filter by Feedback Type:
-                        </label>
-                        <select name="feedback_type" id="feedback_type" onchange="this.form.submit()" style="padding: 8px 20px; border-radius: 8px; border: 1.5px solid #b0b8c9; background: #f9fafc; font-size: 1.04rem; color: #22304a; min-width: 180px;">
-                            <option value="">-- All --</option>
-                            {% for ft in feedback_types %}
-                                <option value="{{ ft.id }}" {% if selected_feedback_type == ft.id %}selected{% endif %}>{{ ft.type }}</option>
-                            {% endfor %}
-                        </select>
-                        <noscript>
-                            <button type="submit" style="padding: 8px 22px; border-radius: 8px; border: 1.5px solid #b0b8c9; background: #e3e8f0; font-weight: 600; font-size: 1.04rem; color: #22304a;">
-                                Filter
-                            </button>
-                        </noscript>
+                    <form method="get" class="row mb-4">
+                        <div class="col-md-4">
+                            <input type="text" name="search" class="form-control" placeholder="Search by name" value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-4">
+                            <select name="feedback_type" class="form-control">
+                                <option value="">Feedback Types</option>
+                                {% for ft in feedback_types %}
+                                    <option value="{{ ft.id }}" {% if selected_type == ft.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ ft.type }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-center">
+                            <button type="submit" class="btn btn-primary me-2">Filter</button>
+                            <button type="button" class="btn btn-secondary me-3" onclick="window.location.href=window.location.pathname;">Clear</button>
+                            <div class="summary-box p-2 bg-light border rounded text-center flex-shrink-0">
+                                <strong class="fs-5 text-dark">{{ total_received }} / {{ total_sent }}</strong>
+                            </div>
+                        </div>
+
+
                     </form>
 
-                    {% if feedbacks %}
-                        <ul style="list-style: none; padding-left: 0;">
-                        {% for fb in feedbacks %}
-                            <li style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #ddd;">
-                                <strong>{{ fb.question.question }}</strong>
-                                <em>({{ fb.feedback.feedback_type.type }})</em><br>
-                                &nbsp;&nbsp;&nbsp;&nbsp;{{ fb.response }}&nbsp;&nbsp;&nbsp;&nbsp;
-                                <small style="color: #555; font-style: italic; margin-left: 40px; display: inline-block;">
-                                    — {{ fb.feedback.user.first_name }} {{ fb.feedback.user.last_name }}
-                                </small>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User Full Name</th>
+                                <th>Feedback Type</th>
+                                <th>Assigned On</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fb in data %}
+                                <tr>
+                                    <td>{{ fb.user.get_full_name }}</td>
+                                    <td>{{ fb.feedback_type.type }}</td>
+                                    <td>{{ fb.assigned_on|date:"Y-m-d H:i" }}</td>
+                                    <td>
+                                        {% if fb.is_active %}
+                                            <span class="badge bg-success">Received</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="4">No results found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination Controls -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            {% if data.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ data.previous_page_number }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">{{ data.number }}</span>
                             </li>
-                        {% endfor %}
+
+                            {% if data.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ data.next_page_number }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ data.paginator.num_pages }}{% if selected_type %}&feedback_type={{ selected_type }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+                                </li>
+                            {% endif %}
                         </ul>
-                    {% else %}
-                        <p>No feedback found.</p>
-                    {% endif %}
-                    <div class="row pagination text-center">
-                        <span class="step-links">
-                            {% if feedbacks.has_previous %}
-                                <a href="?page=1{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">&laquo; first</a>
-                                <a href="?page={{ feedbacks.previous_page_number }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">previous</a>
-                            {% endif %}
-
-                            <span class="current">
-                                Page {{ feedbacks.number }} of {{ feedbacks.paginator.num_pages }}
-                            </span>
-
-                            {% if feedbacks.has_next %}
-                                <a href="?page={{ feedbacks.next_page_number }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">next</a>
-                                <a href="?page={{ feedbacks.paginator.num_pages }}{% if selected_feedback_type %}&feedback_type={{ selected_feedback_type }}{% endif %}">last &raquo;</a>
-                            {% endif %}
-                        </span>
-                    </div>
-
+                    </nav>
                 </div>
             </div>
         </div>
@@ -124,3 +171,4 @@
 </section>
 
 {% endblock %}
+

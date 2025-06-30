@@ -1520,24 +1520,8 @@ from django.contrib.admin.views.decorators import user_passes_test
 @login_required
 @user_passes_test(lambda u: is_eic(u) or is_super_admin(u))
 def feedback_list(request):
-    feedback_type_id = request.GET.get('feedback_type')  # get filter param
-    
-    feedbacks = FeedbackResponse.objects.all().select_related('feedback__user', 'feedback__feedback_type').order_by('-id')
-    feedback_types = FeedbackType.objects.all()
-    
-    if feedback_type_id:
-        feedbacks = feedbacks.filter(feedback__feedback_type_id=feedback_type_id)
-    
-    paginator = Paginator(feedbacks, 7)  # Show 7 feedbacks per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'feedbacks': page_obj,  # Using page_obj instead of feedbacks
-        'feedback_types': feedback_types,
-        'selected_feedback_type': int(feedback_type_id) if feedback_type_id else None,
-    }
-    return render(request, 'feedback_list.html', context)
+
+    return render(request, 'feedback_list.html')
 
 from collections import Counter
 from django.shortcuts import render
@@ -1673,3 +1657,54 @@ def feedback_summary_api(request, user_id):
         })
 
     return JsonResponse({'summary': summary})
+
+# all feedbacks
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q
+from django.shortcuts import render
+from .models import Feedback, FeedbackType
+from django.contrib.auth.models import User
+
+@login_required
+@user_passes_test(lambda u: is_eic(u) or is_super_admin(u))
+def feedback_list(request):
+    feedback_types = FeedbackType.objects.all()
+    selected_type = request.GET.get('feedback_type')
+    search_query = request.GET.get('search', '')
+
+    feedbacks = Feedback.objects.select_related('user', 'feedback_type')
+
+    if selected_type:
+        feedbacks = feedbacks.filter(feedback_type__id=selected_type)
+
+    if search_query:
+        feedbacks = feedbacks.filter(
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query)
+        )
+
+    # Order by assigned_on (newest first)
+    feedbacks = feedbacks.order_by('-assigned_on')
+
+    # Pagination
+    paginator = Paginator(feedbacks, 10)
+    page_number = request.GET.get('page')
+    try:
+        page_obj = paginator.get_page(page_number)
+    except EmptyPage:
+        page_obj = paginator.get_page(1)
+
+    # Totals
+    total_sent = feedbacks.count()
+    total_received = feedbacks.filter(is_active=True).count()
+
+    context = {
+        'data': page_obj,
+        'feedback_types': feedback_types,
+        'selected_type': selected_type,
+        'search_query': search_query,
+        'total_sent': total_sent,
+        'total_received': total_received
+    }
+
+    return render(request, 'feedback_list.html', context)
