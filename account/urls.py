@@ -30,7 +30,8 @@ urlpatterns = [
     path('verify_email/<uidb64>/<token>/', verify_email, name='verify_email'),
     path('set_new_password/<uidb64>/<token>/', set_new_password, name='set_new_password'),
     path('registration_complete/',registration_complete, name='registration_complete'),
-    path('', index, name='index'),
+    path('index/', index, name='index'),
+    path('', home, name='home'),
     path('base/', base_view, name='base'),   # URL for a general page
     path('password_reset/', password_reset_view, name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset_done.html'), name='password_reset_done'),

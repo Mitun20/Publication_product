@@ -53,10 +53,10 @@ PROJECT_KNOWLEDGE = {
     "terms_conditions_to_withdraw_paper": "Terms and conditions are available on the ‘Authors Guidelines’ page. Please refer to the journal website. Paper cannot be withdrawn under any condition once it is accepted.",
     
     # jcm faqs
-    "is_karpagam_jcm_peer_reviewed": "Yes, Karpagam JCM follows a single-blind review process. Selected papers are forwarded to a panel of experts to assess quality. The Editor’s decision is final.",
-    "types_of_papers_published": "Karpagam JCM publishes original Research Papers, Case Studies, Literature Reviews, and Conceptual Frameworks.",
-    "issn_available": "No, currently Karpagam JCM does not have an ISSN. Application is in process.",
-    "print_version_available": "No, Karpagam JCM publishes articles only online.",
+    "is__jcm_peer_reviewed": "Yes, JCM follows a single-blind review process. Selected papers are forwarded to a panel of experts to assess quality. The Editor’s decision is final.",
+    "types_of_papers_published": " JCM publishes original Research Papers, Case Studies, Literature Reviews, and Conceptual Frameworks.",
+    "issn_available": "No, currently  JCM does not have an ISSN. Application is in process.",
+    "print_version_available": "No,  JCM publishes articles only online.",
     "submit_more_than_one_paper": "Yes, you can submit more than one paper at a time.",
     "submission_deadlines": "There is no deadline for submission. Manuscripts can be submitted anytime and will be published if peer-reviewed and accepted.",
     "how_to_submit_paper": "All papers should be forwarded to the Editor's email address.",
@@ -72,7 +72,7 @@ PROJECT_KNOWLEDGE = {
     "print_version_available": "Yes, IJAM Journal is published both online and in print versions.",
     "submit_more_than_one_paper": "Yes, you can submit more than one paper at a time.",
     "submission_deadlines": "There is no deadline for paper submission; you can submit your manuscript at any time. Accepted papers will be published in the upcoming issue.",
-    "how_to_submit_paper": "All papers should be emailed to ijamkahe@gmail.com or addressed to The Editor in Chief, International Journal of Applied Mathematics, Karpagam University, Eachanari Post, Coimbatore-641 021, India.",
+    "how_to_submit_paper": "All papers should be emailed to ijamkahe@gmail.com or addressed to The Editor in Chief, International Journal of Applied Mathematics,  University, Eachanari Post, Coimbatore-641 021, India.",
     "hard_copy_provided": "Yes, after online publication, a hard copy of the journal is sent to all authors by speed post.",
     "acknowledgment_email_timing": "Paper submissions are normally acknowledged within 12 to 24 hours.",
     "review time": "It depends on reviewer response. Generally, submitted papers may be reviewed within 15 days. It is advised not to submit the same article to multiple journals at the same time. You should wait for the review report.",

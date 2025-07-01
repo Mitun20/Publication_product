@@ -566,22 +566,22 @@ from django.db.models import Q
 
 
 def index(request):
-    if request.user.is_authenticated:
-        user = request.user
-        if user.is_superuser:
-            return redirect('dashboard')  # Redirect to user_management.html
-        elif user.groups.filter(name='Admin Office').exists():
-            return redirect('dashboard')  # Redirect to admin_office.html
-        elif user.groups.filter(name='AE').exists():
-            return redirect('associate_editor')  # Redirect to AE dashboard or specific view
-        elif user.groups.filter(name='EIC').exists():
-            return redirect('editor_in_chief')  # Redirect to EIC dashboard or specific view
-        elif user.groups.filter(name='Author').exists():
-            return redirect('startnew')  # Redirect to Author dashboard or specific view
-        elif user.groups.filter(name='Reviewer').exists():
-            return redirect('reviewer_invitations')  # Redirect to Reviewer dashboard or specific view
-        else:
-            return redirect('change_password')
+    # if request.user.is_authenticated:
+    #     user = request.user
+    #     if user.is_superuser:
+    #         return redirect('dashboard')  # Redirect to user_management.html
+    #     elif user.groups.filter(name='Admin Office').exists():
+    #         return redirect('dashboard')  # Redirect to admin_office.html
+    #     elif user.groups.filter(name='AE').exists():
+    #         return redirect('associate_editor')  # Redirect to AE dashboard or specific view
+    #     elif user.groups.filter(name='EIC').exists():
+    #         return redirect('editor_in_chief')  # Redirect to EIC dashboard or specific view
+    #     elif user.groups.filter(name='Author').exists():
+    #         return redirect('startnew')  # Redirect to Author dashboard or specific view
+    #     elif user.groups.filter(name='Reviewer').exists():
+    #         return redirect('reviewer_invitations')  # Redirect to Reviewer dashboard or specific view
+    #     else:
+    #         return redirect('change_password')
         
     journals = Journal.objects.all()
     # journal_name = "JCS"  # The name of the journal to filter by
@@ -659,9 +659,26 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
-
-
-
+def home(request):
+    if request.user.is_authenticated:
+        user = request.user
+        if user.is_superuser:
+            return redirect('dashboard')  # Redirect to user_management.html
+        elif user.groups.filter(name='Admin Office').exists():
+            return redirect('dashboard')  # Redirect to admin_office.html
+        elif user.groups.filter(name='AE').exists():
+            return redirect('associate_editor')  # Redirect to AE dashboard or specific view
+        elif user.groups.filter(name='EIC').exists():
+            return redirect('editor_in_chief')  # Redirect to EIC dashboard or specific view
+        elif user.groups.filter(name='Author').exists():
+            return redirect('startnew')  # Redirect to Author dashboard or specific view
+        elif user.groups.filter(name='Reviewer').exists():
+            return redirect('reviewer_invitations')  # Redirect to Reviewer dashboard or specific view
+        else:
+            return redirect('change_password')
+    else:
+        return redirect('index')
+    return render(request, 'home.html')
 
 def check_user_status(request):
     user = request.user
@@ -669,7 +686,6 @@ def check_user_status(request):
         'is_authenticated': user.is_authenticated,
         'is_author': user.groups.filter(name='Author').exists(),
     })
-
 
 # -------register------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
